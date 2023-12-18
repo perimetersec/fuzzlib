@@ -1,9 +1,16 @@
 // SPDX-License-Identifier: MIT
 import "./Logging.sol";
 import "./Constants.sol";
+import "./AssertHelper.sol";
+
 import "./PropertiesHelper.sol";
 
-abstract contract FuzzBase is PropertiesAsserts, Logging, Constants {
+abstract contract FuzzBase is
+    AssertHelper,
+    PropertiesAsserts,
+    Logging,
+    Constants
+{
     bytes16 internal constant HEX_DIGITS = "0123456789abcdef";
 
     /// @notice bytes4 version of assertEq
