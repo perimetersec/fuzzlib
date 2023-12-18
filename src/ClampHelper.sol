@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "./FuzzLibString.sol";
 import "./AssertHelper.sol";
 
+/// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
 abstract contract ClampHelper is AssertHelper {
     event Clamped(string);
 
