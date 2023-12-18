@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./FuzzLibString.sol";
 import "./AssertHelper.sol";
 
-abstract contract PropertiesAsserts is AssertHelper {
+abstract contract ClampHelper is AssertHelper {
     /// @notice Clamps value to be between low and high, both inclusive
     function clampBetween(
         uint256 value,

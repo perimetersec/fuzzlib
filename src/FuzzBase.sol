@@ -2,12 +2,11 @@
 import "./Logging.sol";
 import "./Constants.sol";
 import "./AssertHelper.sol";
-
-import "./PropertiesHelper.sol";
+import "./ClampHelper.sol";
 
 abstract contract FuzzBase is
     AssertHelper,
-    PropertiesAsserts,
+    ClampHelper,
     Logging,
     Constants
 {
