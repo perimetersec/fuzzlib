@@ -67,6 +67,30 @@ abstract contract AssertHelper {
         }
     }
 
+    /// @notice bytes4 version of assertEq
+    function assertEq(
+        bytes4 a,
+        bytes4 b,
+        string memory reason
+    ) internal {
+        if (a != b) {
+            bytes memory aBytes = abi.encodePacked(a);
+            bytes memory bBytes = abi.encodePacked(b);
+            string memory aStr = FuzzLibString.toHexString(aBytes);
+            string memory bStr = FuzzLibString.toHexString(bBytes);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                "!=",
+                bStr,
+                ", reason: ",
+                reason
+            );
+            emit AssertEqFail(string(assertMsg));
+            assert(false);
+        }
+    }
+
     /// @notice asserts that a is not equal to b. Violations are logged using reason.
     function assertNeq(
         uint256 a,

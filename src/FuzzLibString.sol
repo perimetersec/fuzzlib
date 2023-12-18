@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 /// @author Modified from Solady (https://github.com/Vectorized/solady/blob/main/src/utils/LibString.sol)
 /// @author Modified from Crytic Properties (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
 library FuzzLibString {
+    bytes16 internal constant HEX_DIGITS = "0123456789abcdef";
+
     function toString(int256 value) internal pure returns (string memory str) {
         uint256 absValue = value >= 0 ? uint256(value) : uint256(-value);
         str = toString(absValue);
@@ -81,5 +83,23 @@ library FuzzLibString {
     function char(bytes1 b) internal pure returns (bytes1 c) {
         if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
         else return bytes1(uint8(b) + 0x57);
+    }
+
+    // based on OZ's toHexString
+    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
+    function toHexString(bytes memory value)
+        internal
+        pure
+        returns (string memory)
+    {
+        bytes memory buffer = new bytes(2 * value.length + 2);
+        buffer[0] = "0";
+        buffer[1] = "x";
+        for (uint256 i = 0; i < value.length; i++) {
+            uint8 valueByte = uint8(value[i]);
+            buffer[2 * i + 2] = HEX_DIGITS[valueByte >> 4];
+            buffer[2 * i + 3] = HEX_DIGITS[valueByte & 0xf];
+        }
+        return string(buffer);
     }
 }
