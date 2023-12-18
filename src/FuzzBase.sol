@@ -26,8 +26,6 @@ abstract contract FuzzBase is PropertiesAsserts {
 
     bytes16 internal constant HEX_DIGITS = "0123456789abcdef";
 
-    // test2
-
     /// @notice bytes4 version of assertEq
     function assertEq(
         bytes4 a,
