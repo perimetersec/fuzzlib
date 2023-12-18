@@ -6,6 +6,4 @@ import "./Constants.sol";
 import "./AssertHelper.sol";
 import "./ClampHelper.sol";
 
-abstract contract FuzzBase is AssertHelper, ClampHelper, Logging, Constants {
-
-}
+abstract contract FuzzBase is AssertHelper, ClampHelper, Logging, Constants {}

@@ -4,10 +4,6 @@ pragma solidity ^0.8.0;
 import "./FuzzLibString.sol";
 
 abstract contract AssertHelper {
-    event LogUint256(string, uint256);
-    event LogAddress(string, address);
-    event LogString(string);
-
     event AssertFail(string);
     event AssertEqFail(string);
     event AssertNeqFail(string);

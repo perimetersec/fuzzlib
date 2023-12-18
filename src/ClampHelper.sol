@@ -5,6 +5,8 @@ import "./FuzzLibString.sol";
 import "./AssertHelper.sol";
 
 abstract contract ClampHelper is AssertHelper {
+    event Clamped(string);
+
     /// @notice Clamps value to be between low and high, both inclusive
     function clampBetween(
         uint256 value,
@@ -21,7 +23,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 ansStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return ans;
         }
         return value;
@@ -46,7 +48,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 ansStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return ans;
         }
         return value;
@@ -69,7 +71,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
@@ -87,7 +89,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
@@ -105,7 +107,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
@@ -123,7 +125,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
@@ -146,7 +148,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         } else {
             return a;
@@ -165,7 +167,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         } else {
             return a;
@@ -184,7 +186,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
@@ -202,7 +204,7 @@ abstract contract ClampHelper is AssertHelper {
                 " to ",
                 valueStr
             );
-            emit LogString(string(message));
+            emit Clamped(string(message));
             return value;
         }
         return a;
