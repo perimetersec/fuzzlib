@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
+import "./Logging.sol";
 import "./PropertiesHelper.sol";
 
-abstract contract FuzzBase is PropertiesAsserts {
+abstract contract FuzzBase is PropertiesAsserts, Logging {
     // https://docs.soliditylang.org/en/latest/control-structures.html#panic-via-assert-and-error-via-require
     // 0x00: Used for generic compiler inserted panics.
     // 0x01: If you call assert with an argument that evaluates to false.

@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: MIT
 
-library Debugger {
-    event Debug(string debugString);
-    event Debug(string description, string data);
-    event Debug(string prefix, string description, string data);
-    event Debug(string description, bytes32 data);
-    event Debug(string prefix, string description, bytes32 data);
-    event Debug(string description, uint256 data);
-    event Debug(string prefix, string description, uint256 data);
-    event Debug(string description, int256 data);
-    event Debug(string prefix, string description, int256 data);
-    event Debug(string description, address data);
-    event Debug(string prefix, string description, address data);
-    event Debug(string description, bool data);
-    event Debug(string prefix, string description, bool data);
+abstract contract Logging {
+    event Log(string debugString);
+    event Log(string description, string data);
+    event Log(string prefix, string description, string data);
+    event Log(string description, bytes32 data);
+    event Log(string prefix, string description, bytes32 data);
+    event Log(string description, uint256 data);
+    event Log(string prefix, string description, uint256 data);
+    event Log(string description, int256 data);
+    event Log(string prefix, string description, int256 data);
+    event Log(string description, address data);
+    event Log(string prefix, string description, address data);
+    event Log(string description, bool data);
+    event Log(string prefix, string description, bool data);
 
     function log(string memory debugString) internal {
-        emit Debug(debugString);
+        emit Log(debugString);
     }
 
     function log(string memory description, string memory data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -28,11 +28,11 @@ library Debugger {
         string memory description,
         string memory data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 
     function log(string memory description, bytes32 data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -40,11 +40,11 @@ library Debugger {
         string memory description,
         bytes32 data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 
     function log(string memory description, uint256 data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -52,11 +52,11 @@ library Debugger {
         string memory description,
         uint256 data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 
     function log(string memory description, int256 data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -64,11 +64,11 @@ library Debugger {
         string memory description,
         int256 data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 
     function log(string memory description, address data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -76,11 +76,11 @@ library Debugger {
         string memory description,
         address data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 
     function log(string memory description, bool data) internal {
-        emit Debug(description, data);
+        emit Log(description, data);
     }
 
     function log(
@@ -88,6 +88,6 @@ library Debugger {
         string memory description,
         bool data
     ) internal {
-        emit Debug(prefix, description, data);
+        emit Log(prefix, description, data);
     }
 }
