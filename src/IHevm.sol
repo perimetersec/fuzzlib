@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 // https://github.com/ethereum/hevm/blob/main/doc/src/controlling-the-unit-testing-environment.md#cheat-codes
 
