@@ -3,25 +3,25 @@ pragma solidity ^0.8.0;
 
 abstract contract Logging {
     event Log(string debugString);
-    event Log(string description, string data);
-    event Log(string prefix, string description, string data);
-    event Log(string description, bytes32 data);
-    event Log(string prefix, string description, bytes32 data);
-    event Log(string description, uint256 data);
-    event Log(string prefix, string description, uint256 data);
-    event Log(string description, int256 data);
-    event Log(string prefix, string description, int256 data);
-    event Log(string description, address data);
-    event Log(string prefix, string description, address data);
-    event Log(string description, bool data);
-    event Log(string prefix, string description, bool data);
+    event LogString(string description, string data);
+    event LogString(string prefix, string description, string data);
+    event LogBytes(string description, bytes data);
+    event LogBytes(string prefix, string description, bytes data);
+    event LogUint(string description, uint256 data);
+    event LogUint(string prefix, string description, uint256 data);
+    event LogInt(string description, int256 data);
+    event LogInt(string prefix, string description, int256 data);
+    event LogAddress(string description, address data);
+    event LogAddress(string prefix, string description, address data);
+    event LogBool(string description, bool data);
+    event LogBool(string prefix, string description, bool data);
 
     function log(string memory debugString) internal {
         emit Log(debugString);
     }
 
     function log(string memory description, string memory data) internal {
-        emit Log(description, data);
+        emit LogString(description, data);
     }
 
     function log(
@@ -29,23 +29,23 @@ abstract contract Logging {
         string memory description,
         string memory data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogString(prefix, description, data);
     }
 
-    function log(string memory description, bytes32 data) internal {
-        emit Log(description, data);
+    function log(string memory description, bytes memory data) internal {
+        emit LogBytes(description, data);
     }
 
     function log(
         string memory prefix,
         string memory description,
-        bytes32 data
+        bytes memory data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogBytes(prefix, description, data);
     }
 
     function log(string memory description, uint256 data) internal {
-        emit Log(description, data);
+        emit LogUint(description, data);
     }
 
     function log(
@@ -53,11 +53,11 @@ abstract contract Logging {
         string memory description,
         uint256 data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogUint(prefix, description, data);
     }
 
     function log(string memory description, int256 data) internal {
-        emit Log(description, data);
+        emit LogInt(description, data);
     }
 
     function log(
@@ -65,11 +65,11 @@ abstract contract Logging {
         string memory description,
         int256 data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogInt(prefix, description, data);
     }
 
     function log(string memory description, address data) internal {
-        emit Log(description, data);
+        emit LogAddress(description, data);
     }
 
     function log(
@@ -77,11 +77,11 @@ abstract contract Logging {
         string memory description,
         address data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogAddress(prefix, description, data);
     }
 
     function log(string memory description, bool data) internal {
-        emit Log(description, data);
+        emit LogBool(description, data);
     }
 
     function log(
@@ -89,6 +89,6 @@ abstract contract Logging {
         string memory description,
         bool data
     ) internal {
-        emit Log(prefix, description, data);
+        emit LogBool(prefix, description, data);
     }
 }
