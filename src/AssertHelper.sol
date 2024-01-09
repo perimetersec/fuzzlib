@@ -307,4 +307,67 @@ abstract contract AssertHelper {
             assert(false);
         }
     }
+
+    function assertRevertReasonNotEqual(
+        bytes memory returnData,
+        string memory reason
+    ) internal {
+        bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
+        assertWithMsg(!isEqual, reason);
+    }
+
+    function assertRevertReasonEqual(
+        bytes memory returnData,
+        string memory reason
+    ) internal {
+        bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
+        assertWithMsg(isEqual, reason);
+    }
+
+    function assertRevertReasonEqual(
+        bytes memory returnData,
+        string memory reason1,
+        string memory reason2
+    ) internal {
+        bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason2);
+        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2));
+    }
+
+    function assertRevertReasonEqual(
+        bytes memory returnData,
+        string memory reason1,
+        string memory reason2,
+        string memory reason3
+    ) internal {
+        bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason3);
+        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2, " OR ", reason3));
+    }
+
+    function assertRevertReasonEqual(
+        bytes memory returnData,
+        string memory reason1,
+        string memory reason2,
+        string memory reason3,
+        string memory reason4
+    ) internal {
+        bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason3) ||
+            FuzzLibString.isRevertReasonEqual(returnData, reason4);
+        assertWithMsg(
+            isEqual,
+            string.concat(
+                reason1,
+                " OR ",
+                reason2,
+                " OR ",
+                reason3,
+                " OR ",
+                reason4
+            )
+        );
+    }
 }
