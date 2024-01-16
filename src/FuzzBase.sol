@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./Logging.sol";
 import "./Constants.sol";
-import "./AssertHelper.sol";
+import "./AssertWrapper.sol";
 import "./ClampHelper.sol";
 
-abstract contract FuzzBase is AssertHelper, ClampHelper, Logging, Constants {}
+abstract contract FuzzBase is AssertWrapper, ClampHelper, Logging, Constants {}

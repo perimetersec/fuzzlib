@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./AssertHelper.sol";
 
-abstract contract EchidnaAsserts is AssertHelper {
+abstract contract AssertWrapper is AssertHelper {
     function gt(uint256 a, uint256 b, string memory message) internal {
         assertGt(a, b, message);
     }
