@@ -15,6 +15,21 @@ abstract contract Logging {
     event LogAddress(string prefix, string description, address data);
     event LogBool(string description, bool data);
     event LogBool(string prefix, string description, bool data);
+    
+    event AssertionFailed();
+    event AssertionFailed(string description);
+    event AssertionFailed(string description, string data);
+    event AssertionFailed(string prefix, string description, string data);
+    event AssertionFailed(string description, bytes data);
+    event AssertionFailed(string prefix, string description, bytes data);
+    event AssertionFailed(string description, uint256 data);
+    event AssertionFailed(string prefix, string description, uint256 data);
+    event AssertionFailed(string description, int256 data);
+    event AssertionFailed(string prefix, string description, int256 data);
+    event AssertionFailed(string description, address data);
+    event AssertionFailed(string prefix, string description, address data);
+    event AssertionFailed(string description, bool data);
+    event AssertionFailed(string prefix, string description, bool data);
 
     function log(string memory debugString) internal {
         emit Log(debugString);
@@ -90,5 +105,85 @@ abstract contract Logging {
         bool data
     ) internal {
         emit LogBool(prefix, description, data);
+    }
+
+    function logFail() internal {
+        emit AssertionFailed();
+    }
+
+    function logFail(string memory debugString) internal {
+        emit AssertionFailed(debugString);
+    }
+
+    function logFail(string memory description, string memory data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        string memory data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
+    }
+
+    function logFail(string memory description, bytes memory data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        bytes memory data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
+    }
+
+    function logFail(string memory description, uint256 data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        uint256 data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
+    }
+
+    function logFail(string memory description, int256 data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        int256 data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
+    }
+
+    function logFail(string memory description, address data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        address data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
+    }
+
+    function logFail(string memory description, bool data) internal {
+        emit AssertionFailed(description, data);
+    }
+
+    function logFail(
+        string memory prefix,
+        string memory description,
+        bool data
+    ) internal {
+        emit AssertionFailed(prefix, description, data);
     }
 }
