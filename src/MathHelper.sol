@@ -15,4 +15,12 @@ abstract contract MathHelper {
     function abs(int128 n) internal pure returns (int128) {
         return n >= 0 ? n : -n;
     }
+
+    function abs(int256 n) internal pure returns (uint256) {
+        return n >= 0 ? uint256(n) : uint256(-n);
+    }
+
+    function diff(int256 a, int256 b) internal pure returns (uint256) {
+        return a >= b ? uint256(a - b) : uint256(b - a);
+    }
 }
