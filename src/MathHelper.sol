@@ -5,8 +5,8 @@ abstract contract MathHelper {
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
         return a < b ? a : b;
     }
-    
-      // Forked from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/math/SignedMath.sol
+
+    // Forked from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/math/SignedMath.sol
     function max(int256 a, int256 b) internal pure returns (int256) {
         return a > b ? a : b;
     }
