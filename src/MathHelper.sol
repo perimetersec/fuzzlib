@@ -23,4 +23,8 @@ abstract contract MathHelper {
     function diff(int256 a, int256 b) internal pure returns (uint256) {
         return a >= b ? uint256(a - b) : uint256(b - a);
     }
+
+    function diff(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a >= b ? a - b : b - a;
+    }
 }
