@@ -64,7 +64,7 @@ abstract contract ClampHelper is AssertHelper {
     /// @notice clamps a to be less than b
     function clampLt(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
         if (!(a < b)) {
-            assertNeq(
+            neq(
                 b,
                 0,
                 "clampLt cannot clamp value a to be less than zero. Check your inputs/assumptions."
@@ -149,7 +149,7 @@ abstract contract ClampHelper is AssertHelper {
     /// @notice clamps a to be greater than b
     function clampGt(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
         if (!(a > b)) {
-            assertNeq(
+            neq(
                 b,
                 type(uint256).max,
                 "clampGt cannot clamp value a to be larger than uint256.max. Check your inputs/assumptions."
