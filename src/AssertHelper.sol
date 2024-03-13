@@ -36,6 +36,10 @@ abstract contract AssertHelper {
         }
     }
 
+    function f(bool a, string memory reason) internal {
+        t(!a, reason);
+    }
+
     /// @notice asserts that a is equal to b. Violations are logged using reason.
     function eq(uint256 a, uint256 b, string memory reason) internal {
         if (a != b) {
@@ -285,6 +289,42 @@ abstract contract AssertHelper {
         }
     }
 
+    /// @notice asserts that a is less than or equal to b. Violations are logged using reason.
+    function lte(uint256 a, uint256 b, string memory reason) internal {
+        if (!(a <= b)) {
+            string memory aStr = FuzzLibString.toString(a);
+            string memory bStr = FuzzLibString.toString(b);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                ">",
+                bStr,
+                " failed, reason: ",
+                reason
+            );
+            emit AssertLteFail(string(assertMsg));
+            assert(false);
+        }
+    }
+
+    /// @notice int256 version of assertLte
+    function lte(int256 a, int256 b, string memory reason) internal {
+        if (!(a <= b)) {
+            string memory aStr = FuzzLibString.toString(a);
+            string memory bStr = FuzzLibString.toString(b);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                ">",
+                bStr,
+                " failed, reason: ",
+                reason
+            );
+            emit AssertLteFail(string(assertMsg));
+            assert(false);
+        }
+    }
+
     function assertRevertReasonNotEqual(
         bytes memory returnData,
         string memory reason
@@ -308,7 +348,10 @@ abstract contract AssertHelper {
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2);
-        t(isEqual, string.concat(reason1, " OR ", reason2));
+        string memory assertMsg = string(
+            abi.encodePacked(reason1, " OR ", reason2)
+        );
+        t(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -320,7 +363,10 @@ abstract contract AssertHelper {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3);
-        t(isEqual, string.concat(reason1, " OR ", reason2, " OR ", reason3));
+        string memory assertMsg = string(
+            abi.encodePacked(reason1, " OR ", reason2, " OR ", reason3)
+        );
+        t(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -347,7 +393,7 @@ abstract contract AssertHelper {
                 reason4
             )
         );
-        assertWithMsg(isEqual, assertMsg);
+        t(isEqual, assertMsg);
     }
 
     function assertErrorsAllowed(
