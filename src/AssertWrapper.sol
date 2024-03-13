@@ -59,4 +59,8 @@ abstract contract AssertWrapper is AssertHelper {
     function t(bool a, string memory message) internal {
         assertWithMsg(a, message);
     }
+
+    function f(bool a, string memory message) internal {
+        assertWithMsg(!a, message);
+    }
 }
