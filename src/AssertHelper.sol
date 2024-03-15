@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import "./FuzzLibString.sol";
 
+interface Blaat {
+    function breakInvariant() external;
+}
+
 /// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
 abstract contract AssertHelper {
     event AssertFail(string);
@@ -13,11 +17,22 @@ abstract contract AssertHelper {
     event AssertLteFail(string);
     event AssertLtFail(string);
 
+    Blaat blaat;
+
+    function setBlaat(address _blaat) internal {
+        blaat = Blaat(_blaat);
+    }
+
+    function breakInvariant() internal {
+        blaat.breakInvariant();
+    }
+
     /// @notice asserts that a is true. Violations are logged using reason.
     function t(bool a, string memory reason) internal {
         if (!a) {
             emit AssertFail(reason);
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -35,7 +50,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -53,7 +69,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -73,7 +90,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -91,7 +109,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -109,7 +128,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -127,7 +147,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -145,7 +166,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -163,7 +185,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGteFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -181,7 +204,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGteFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -199,7 +223,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -217,7 +242,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -235,7 +261,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLteFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -253,7 +280,8 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLteFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
