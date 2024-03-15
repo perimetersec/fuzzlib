@@ -13,6 +13,7 @@ abstract contract AssertHelper {
     event AssertLteFail(string);
     event AssertLtFail(string);
 
+    /// @notice asserts that a is true. Violations are logged using reason.
     function t(bool a, string memory reason) internal {
         if (!a) {
             emit AssertFail(reason);
