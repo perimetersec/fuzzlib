@@ -262,7 +262,7 @@ abstract contract AssertHelper {
         string memory reason
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
-        f(isEqual, reason);
+        t(!isEqual, reason);
     }
 
     function assertRevertReasonEqual(
