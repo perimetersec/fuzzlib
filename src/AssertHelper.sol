@@ -21,10 +21,6 @@ abstract contract AssertHelper {
         }
     }
 
-    function f(bool a, string memory reason) internal {
-        t(!a, reason);
-    }
-
     /// @notice asserts that a is equal to b. Violations are logged using reason.
     function eq(uint256 a, uint256 b, string memory reason) internal {
         if (a != b) {
