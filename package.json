@@ -1,0 +1,29 @@
+{
+  "name": "@perimetersec/fuzzlib",
+  "version": "0.2.0",
+  "description": "Solidity Fuzzing Library",
+  "homepage": "https://github.com/perimetersec/fuzzlib#readme",
+  "author": "Perimeter <info@perimetersec.io>",
+  "license": "MIT",
+  "files": [
+    "src/**/*"
+  ],
+  "scripts": {
+    "test": "foundry test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perimetersec/fuzzlib.git"
+  },
+  "bugs": {
+    "url": "https://github.com/perimetersec/fuzzlib/issues"
+  },
+  "keywords": [
+    "solidity",
+    "fuzzing",
+    "library",
+    "security",
+    "echidna",
+    "medusa"
+  ]
+}
