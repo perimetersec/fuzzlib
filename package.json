@@ -22,6 +22,8 @@
     "solidity",
     "fuzzing",
     "library",
-    "security"
+    "security",
+    "echidna",
+    "medusa"
   ]
 }
