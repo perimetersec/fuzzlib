@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./AssertWrapper.sol";
+import "./AssertHelper.sol";
 import "./ClampWrapper.sol";
 import "./MathHelper.sol";
 import "./RandomHelper.sol";
@@ -11,7 +11,7 @@ import "./IHevm.sol";
 import "./IStdCheats.sol";
 
 abstract contract FuzzBase is
-    AssertWrapper,
+    AssertHelper,
     ClampWrapper,
     MathHelper,
     RandomHelper,
