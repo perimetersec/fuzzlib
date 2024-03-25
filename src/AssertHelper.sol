@@ -331,7 +331,10 @@ abstract contract AssertHelper {
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2);
-        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2));
+        string memory assertMsg = string(
+            abi.encodePacked(reason1, " OR ", reason2)
+        );
+        assertWithMsg(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -343,7 +346,10 @@ abstract contract AssertHelper {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3);
-        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2, " OR ", reason3));
+        string memory assertMsg = string(
+            abi.encodePacked(reason1, " OR ", reason2, " OR ", reason3)
+        );
+        assertWithMsg(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -357,9 +363,8 @@ abstract contract AssertHelper {
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason4);
-        assertWithMsg(
-            isEqual,
-            string.concat(
+        string memory assertMsg = string(
+            abi.encodePacked(
                 reason1,
                 " OR ",
                 reason2,
