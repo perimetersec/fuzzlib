@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import "./FuzzLibString.sol";
 
+interface Blaat {
+    function breakInvariant() external;
+}
+
 /// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
 abstract contract AssertHelper {
     event AssertFail(string);
@@ -13,19 +17,27 @@ abstract contract AssertHelper {
     event AssertLteFail(string);
     event AssertLtFail(string);
 
-    function assertWithMsg(bool b, string memory reason) internal {
-        if (!b) {
+    Blaat blaat;
+
+    function setBlaat(address _blaat) internal {
+        blaat = Blaat(_blaat);
+    }
+
+    function breakInvariant() internal {
+        blaat.breakInvariant();
+    }
+
+    /// @notice asserts that a is true. Violations are logged using reason.
+    function t(bool a, string memory reason) internal {
+        if (!a) {
             emit AssertFail(reason);
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
     /// @notice asserts that a is equal to b. Violations are logged using reason.
-    function assertEq(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
+    function eq(uint256 a, uint256 b, string memory reason) internal {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -38,16 +50,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice int256 version of assertEq
-    function assertEq(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
+    /// @notice int256 version of `eq`
+    function eq(int256 a, int256 b, string memory reason) internal {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -60,16 +69,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice bytes4 version of assertEq
-    function assertEq(
-        bytes4 a,
-        bytes4 b,
-        string memory reason
-    ) internal {
+    /// @notice bytes4 version of `eq`
+    function eq(bytes4 a, bytes4 b, string memory reason) internal {
         if (a != b) {
             bytes memory aBytes = abi.encodePacked(a);
             bytes memory bBytes = abi.encodePacked(b);
@@ -84,16 +90,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
     /// @notice asserts that a is not equal to b. Violations are logged using reason.
-    function assertNeq(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
+    function neq(uint256 a, uint256 b, string memory reason) internal {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -106,16 +109,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice int256 version of assertNeq
-    function assertNeq(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
+    /// @notice int256 version of `neq`
+    function neq(int256 a, int256 b, string memory reason) internal {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -128,60 +128,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
-        }
-    }
-
-    /// @notice asserts that a is greater than or equal to b. Violations are logged using reason.
-    function assertGte(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
-        if (!(a >= b)) {
-            string memory aStr = FuzzLibString.toString(a);
-            string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                "<",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertGteFail(string(assertMsg));
-            assert(false);
-        }
-    }
-
-    /// @notice int256 version of assertGte
-    function assertGte(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
-        if (!(a >= b)) {
-            string memory aStr = FuzzLibString.toString(a);
-            string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                "<",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertGteFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
     /// @notice asserts that a is greater than b. Violations are logged using reason.
-    function assertGt(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
+    function gt(uint256 a, uint256 b, string memory reason) internal {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -194,16 +147,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice int256 version of assertGt
-    function assertGt(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
+    /// @notice int256 version of `gt`
+    function gt(int256 a, int256 b, string memory reason) internal {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -216,60 +166,51 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice asserts that a is less than or equal to b. Violations are logged using reason.
-    function assertLte(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
-        if (!(a <= b)) {
+    /// @notice asserts that a is greater than or equal to b. Violations are logged using reason.
+    function gte(uint256 a, uint256 b, string memory reason) internal {
+        if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
             bytes memory assertMsg = abi.encodePacked(
                 "Invalid: ",
                 aStr,
-                ">",
+                "<",
                 bStr,
                 " failed, reason: ",
                 reason
             );
-            emit AssertLteFail(string(assertMsg));
-            assert(false);
+            emit AssertGteFail(string(assertMsg));
+            // assert(false);
+            breakInvariant();
         }
     }
 
-    /// @notice int256 version of assertLte
-    function assertLte(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
-        if (!(a <= b)) {
+    /// @notice int256 version of assertGte
+    function gte(int256 a, int256 b, string memory reason) internal {
+        if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
             bytes memory assertMsg = abi.encodePacked(
                 "Invalid: ",
                 aStr,
-                ">",
+                "<",
                 bStr,
                 " failed, reason: ",
                 reason
             );
-            emit AssertLteFail(string(assertMsg));
-            assert(false);
+            emit AssertGteFail(string(assertMsg));
+            // assert(false);
+            breakInvariant();
         }
     }
 
     /// @notice asserts that a is less than b. Violations are logged using reason.
-    function assertLt(
-        uint256 a,
-        uint256 b,
-        string memory reason
-    ) internal {
+    function lt(uint256 a, uint256 b, string memory reason) internal {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -282,16 +223,13 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
         }
     }
 
     /// @notice int256 version of assertLt
-    function assertLt(
-        int256 a,
-        int256 b,
-        string memory reason
-    ) internal {
+    function lt(int256 a, int256 b, string memory reason) internal {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -304,7 +242,46 @@ abstract contract AssertHelper {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            // assert(false);
+            breakInvariant();
+        }
+    }
+
+    /// @notice asserts that a is less than or equal to b. Violations are logged using reason.
+    function lte(uint256 a, uint256 b, string memory reason) internal {
+        if (!(a <= b)) {
+            string memory aStr = FuzzLibString.toString(a);
+            string memory bStr = FuzzLibString.toString(b);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                ">",
+                bStr,
+                " failed, reason: ",
+                reason
+            );
+            emit AssertLteFail(string(assertMsg));
+            // assert(false);
+            breakInvariant();
+        }
+    }
+
+    /// @notice int256 version of assertLte
+    function lte(int256 a, int256 b, string memory reason) internal {
+        if (!(a <= b)) {
+            string memory aStr = FuzzLibString.toString(a);
+            string memory bStr = FuzzLibString.toString(b);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                ">",
+                bStr,
+                " failed, reason: ",
+                reason
+            );
+            emit AssertLteFail(string(assertMsg));
+            // assert(false);
+            breakInvariant();
         }
     }
 
@@ -313,7 +290,7 @@ abstract contract AssertHelper {
         string memory reason
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
-        assertWithMsg(!isEqual, reason);
+        t(!isEqual, reason);
     }
 
     function assertRevertReasonEqual(
@@ -321,7 +298,7 @@ abstract contract AssertHelper {
         string memory reason
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
-        assertWithMsg(isEqual, reason);
+        t(isEqual, reason);
     }
 
     function assertRevertReasonEqual(
@@ -331,7 +308,7 @@ abstract contract AssertHelper {
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2);
-        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2));
+        t(isEqual, string.concat(reason1, " OR ", reason2));
     }
 
     function assertRevertReasonEqual(
@@ -343,7 +320,7 @@ abstract contract AssertHelper {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3);
-        assertWithMsg(isEqual, string.concat(reason1, " OR ", reason2, " OR ", reason3));
+        t(isEqual, string.concat(reason1, " OR ", reason2, " OR ", reason3));
     }
 
     function assertRevertReasonEqual(
@@ -357,7 +334,7 @@ abstract contract AssertHelper {
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason4);
-        assertWithMsg(
+        t(
             isEqual,
             string.concat(
                 reason1,

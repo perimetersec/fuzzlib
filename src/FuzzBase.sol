@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./AssertWrapper.sol";
+import "./AssertHelper.sol";
 import "./ClampWrapper.sol";
 import "./MathHelper.sol";
 import "./RandomHelper.sol";
@@ -10,8 +10,14 @@ import "./Constants.sol";
 import "./IHevm.sol";
 import "./IStdCheats.sol";
 
+contract BlaatCrytic is Blaat {
+    function breakInvariant() public {
+        assert(false);
+    }
+}
+
 abstract contract FuzzBase is
-    AssertWrapper,
+    AssertHelper,
     ClampWrapper,
     MathHelper,
     RandomHelper,
@@ -19,5 +25,11 @@ abstract contract FuzzBase is
     Constants
 {
     IHevm internal vm = IHevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D); // for echidna
-    IStdCheats internal mvm = IStdCheats(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D); // for medusa
+    IStdCheats internal mvm =
+        IStdCheats(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D); // for medusa
+
+    constructor() {
+        setBlaat(address(new BlaatCrytic()));
+    }
+
 }
