@@ -337,6 +337,7 @@ abstract contract AssertHelper {
         t(
             isEqual,
             string.concat(
+            abi.encodePacked(
                 reason1,
                 " OR ",
                 reason2,
