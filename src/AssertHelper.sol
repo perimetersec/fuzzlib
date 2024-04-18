@@ -394,7 +394,7 @@ abstract contract AssertHelper {
     function assertErrorsAllowedMultiMsg(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
-        string[] memory message
+        string[] memory messages
     ) internal {
         bool allowed = false;
         uint256 passIndex = 0;
@@ -405,6 +405,6 @@ abstract contract AssertHelper {
                 break;
             }
         }
-        assertWithMsg(allowed, message[passIndex]);
+        assertWithMsg(allowed, messages[passIndex]);
     }
 }
