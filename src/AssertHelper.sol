@@ -349,33 +349,35 @@ abstract contract AssertHelper {
         );
     }
 
-    function assertErrorsAllowed(bytes4 errorSelector, bytes4[] memory allowedErrors, string memory message) internal {
+    function assertErrorsAllowed(
+        bytes4 errorSelector,
+        bytes4[] memory allowedErrors,
+        string memory message
+    ) internal {
         bool allowed = false;
         for (uint256 i = 0; i < allowedErrors.length; i++) {
             if (errorSelector == allowedErrors[i]) {
                 allowed = true;
-            } else {
-                allowed = false;
+                break;
             }
-            if (!allowed) break;
         }
         assertWithMsg(allowed, message);
     }
 
-    function assertErrorsAllowedMultiMsg(bytes4 errorSelector, bytes4[] memory allowedErrors, string[] memory message) internal {
+    function assertErrorsAllowedMultiMsg(
+        bytes4 errorSelector,
+        bytes4[] memory allowedErrors,
+        string[] memory messages
+    ) internal {
         bool allowed = false;
-        uint256 errorIndex = 0;
+        uint256 passIndex = 0;
         for (uint256 i = 0; i < allowedErrors.length; i++) {
             if (errorSelector == allowedErrors[i]) {
                 allowed = true;
-            } else {
-                allowed = false;
-            }
-            if (!allowed) {
-                errorIndex = i;
+                passIndex = i;
                 break;
             }
         }
-        assertWithMsg(allowed, message[errorIndex]);
+        assertWithMsg(allowed, messages[passIndex]);
     }
 }
