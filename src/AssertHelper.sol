@@ -397,14 +397,14 @@ abstract contract AssertHelper {
         string[] memory message
     ) internal {
         bool allowed = false;
-        uint256 errorIndex = 0;
+        uint256 passIndex = 0;
         for (uint256 i = 0; i < allowedErrors.length; i++) {
             if (errorSelector == allowedErrors[i]) {
                 allowed = true;
-                errorIndex = i;
+                passIndex = i;
                 break;
             }
         }
-        assertWithMsg(allowed, message[errorIndex]);
+        assertWithMsg(allowed, message[passIndex]);
     }
 }
