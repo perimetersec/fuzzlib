@@ -60,33 +60,11 @@ abstract contract AssertWrapper is AssertHelper {
         assertWithMsg(a, message);
     }
 
-    function assertErrorsAllowed(bytes4 errorSelector, bytes4[] memory allowedErrors, string memory message) private {
-        bool allowed = false;
-        for (uint256 i = 0; i < allowedErrors.length; i++) {
-            if (errorSelector == allowedErrors[i]) {
-                allowed = true;
-            } else {
-                allowed = false;
-            }
-            if (!allowed) break;
-        }
-        t(allowed, message);
+    function errAllow(bytes4 errorSelector, bytes4[] memory allowedErrors, string memory message) internal {
+        assertErrorsAllowed(errorSelector, allowedErrors, message);
     }
 
-    function assertErrorsAllowedMultiMsg(bytes4 errorSelector, bytes4[] memory allowedErrors, string[] memory message) private {
-        bool allowed = false;
-        uint256 errorIndex = 0;
-        for (uint256 i = 0; i < allowedErrors.length; i++) {
-            if (errorSelector == allowedErrors[i]) {
-                allowed = true;
-            } else {
-                allowed = false;
-            }
-            if (!allowed) {
-                errorIndex = i;
-                break;
-            }
-        }
-        t(allowed, message[errorIndex]);
+    function errsAllow(bytes4 errorSelector, bytes4[] memory allowedErrors, string[] memory message) internal {
+        assertErrorsAllowedMultiMsg(errorSelector, allowedErrors, message);
     }
 }
