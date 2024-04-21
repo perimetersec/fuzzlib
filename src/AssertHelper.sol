@@ -374,6 +374,7 @@ abstract contract AssertHelper {
                 reason4
             )
         );
+        assertWithMsg(isEqual, assertMsg);
     }
 
     function assertErrorsAllowed(
