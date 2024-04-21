@@ -36,7 +36,6 @@ contract Onchain {
             address masterMinter = IUSDC(tokenAddress).masterMinter();
             vm.prank(masterMinter);
             IUSDC(tokenAddress).configureMinter(address(this), give);
-            vm.prank(masterMinter);
             IUSDC(tokenAddress).mint(to, give);
         } else if (token == Token.USDT) {
             address tokenAddress = chainIdToTokenToAddress[block.chainid][token];
