@@ -29,5 +29,4 @@ abstract contract FuzzBase is
     constructor() {
         setPlatform(address(new PlatformCrytic()));
     }
-
 }
