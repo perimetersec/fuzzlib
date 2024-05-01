@@ -10,11 +10,7 @@ import "./Constants.sol";
 import "./IHevm.sol";
 import "./IStdCheats.sol";
 
-contract BlaatCrytic is Blaat {
-    function breakInvariant() public {
-        assert(false);
-    }
-}
+import {PlatformCrytic} from "./platform/PlatformCrytic.sol";
 
 abstract contract FuzzBase is
     AssertHelper,
@@ -29,7 +25,7 @@ abstract contract FuzzBase is
         IStdCheats(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D); // for medusa
 
     constructor() {
-        setBlaat(address(new BlaatCrytic()));
+        setPlatform(address(new PlatformCrytic()));
     }
 
 }
