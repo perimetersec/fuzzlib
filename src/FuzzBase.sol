@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./AssertHelper.sol";
+import "./AssertHelperFullName.sol";
 import "./ClampWrapper.sol";
 import "./MathHelper.sol";
 import "./RandomHelper.sol";
@@ -14,6 +15,7 @@ import {PlatformCrytic} from "./platform/PlatformCrytic.sol";
 
 abstract contract FuzzBase is
     AssertHelper,
+    AssertHelperFullName, // backwards compatibility
     ClampWrapper,
     MathHelper,
     RandomHelper,
