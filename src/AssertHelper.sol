@@ -289,42 +289,6 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice asserts that a is less than or equal to b. Violations are logged using reason.
-    function lte(uint256 a, uint256 b, string memory reason) internal {
-        if (!(a <= b)) {
-            string memory aStr = FuzzLibString.toString(a);
-            string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                ">",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertLteFail(string(assertMsg));
-            assert(false);
-        }
-    }
-
-    /// @notice int256 version of assertLte
-    function lte(int256 a, int256 b, string memory reason) internal {
-        if (!(a <= b)) {
-            string memory aStr = FuzzLibString.toString(a);
-            string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                ">",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertLteFail(string(assertMsg));
-            assert(false);
-        }
-    }
-
     function assertRevertReasonNotEqual(
         bytes memory returnData,
         string memory reason
@@ -382,18 +346,18 @@ abstract contract AssertHelper {
             FuzzLibString.isRevertReasonEqual(returnData, reason4);
         t(
             isEqual,
-            string.concat(
-            abi.encodePacked(
-                reason1,
-                " OR ",
-                reason2,
-                " OR ",
-                reason3,
-                " OR ",
-                reason4
+            string(
+                abi.encodePacked(
+                    reason1,
+                    " OR ",
+                    reason2,
+                    " OR ",
+                    reason3,
+                    " OR ",
+                    reason4
+                )
             )
         );
-        t(isEqual, assertMsg);
     }
 
     function assertErrorsAllowed(
@@ -408,7 +372,7 @@ abstract contract AssertHelper {
                 break;
             }
         }
-        assertWithMsg(allowed, message);
+        t(allowed, message);
     }
 
     function assertErrorsAllowedMultiMsg(
@@ -425,6 +389,6 @@ abstract contract AssertHelper {
                 break;
             }
         }
-        assertWithMsg(allowed, messages[passIndex]);
+        t(allowed, messages[passIndex]);
     }
 }
