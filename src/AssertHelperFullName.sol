@@ -61,4 +61,20 @@ abstract contract AssertHelperFullName is AssertHelper {
     function assertLte(int256 a, int256 b, string memory reason) internal {
         lte(a, b, reason);
     }
+
+    function assertErrorsAllowed(
+        bytes4 errorSelector,
+        bytes4[] memory allowedErrors,
+        string memory message
+    ) internal {
+        errAllow(errorSelector, allowedErrors, message);
+    }
+
+    function assertErrorsAllowedMultiMsg(
+        bytes4 errorSelector,
+        bytes4[] memory allowedErrors,
+        string[] memory message
+    ) internal {
+        errsAllow(errorSelector, allowedErrors, message);
+    }
 }

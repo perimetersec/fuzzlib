@@ -360,7 +360,7 @@ abstract contract AssertHelper {
         );
     }
 
-    function assertErrorsAllowed(
+    function errAllow(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string memory message
@@ -375,7 +375,7 @@ abstract contract AssertHelper {
         t(allowed, message);
     }
 
-    function assertErrorsAllowedMultiMsg(
+    function errsAllow(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string[] memory messages
