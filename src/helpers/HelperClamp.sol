@@ -138,7 +138,7 @@ abstract contract HelperClamp is HelperAssert {
         bool enableLogs
     ) internal returns (uint256) {
         if (!(a < b)) {
-            assertNeq(
+            neq(
                 b,
                 0,
                 "clampLt cannot clamp value a to be less than zero. Check your inputs/assumptions."
@@ -239,7 +239,7 @@ abstract contract HelperClamp is HelperAssert {
         bool enableLogs
     ) internal returns (uint256) {
         if (!(a > b)) {
-            assertNeq(
+            neq(
                 b,
                 type(uint256).max,
                 "clampGt cannot clamp value a to be larger than uint256.max. Check your inputs/assumptions."

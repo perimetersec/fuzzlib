@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IPlatform} from "./platform/IPlatform.sol";
+import {IPlatform} from "../platform/IPlatform.sol";
 
 contract HelperBase {
     IPlatform public platform;
