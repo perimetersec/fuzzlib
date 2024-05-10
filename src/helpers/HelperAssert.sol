@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "./FuzzLibString.sol";
 
 /// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
-abstract contract AssertHelper {
+abstract contract HelperAssert {
     event AssertFail(string);
     event AssertEqFail(string);
     event AssertNeqFail(string);

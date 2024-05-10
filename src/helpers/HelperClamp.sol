@@ -2,14 +2,84 @@
 pragma solidity ^0.8.0;
 
 import "./FuzzLibString.sol";
-import "./AssertHelper.sol";
+import "./HelperAssert.sol";
 
 /// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
-abstract contract ClampHelper is AssertHelper {
+abstract contract HelperClamp is HelperAssert {
     event Clamped(string);
 
+    /*
+     **************************************************************************
+     * Clamp functions with logging enabled
+     **************************************************************************
+     */
+
     /// @notice Clamps value to be between low and high, both inclusive
-    function clampBetween(
+    function clamp(
+        uint256 value,
+        uint256 low,
+        uint256 high
+    ) internal returns (uint256) {
+        return clamp(value, low, high, true);
+    }
+
+    /// @notice int256 version of clamp
+    function clamp(
+        int256 value,
+        int256 low,
+        int256 high
+    ) internal returns (int256) {
+        return clamp(value, low, high, true);
+    }
+
+    /// @notice clamps a to be less than b
+    function clampLt(uint256 a, uint256 b) internal returns (uint256) {
+        return clampLt(a, b);
+    }
+
+    /// @notice int256 version of clampLt
+    function clampLt(int256 a, int256 b) internal returns (int256) {
+        return clampLt(a, b, true);
+    }
+
+    /// @notice clamps a to be less than or equal to b
+    function clampLte(uint256 a, uint256 b) internal returns (uint256) {
+        return clampLte(a, b, true);
+    }
+
+    /// @notice int256 version of clampLte
+    function clampLte(int256 a, int256 b) internal returns (int256) {
+        return clampLte(a, b, true);
+    }
+
+    /// @notice clamps a to be greater than b
+    function clampGt(uint256 a, uint256 b) internal returns (uint256) {
+        return clampGt(a, b, true);
+    }
+
+    /// @notice int256 version of clampGt
+    function clampGt(int256 a, int256 b) internal returns (int256) {
+        return clampGt(a, b, true);
+    }
+
+    /// @notice clamps a to be greater than or equal to b
+    function clampGte(uint256 a, uint256 b) internal returns (uint256) {
+        return clampGte(a, b, true);
+    }
+
+    /// @notice int256 version of clampGte
+    function clampGte(int256 a, int256 b) internal returns (int256) {
+        return clampGte(a, b, true);
+    }
+
+    /*
+     **************************************************************************
+     * Clamp functions with optional logging
+     **************************************************************************
+     */
+
+    /// @notice Clamps value to be between low and high, both inclusive
+    function clamp(
         uint256 value,
         uint256 low,
         uint256 high,
@@ -33,8 +103,8 @@ abstract contract ClampHelper is AssertHelper {
         return value;
     }
 
-    /// @notice int256 version of clampBetween
-    function clampBetween(
+    /// @notice int256 version of clamp
+    function clamp(
         int256 value,
         int256 low,
         int256 high,
@@ -62,7 +132,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice clamps a to be less than b
-    function clampLt(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
+    function clampLt(
+        uint256 a,
+        uint256 b,
+        bool enableLogs
+    ) internal returns (uint256) {
         if (!(a < b)) {
             assertNeq(
                 b,
@@ -87,7 +161,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice int256 version of clampLt
-    function clampLt(int256 a, int256 b, bool enableLogs) internal returns (int256) {
+    function clampLt(
+        int256 a,
+        int256 b,
+        bool enableLogs
+    ) internal returns (int256) {
         if (!(a < b)) {
             int256 value = b - 1;
             if (enableLogs) {
@@ -107,7 +185,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice clamps a to be less than or equal to b
-    function clampLte(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
+    function clampLte(
+        uint256 a,
+        uint256 b,
+        bool enableLogs
+    ) internal returns (uint256) {
         if (!(a <= b)) {
             uint256 value = a % (b + 1);
             if (enableLogs) {
@@ -127,7 +209,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice int256 version of clampLte
-    function clampLte(int256 a, int256 b, bool enableLogs) internal returns (int256) {
+    function clampLte(
+        int256 a,
+        int256 b,
+        bool enableLogs
+    ) internal returns (int256) {
         if (!(a <= b)) {
             int256 value = b;
             if (enableLogs) {
@@ -147,7 +233,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice clamps a to be greater than b
-    function clampGt(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
+    function clampGt(
+        uint256 a,
+        uint256 b,
+        bool enableLogs
+    ) internal returns (uint256) {
         if (!(a > b)) {
             assertNeq(
                 b,
@@ -173,7 +263,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice int256 version of clampGt
-    function clampGt(int256 a, int256 b, bool enableLogs) internal returns (int256) {
+    function clampGt(
+        int256 a,
+        int256 b,
+        bool enableLogs
+    ) internal returns (int256) {
         if (!(a > b)) {
             int256 value = b + 1;
             if (enableLogs) {
@@ -194,7 +288,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice clamps a to be greater than or equal to b
-    function clampGte(uint256 a, uint256 b, bool enableLogs) internal returns (uint256) {
+    function clampGte(
+        uint256 a,
+        uint256 b,
+        bool enableLogs
+    ) internal returns (uint256) {
         if (!(a > b)) {
             uint256 value = b;
             if (enableLogs) {
@@ -214,7 +312,11 @@ abstract contract ClampHelper is AssertHelper {
     }
 
     /// @notice int256 version of clampGte
-    function clampGte(int256 a, int256 b, bool enableLogs) internal returns (int256) {
+    function clampGte(
+        int256 a,
+        int256 b,
+        bool enableLogs
+    ) internal returns (int256) {
         if (!(a > b)) {
             int256 value = b;
             if (enableLogs) {

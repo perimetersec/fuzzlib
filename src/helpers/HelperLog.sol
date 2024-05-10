@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-abstract contract Logging {
+abstract contract HelperLog {
     event Log(string debugString);
     event LogString(string description, string data);
     event LogString(string prefix, string description, string data);
