@@ -31,11 +31,11 @@ abstract contract HelperLog {
     event AssertionFailed(string description, bool data);
     event AssertionFailed(string prefix, string description, bool data);
 
-    function log(string memory debugString) internal {
+    function log(string memory debugString) public {
         emit Log(debugString);
     }
 
-    function log(string memory description, string memory data) internal {
+    function log(string memory description, string memory data) public {
         emit LogString(description, data);
     }
 
@@ -43,11 +43,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         string memory data
-    ) internal {
+    ) public {
         emit LogString(prefix, description, data);
     }
 
-    function log(string memory description, bytes memory data) internal {
+    function log(string memory description, bytes memory data) public {
         emit LogBytes(description, data);
     }
 
@@ -55,11 +55,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         bytes memory data
-    ) internal {
+    ) public {
         emit LogBytes(prefix, description, data);
     }
 
-    function log(string memory description, uint256 data) internal {
+    function log(string memory description, uint256 data) public {
         emit LogUint(description, data);
     }
 
@@ -67,11 +67,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         uint256 data
-    ) internal {
+    ) public {
         emit LogUint(prefix, description, data);
     }
 
-    function log(string memory description, int256 data) internal {
+    function log(string memory description, int256 data) public {
         emit LogInt(description, data);
     }
 
@@ -79,11 +79,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         int256 data
-    ) internal {
+    ) public {
         emit LogInt(prefix, description, data);
     }
 
-    function log(string memory description, address data) internal {
+    function log(string memory description, address data) public {
         emit LogAddress(description, data);
     }
 
@@ -91,11 +91,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         address data
-    ) internal {
+    ) public {
         emit LogAddress(prefix, description, data);
     }
 
-    function log(string memory description, bool data) internal {
+    function log(string memory description, bool data) public {
         emit LogBool(description, data);
     }
 
@@ -103,19 +103,19 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         bool data
-    ) internal {
+    ) public {
         emit LogBool(prefix, description, data);
     }
 
-    function logFail() internal {
+    function logFail() public {
         emit AssertionFailed();
     }
 
-    function logFail(string memory debugString) internal {
+    function logFail(string memory debugString) public {
         emit AssertionFailed(debugString);
     }
 
-    function logFail(string memory description, string memory data) internal {
+    function logFail(string memory description, string memory data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -123,11 +123,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         string memory data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 
-    function logFail(string memory description, bytes memory data) internal {
+    function logFail(string memory description, bytes memory data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -135,11 +135,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         bytes memory data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 
-    function logFail(string memory description, uint256 data) internal {
+    function logFail(string memory description, uint256 data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -147,11 +147,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         uint256 data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 
-    function logFail(string memory description, int256 data) internal {
+    function logFail(string memory description, int256 data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -159,11 +159,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         int256 data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 
-    function logFail(string memory description, address data) internal {
+    function logFail(string memory description, address data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -171,11 +171,11 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         address data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 
-    function logFail(string memory description, bool data) internal {
+    function logFail(string memory description, bool data) public {
         emit AssertionFailed(description, data);
     }
 
@@ -183,7 +183,7 @@ abstract contract HelperLog {
         string memory prefix,
         string memory description,
         bool data
-    ) internal {
+    ) public {
         emit AssertionFailed(prefix, description, data);
     }
 }

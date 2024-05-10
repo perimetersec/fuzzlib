@@ -19,7 +19,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 value,
         uint256 low,
         uint256 high
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         return clamp(value, low, high, true);
     }
 
@@ -28,47 +28,47 @@ abstract contract HelperClamp is HelperAssert {
         int256 value,
         int256 low,
         int256 high
-    ) internal returns (int256) {
+    ) public returns (int256) {
         return clamp(value, low, high, true);
     }
 
     /// @notice clamps a to be less than b
-    function clampLt(uint256 a, uint256 b) internal returns (uint256) {
+    function clampLt(uint256 a, uint256 b) public returns (uint256) {
         return clampLt(a, b);
     }
 
     /// @notice int256 version of clampLt
-    function clampLt(int256 a, int256 b) internal returns (int256) {
+    function clampLt(int256 a, int256 b) public returns (int256) {
         return clampLt(a, b, true);
     }
 
     /// @notice clamps a to be less than or equal to b
-    function clampLte(uint256 a, uint256 b) internal returns (uint256) {
+    function clampLte(uint256 a, uint256 b) public returns (uint256) {
         return clampLte(a, b, true);
     }
 
     /// @notice int256 version of clampLte
-    function clampLte(int256 a, int256 b) internal returns (int256) {
+    function clampLte(int256 a, int256 b) public returns (int256) {
         return clampLte(a, b, true);
     }
 
     /// @notice clamps a to be greater than b
-    function clampGt(uint256 a, uint256 b) internal returns (uint256) {
+    function clampGt(uint256 a, uint256 b) public returns (uint256) {
         return clampGt(a, b, true);
     }
 
     /// @notice int256 version of clampGt
-    function clampGt(int256 a, int256 b) internal returns (int256) {
+    function clampGt(int256 a, int256 b) public returns (int256) {
         return clampGt(a, b, true);
     }
 
     /// @notice clamps a to be greater than or equal to b
-    function clampGte(uint256 a, uint256 b) internal returns (uint256) {
+    function clampGte(uint256 a, uint256 b) public returns (uint256) {
         return clampGte(a, b, true);
     }
 
     /// @notice int256 version of clampGte
-    function clampGte(int256 a, int256 b) internal returns (int256) {
+    function clampGte(int256 a, int256 b) public returns (int256) {
         return clampGte(a, b, true);
     }
 
@@ -84,7 +84,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 low,
         uint256 high,
         bool enableLogs
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         if (value < low || value > high) {
             uint256 ans = low + (value % (high - low + 1));
             if (enableLogs) {
@@ -109,7 +109,7 @@ abstract contract HelperClamp is HelperAssert {
         int256 low,
         int256 high,
         bool enableLogs
-    ) internal returns (int256) {
+    ) public returns (int256) {
         if (value < low || value > high) {
             int256 range = high - low + 1;
             int256 clamped = (value - low) % (range);
@@ -136,7 +136,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 a,
         uint256 b,
         bool enableLogs
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         if (!(a < b)) {
             neq(
                 b,
@@ -165,7 +165,7 @@ abstract contract HelperClamp is HelperAssert {
         int256 a,
         int256 b,
         bool enableLogs
-    ) internal returns (int256) {
+    ) public returns (int256) {
         if (!(a < b)) {
             int256 value = b - 1;
             if (enableLogs) {
@@ -189,7 +189,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 a,
         uint256 b,
         bool enableLogs
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         if (!(a <= b)) {
             uint256 value = a % (b + 1);
             if (enableLogs) {
@@ -213,7 +213,7 @@ abstract contract HelperClamp is HelperAssert {
         int256 a,
         int256 b,
         bool enableLogs
-    ) internal returns (int256) {
+    ) public returns (int256) {
         if (!(a <= b)) {
             int256 value = b;
             if (enableLogs) {
@@ -237,7 +237,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 a,
         uint256 b,
         bool enableLogs
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         if (!(a > b)) {
             neq(
                 b,
@@ -267,7 +267,7 @@ abstract contract HelperClamp is HelperAssert {
         int256 a,
         int256 b,
         bool enableLogs
-    ) internal returns (int256) {
+    ) public returns (int256) {
         if (!(a > b)) {
             int256 value = b + 1;
             if (enableLogs) {
@@ -292,7 +292,7 @@ abstract contract HelperClamp is HelperAssert {
         uint256 a,
         uint256 b,
         bool enableLogs
-    ) internal returns (uint256) {
+    ) public returns (uint256) {
         if (!(a > b)) {
             uint256 value = b;
             if (enableLogs) {
@@ -316,7 +316,7 @@ abstract contract HelperClamp is HelperAssert {
         int256 a,
         int256 b,
         bool enableLogs
-    ) internal returns (int256) {
+    ) public returns (int256) {
         if (!(a > b)) {
             int256 value = b;
             if (enableLogs) {

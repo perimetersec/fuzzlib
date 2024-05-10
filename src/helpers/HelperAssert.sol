@@ -15,7 +15,7 @@ abstract contract HelperAssert is HelperBase {
     event AssertLteFail(string);
     event AssertLtFail(string);
 
-    function t(bool b, string memory reason) internal {
+    function t(bool b, string memory reason) public {
         if (!b) {
             emit AssertFail(reason);
             platform.assertFail();
@@ -27,7 +27,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -49,7 +49,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -71,7 +71,7 @@ abstract contract HelperAssert is HelperBase {
         bytes4 a,
         bytes4 b,
         string memory reason
-    ) internal {
+    ) public {
         if (a != b) {
             bytes memory aBytes = abi.encodePacked(a);
             bytes memory bBytes = abi.encodePacked(b);
@@ -95,7 +95,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -117,7 +117,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -139,7 +139,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -161,7 +161,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -183,7 +183,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -205,7 +205,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -227,7 +227,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a <= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -249,7 +249,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a <= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -271,7 +271,7 @@ abstract contract HelperAssert is HelperBase {
         uint256 a,
         uint256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -293,7 +293,7 @@ abstract contract HelperAssert is HelperBase {
         int256 a,
         int256 b,
         string memory reason
-    ) internal {
+    ) public {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
@@ -313,7 +313,7 @@ abstract contract HelperAssert is HelperBase {
     function assertRevertReasonNotEqual(
         bytes memory returnData,
         string memory reason
-    ) internal {
+    ) public {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
         t(!isEqual, reason);
     }
@@ -321,7 +321,7 @@ abstract contract HelperAssert is HelperBase {
     function assertRevertReasonEqual(
         bytes memory returnData,
         string memory reason
-    ) internal {
+    ) public {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
         t(isEqual, reason);
     }
@@ -330,7 +330,7 @@ abstract contract HelperAssert is HelperBase {
         bytes memory returnData,
         string memory reason1,
         string memory reason2
-    ) internal {
+    ) public {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2);
         string memory assertMsg = string(
@@ -344,7 +344,7 @@ abstract contract HelperAssert is HelperBase {
         string memory reason1,
         string memory reason2,
         string memory reason3
-    ) internal {
+    ) public {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3);
@@ -360,7 +360,7 @@ abstract contract HelperAssert is HelperBase {
         string memory reason2,
         string memory reason3,
         string memory reason4
-    ) internal {
+    ) public {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason1) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason2) ||
             FuzzLibString.isRevertReasonEqual(returnData, reason3) ||
@@ -383,7 +383,7 @@ abstract contract HelperAssert is HelperBase {
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string memory message
-    ) internal {
+    ) public {
         bool allowed = false;
         for (uint256 i = 0; i < allowedErrors.length; i++) {
             if (errorSelector == allowedErrors[i]) {
@@ -398,7 +398,7 @@ abstract contract HelperAssert is HelperBase {
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string[] memory messages
-    ) internal {
+    ) public {
         bool allowed = false;
         uint256 passIndex = 0;
         for (uint256 i = 0; i < allowedErrors.length; i++) {

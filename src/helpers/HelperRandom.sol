@@ -7,7 +7,7 @@ abstract contract HelperRandom {
     function shuffleArray(
         uint256[] memory shuffle,
         uint256 entropy
-    ) internal pure {
+    ) public pure {
         for (uint256 i = shuffle.length - 1; i > 0; i--) {
             uint256 swapIndex = entropy % (shuffle.length - i);
 
