@@ -13,7 +13,7 @@ abstract contract AssertHelper {
     event AssertLteFail(string);
     event AssertLtFail(string);
 
-    function assertWithMsg(bool b, string memory reason) internal {
+    function t(bool b, string memory reason) internal {
         if (!b) {
             emit AssertFail(reason);
             assert(false);
@@ -21,7 +21,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is equal to b. Violations are logged using reason.
-    function assertEq(
+    function eq(
         uint256 a,
         uint256 b,
         string memory reason
@@ -42,8 +42,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertEq
-    function assertEq(
+    /// @notice int256 version of eq
+    function eq(
         int256 a,
         int256 b,
         string memory reason
@@ -64,8 +64,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice bytes4 version of assertEq
-    function assertEq(
+    /// @notice bytes4 version of eq
+    function eq(
         bytes4 a,
         bytes4 b,
         string memory reason
@@ -89,7 +89,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is not equal to b. Violations are logged using reason.
-    function assertNeq(
+    function neq(
         uint256 a,
         uint256 b,
         string memory reason
@@ -110,8 +110,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertNeq
-    function assertNeq(
+    /// @notice int256 version of neq
+    function neq(
         int256 a,
         int256 b,
         string memory reason
@@ -133,7 +133,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is greater than or equal to b. Violations are logged using reason.
-    function assertGte(
+    function gte(
         uint256 a,
         uint256 b,
         string memory reason
@@ -154,8 +154,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertGte
-    function assertGte(
+    /// @notice int256 version of gte
+    function gte(
         int256 a,
         int256 b,
         string memory reason
@@ -177,7 +177,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is greater than b. Violations are logged using reason.
-    function assertGt(
+    function gt(
         uint256 a,
         uint256 b,
         string memory reason
@@ -198,8 +198,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertGt
-    function assertGt(
+    /// @notice int256 version of gt
+    function gt(
         int256 a,
         int256 b,
         string memory reason
@@ -221,7 +221,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is less than or equal to b. Violations are logged using reason.
-    function assertLte(
+    function lte(
         uint256 a,
         uint256 b,
         string memory reason
@@ -242,8 +242,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertLte
-    function assertLte(
+    /// @notice int256 version of lte
+    function lte(
         int256 a,
         int256 b,
         string memory reason
@@ -265,7 +265,7 @@ abstract contract AssertHelper {
     }
 
     /// @notice asserts that a is less than b. Violations are logged using reason.
-    function assertLt(
+    function lt(
         uint256 a,
         uint256 b,
         string memory reason
@@ -286,8 +286,8 @@ abstract contract AssertHelper {
         }
     }
 
-    /// @notice int256 version of assertLt
-    function assertLt(
+    /// @notice int256 version of lt
+    function lt(
         int256 a,
         int256 b,
         string memory reason
@@ -313,7 +313,7 @@ abstract contract AssertHelper {
         string memory reason
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
-        assertWithMsg(!isEqual, reason);
+        t(!isEqual, reason);
     }
 
     function assertRevertReasonEqual(
@@ -321,7 +321,7 @@ abstract contract AssertHelper {
         string memory reason
     ) internal {
         bool isEqual = FuzzLibString.isRevertReasonEqual(returnData, reason);
-        assertWithMsg(isEqual, reason);
+        t(isEqual, reason);
     }
 
     function assertRevertReasonEqual(
@@ -334,7 +334,7 @@ abstract contract AssertHelper {
         string memory assertMsg = string(
             abi.encodePacked(reason1, " OR ", reason2)
         );
-        assertWithMsg(isEqual, assertMsg);
+        t(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -349,7 +349,7 @@ abstract contract AssertHelper {
         string memory assertMsg = string(
             abi.encodePacked(reason1, " OR ", reason2, " OR ", reason3)
         );
-        assertWithMsg(isEqual, assertMsg);
+        t(isEqual, assertMsg);
     }
 
     function assertRevertReasonEqual(
@@ -374,10 +374,10 @@ abstract contract AssertHelper {
                 reason4
             )
         );
-        assertWithMsg(isEqual, assertMsg);
+        t(isEqual, assertMsg);
     }
 
-    function assertErrorsAllowed(
+    function errAllow(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string memory message
@@ -389,10 +389,10 @@ abstract contract AssertHelper {
                 break;
             }
         }
-        assertWithMsg(allowed, message);
+        t(allowed, message);
     }
 
-    function assertErrorsAllowedMultiMsg(
+    function errsAllow(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
         string[] memory messages
@@ -406,6 +406,6 @@ abstract contract AssertHelper {
                 break;
             }
         }
-        assertWithMsg(allowed, messages[passIndex]);
+        t(allowed, messages[passIndex]);
     }
 }
