@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./HelperBase.sol";
+
 import "../FuzzLibString.sol";
 
 /// @author Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
-abstract contract HelperAssert {
+abstract contract HelperAssert is HelperBase {
     event AssertFail(string);
     event AssertEqFail(string);
     event AssertNeqFail(string);
@@ -16,7 +18,7 @@ abstract contract HelperAssert {
     function t(bool b, string memory reason) internal {
         if (!b) {
             emit AssertFail(reason);
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -38,7 +40,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -60,7 +62,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -84,7 +86,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertEqFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -106,7 +108,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -128,7 +130,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertNeqFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -150,7 +152,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertGteFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -172,7 +174,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertGteFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -194,7 +196,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -216,7 +218,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertGtFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -238,7 +240,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertLteFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -260,7 +262,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertLteFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -282,7 +284,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
@@ -304,7 +306,7 @@ abstract contract HelperAssert {
                 reason
             );
             emit AssertLtFail(string(assertMsg));
-            assert(false);
+            platform.assertFail();
         }
     }
 
