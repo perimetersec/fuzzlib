@@ -51,15 +51,14 @@ contract TestAsserts is Test, HelperAssert {
         vm.expectEmit(true, true, false, false);
         emit AssertEqFail("");
         vm.expectRevert();  
-        eq(x, y, "eq does not revert with the fuzz values");
+        eq(x, y, "eq reverts with different values");
     }
 
     function testFuzz_HelperAssert_eq_x_y_fuzz(uint256 x, uint256 y) public {
         vm.assume(x != y);
-        string memory reason = "eq does not revert with equal values";
         vm.expectEmit(true, true, false, false);
         emit AssertEqFail("");
         vm.expectRevert();
-        eq(x, y, reason);
+        eq(x, y,  "eq does reverts with different values");
     }
 }
