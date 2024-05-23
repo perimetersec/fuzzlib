@@ -59,6 +59,6 @@ contract TestAsserts is Test, HelperAssert {
         vm.expectEmit(true, true, false, false);
         emit AssertEqFail("");
         vm.expectRevert();
-        eq(x, y,  "eq does reverts with different values");
+        eq(x, y,  "eq reverts with different values");
     }
 }
