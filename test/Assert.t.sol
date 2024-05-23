@@ -28,12 +28,12 @@ contract TestAsserts is Test, HelperAssert {
     }
 
     function test_HelperAssert_t_true() public {
-        t(true, "t reverts for true"); 
+        t(true, "t does not revert for true"); 
     }
 
     function test_HelperAssert_t_false() public {
         vm.expectRevert();
-        t(false, "t does not revert for true"); 
+        t(false, "t reverts for true"); 
     }
 
     function test_HelperAssert_eq_x_x_concrete() public {
