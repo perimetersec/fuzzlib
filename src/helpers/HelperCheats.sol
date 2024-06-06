@@ -20,4 +20,8 @@ abstract contract HelperCheats {
     function prank(address sender) public {
         vm.prank(sender);
     }
+
+    function deal(address sender, uint amount) public {
+        vm.deal(sender, amount);
+    }
 }
