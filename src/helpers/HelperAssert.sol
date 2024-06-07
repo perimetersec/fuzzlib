@@ -66,6 +66,50 @@ abstract contract HelperAssert is HelperBase {
         }
     }
 
+    /// @notice bool version of eq
+    function eq(
+        bool a,
+        bool b,
+        string memory reason
+    ) public {
+        if (a != b) {
+            string memory aStr = a ? "true" : "false";
+            string memory bStr = b ? "true" : "false";
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                "!=",
+                bStr,
+                ", reason: ",
+                reason
+            );
+            emit AssertEqFail(string(assertMsg));
+            platform.assertFail();
+        }
+    }
+
+    /// @notice address version of eq
+    function eq(
+        address a,
+        address b,
+        string memory reason
+    ) public {
+        if (a != b) {
+            string memory aStr = FuzzLibString.toString(a);
+            string memory bStr = FuzzLibString.toString(b);
+            bytes memory assertMsg = abi.encodePacked(
+                "Invalid: ",
+                aStr,
+                "!=",
+                bStr,
+                ", reason: ",
+                reason
+            );
+            emit AssertEqFail(string(assertMsg));
+            platform.assertFail();
+        }
+    }
+
     /// @notice bytes4 version of eq
     function eq(
         bytes4 a,
