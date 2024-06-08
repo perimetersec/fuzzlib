@@ -9,7 +9,8 @@ library LibLog {
     event LogInt(string message, int256 data);
     event LogAddress(string message, address data);
     event LogBool(string message, bool data);
-    
+    event LogBytes32(string message, bytes32 data);
+
     event AssertionFailed();
     event AssertionFailed(string message);
     event AssertionFailed(string message, string data);
@@ -47,6 +48,10 @@ library LibLog {
         emit LogBool(message, data);
     }
 
+    function log(string memory message, bytes32 data) internal {
+        emit LogBytes32(message, data);
+    }
+
     function logFail() internal {
         emit AssertionFailed();
     }
@@ -77,5 +82,9 @@ library LibLog {
 
     function logFail(string memory message, bool data) internal {
         emit AssertionFailed(message, data);
+    }
+
+    function logFail(string memory message, bytes32 data) internal {
+        emit LogBytes32(message, data);
     }
 }
