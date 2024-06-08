@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {Constants} from "./Constants.sol";
+
 // Available cheat codes for Medusa 
 // Documentation: https://github.com/crytic/medusa/tree/dev/mdbook/docs/src/cheatcodes
 // Usage: https://github.com/crytic/medusa/blob/dev/mdbook/docs/src/cheatcodes_overview.md
@@ -76,3 +78,5 @@ interface IStdCheats {
     function parseInt(string memory) external returns(int256);
     function parseBool(string memory) external returns(bool);
 }
+
+IStdCheats constant mvm = IStdCheats(Constants.ADDRESS_CHEATS);
