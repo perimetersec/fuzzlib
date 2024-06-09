@@ -32,6 +32,10 @@ abstract contract HelperLog {
         LibLog.log(message, data);
     }
 
+    function log(string memory message, bytes32 data) public {
+        LibLog.log(message, data);
+    }
+
     function logFail() public {
         LibLog.logFail();
     }
@@ -62,5 +66,9 @@ abstract contract HelperLog {
 
     function logFail(string memory message, bool data) public {
         LibLog.logFail(message, data);
+    }
+
+    function logFail(string memory message, bytes32 data) public {
+        LibLog.log(message, data);
     }
 }
