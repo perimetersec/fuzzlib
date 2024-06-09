@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/// @author https://github.com/crytic/properties/blob/2526765eedd9bda30c168cd271fa403ac72cb1a9/contracts/util/Hevm.sol
+import {Constants} from "./Constants.sol";
+
 interface IHevm {
     // Set block.timestamp to newTimestamp
     function warp(uint256 newTimestamp) external;
@@ -51,3 +52,5 @@ interface IHevm {
     // Labels the address in traces
     function label(address addr, string calldata label) external;
 }
+
+IHevm constant hevm = IHevm(Constants.ADDRESS_CHEATS);
