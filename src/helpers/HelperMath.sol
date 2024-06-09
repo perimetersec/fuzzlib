@@ -6,6 +6,10 @@ abstract contract HelperMath {
         return a < b ? a : b;
     }
 
+    function max(uint256 a, uint256 b) public pure returns (uint256) {
+        return a > b ? a : b;
+    }
+
     // Forked from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/math/SignedMath.sol
     function max(int256 a, int256 b) public pure returns (int256) {
         return a > b ? a : b;
