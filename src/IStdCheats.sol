@@ -79,4 +79,4 @@ interface IStdCheats {
     function parseBool(string memory) external returns(bool);
 }
 
-IStdCheats constant mvm = IStdCheats(Constants.ADDRESS_CHEATS);
+IStdCheats constant vm = IStdCheats(Constants.ADDRESS_CHEATS);

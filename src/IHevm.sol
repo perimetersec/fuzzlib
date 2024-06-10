@@ -53,4 +53,4 @@ interface IHevm {
     function label(address addr, string calldata label) external;
 }
 
-IHevm constant hevm = IHevm(Constants.ADDRESS_CHEATS);
+IHevm constant vm = IHevm(Constants.ADDRESS_CHEATS);
