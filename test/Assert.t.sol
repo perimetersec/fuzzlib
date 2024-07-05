@@ -42,12 +42,12 @@ contract TestAsserts is Test, HelperAssert {
         uint256 y = 4;
 
         string memory reason = "example message";
-        string memory failReason = string(abi.encodePacked(createAssertFailMessage(
+        string memory failReason = createAssertFailMessage(
                 FuzzLibString.toString(x),
                 FuzzLibString.toString(y),
                 "!=",
                 reason
-        )));
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
 
@@ -61,12 +61,12 @@ contract TestAsserts is Test, HelperAssert {
         string memory reason = "example message";
 
         vm.expectEmit(true, false, false, true);
-        string memory failReason = string(abi.encodePacked(createAssertFailMessage(
+        string memory failReason = createAssertFailMessage(
                 FuzzLibString.toString(x),
                 FuzzLibString.toString(y),
                 "!=",
                 reason
-        )));
+        );
         emit AssertEqFail(failReason);
 
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -89,12 +89,12 @@ contract TestAsserts is Test, HelperAssert {
         bool y = false;
 
         string memory reason = "example message";
-        string memory failReason = string(abi.encodePacked(createAssertFailMessage(
+        string memory failReason = createAssertFailMessage(
                 x ? "true" : "false",
                 y ? "true" : "false",
                 "!=",
                 reason
-        )));
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
 
@@ -108,12 +108,12 @@ contract TestAsserts is Test, HelperAssert {
         string memory reason = "example message";
 
         vm.expectEmit(true, false, false, true);
-        string memory failReason = string(abi.encodePacked(createAssertFailMessage(
+        string memory failReason = createAssertFailMessage(
                 x ? "true" : "false",
                 y ? "true" : "false",
                 "!=",
                 reason
-        )));
+        );
         emit AssertEqFail(failReason);
 
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
