@@ -31,8 +31,8 @@ abstract contract HelperAssert is HelperBase {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
-            emit AssertEqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
+            emit AssertEqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -46,8 +46,8 @@ abstract contract HelperAssert is HelperBase {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
-           emit AssertEqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
+           emit AssertEqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -61,8 +61,8 @@ abstract contract HelperAssert is HelperBase {
         if (a != b) {
             string memory aStr = a ? "true" : "false";
             string memory bStr = b ? "true" : "false";
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
-            emit AssertEqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
+            emit AssertEqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -76,8 +76,8 @@ abstract contract HelperAssert is HelperBase {
         if (a != b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
-            emit AssertEqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
+            emit AssertEqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -93,8 +93,8 @@ abstract contract HelperAssert is HelperBase {
             bytes memory bBytes = abi.encodePacked(b);
             string memory aStr = FuzzLibString.toHexString(aBytes);
             string memory bStr = FuzzLibString.toHexString(bBytes);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
-            emit AssertEqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "!=", reason);
+            emit AssertEqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -108,8 +108,8 @@ abstract contract HelperAssert is HelperBase {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "==", reason);
-            emit AssertNeqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "==", reason);
+            emit AssertNeqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -123,8 +123,8 @@ abstract contract HelperAssert is HelperBase {
         if (a == b) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "==", reason);
-            emit AssertNeqFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "==", reason);
+            emit AssertNeqFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -138,8 +138,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "<", reason);
-            emit AssertGteFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "<", reason);
+            emit AssertGteFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -153,8 +153,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a >= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "<", reason);
-            emit AssertGteFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "<", reason);
+            emit AssertGteFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -168,8 +168,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = createAssertFailMessage(aStr, bStr, "<=", reason);
-            emit AssertGtFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "<=", reason);
+            emit AssertGtFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -183,15 +183,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a > b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                "<=",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertGtFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, "<=", reason);
+            emit AssertGtFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -205,15 +198,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a <= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                ">",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertLteFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, ">", reason);
+            emit AssertLteFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -227,15 +213,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a <= b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-            bytes memory assertMsg = abi.encodePacked(
-                "Invalid: ",
-                aStr,
-                ">",
-                bStr,
-                " failed, reason: ",
-                reason
-            );
-            emit AssertLteFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, ">", reason);
+            emit AssertLteFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -249,8 +228,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-           bytes memory assertMsg = createAssertFailMessage(aStr, bStr, ">=", reason);
-            emit AssertLtFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, ">=", reason);
+            emit AssertLtFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -264,8 +243,8 @@ abstract contract HelperAssert is HelperBase {
         if (!(a < b)) {
             string memory aStr = FuzzLibString.toString(a);
             string memory bStr = FuzzLibString.toString(b);
-           bytes memory assertMsg = createAssertFailMessage(aStr, bStr, ">=", reason);
-            emit AssertLtFail(string(assertMsg));
+            string memory assertMsg = createAssertFailMessage(aStr, bStr, ">=", reason);
+            emit AssertLtFail(assertMsg);
             platform.assertFail();
         }
     }
@@ -371,8 +350,8 @@ abstract contract HelperAssert is HelperBase {
         t(allowed, messages[passIndex]);
     }
 
-    function createAssertFailMessage(string memory aStr, string memory bStr, string memory operator, string memory reason)internal pure returns (bytes memory) {
-        return bytes(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
+    function createAssertFailMessage(string memory aStr, string memory bStr, string memory operator, string memory reason)internal pure returns (string memory) {
+        return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
     }
 
 }
