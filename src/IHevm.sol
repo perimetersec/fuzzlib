@@ -53,4 +53,5 @@ interface IHevm {
     function label(address addr, string calldata label) external;
 }
 
-IHevm constant vm = IHevm(Constants.ADDRESS_CHEATS);
+// Don't use Constants.ADDRESS_CHEATS to support older Solidity versions
+IHevm constant vm = IHevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
