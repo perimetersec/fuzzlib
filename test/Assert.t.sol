@@ -15,6 +15,9 @@ contract TestAsserts is Test, HelperAssert {
         setPlatform(address(new PlatformTest()));
     }
 
+    /**
+     * "t" test
+     */
     function test_HelperAssert_t_true() public {
         string memory reason = "example message"; 
         t(true, reason); 
@@ -28,6 +31,9 @@ contract TestAsserts is Test, HelperAssert {
         t(false, reason); 
     }
 
+    /**
+     * "eq" test
+     */
     function test_eq_x_x() public {
         uint256 x = 1;
         eq(x, x, "example message");
@@ -120,4 +126,70 @@ contract TestAsserts is Test, HelperAssert {
 
         eq(x, y, reason);
     } 
+
+    /**
+     * "neq" test
+     */
+    function test_neq_x_y() public {
+        uint256 x = 1;
+        uint256 y = 2;
+        neq(x, y, "example message");
+    }
+
+    function testFuzz_neq_x_y(uint256 x, uint256 y) public {
+        vm.assume(x != y);
+        neq(x, y, "example message");
+    }
+
+    // neq: unhappy path
+    function test_neq_x_y_unhappy_path() public {
+        uint256 x = 1;
+        uint256 y = 1;
+
+        string memory reason = "x and y should not be the same";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(x),
+            FuzzLibString.toString(y),
+            "==",
+            reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertNeqFail(failReason);
+
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+
+        neq(x, y, reason);
+    }
+
+    // note that params are int instead of uint
+    function test_neq_x_y_int256_param() public {
+        int256 x = 1;
+        int256 y = 2;
+        neq(x, y, "example message");
+    }
+
+     function testFuzz_neq_x_y_int256_param(int256 x, int256 y) public {
+        vm.assume(x != y);
+        neq(x, y, "example message");
+    }
+
+    // neq: unhappy path
+    function test_neq_x_y_unhappy_path_int256_param() public {
+        int256 x = 1;
+        int256 y = 1;
+
+        string memory reason = "x and y should not be the same";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(x),
+            FuzzLibString.toString(y),
+            "==",
+            reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertNeqFail(failReason);
+
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+
+        neq(x, y, reason);
+    }
 }
