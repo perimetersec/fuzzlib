@@ -1,4 +1,6 @@
 ## Solidity Fuzzing Library
+Fuzzlib is an unopinionated Solidity library designed for both stateful and stateless fuzzing of smart contracts. It provides a collection of useful functions and libraries designed to streamline fuzzing harness development with Echidna, Medusa, and Foundry, making the process easier and more efficient.
+
 **Fuzzlib is still in alpha and under active development with potential future breaking changes!**
 
 Branches
