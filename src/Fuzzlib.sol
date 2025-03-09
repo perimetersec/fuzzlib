@@ -7,6 +7,7 @@ import {HelperClamp} from "./helpers/HelperClamp.sol";
 import {HelperLog} from "./helpers/HelperLog.sol";
 import {HelperMath} from "./helpers/HelperMath.sol";
 import {HelperRandom} from "./helpers/HelperRandom.sol";
+import {HelperCall} from "./helpers/HelperCall.sol";
 
 contract Fuzzlib is
     HelperBase,
@@ -14,5 +15,6 @@ contract Fuzzlib is
     HelperClamp,
     HelperLog,
     HelperMath,
-    HelperRandom
+    HelperRandom,
+    HelperCall
 {}
