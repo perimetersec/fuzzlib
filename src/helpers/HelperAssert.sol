@@ -354,4 +354,112 @@ abstract contract HelperAssert is HelperBase {
         return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
     }
 
+    function allowErrors(  
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages
+    ) public {
+        allowErrors(errorData, allowedRequireErrorMessages, new bytes4[](0), "", false);
+    }
+    
+    function allowErrors(  
+        bytes memory errorData,
+        bytes4[] memory allowedCustomErrors,
+        string memory errorContext
+    ) public {
+        allowErrors(errorData, new string[](0), allowedCustomErrors, errorContext, false);
+    }
+    
+    function allowErrors(  
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages,
+        bytes4[] memory allowedCustomErrors,
+        string memory errorContext
+    ) public {
+        allowErrors(errorData, allowedRequireErrorMessages, allowedCustomErrors, errorContext, false);
+    }
+    
+    /**
+     * Allow require failure & custom errors
+     * @param errorData: return data from a function call. In this case, it's a failure data
+     * @param allowedRequireErrorMessages: allowed require failure messages. It's a string array
+     * @param allowedCustomErrors: allowed custom errors. It can be just 4 bytes function selector or it could be longer
+     * @param errorContext: error context: A message to describe the error
+     * @param allowEmptyError: allow require failure without message
+     */
+    function allowErrors(  
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages,
+        bytes4[] memory allowedCustomErrors,
+        string memory errorContext,
+        bool allowEmptyError
+    ) public {
+        if (allowEmptyError && errorData.length == 0) {
+            // 1. empty error case (ex: require(false)) <= useful when there is no error message, errorData is empty
+            // NOTE: Becareful! It could be "require" or "revert" failure without message BUT also it could be something else such as 
+            // calling non-existing address (ex: address(0xdead).call(...)). The root-cause could be various. Please check the 
+            // code and the context before use allowEmptyError = true.
+            _handleEmptyError(allowEmptyError);
+            return;
+        }
+    
+        if (errorData.length < 4) {
+            t(false, "unexpected error data length during allowErrors()");
+            return;
+        }
+    
+        bytes4 selector = bytes4(errorData);
+        
+        if (_isErrorString(selector)) {
+            // 2. require failure case (ex: require(false, "error message"))
+            _allowRequireFailure(errorData, allowedRequireErrorMessages);
+        } else if (allowedCustomErrors.length > 0) {
+            // 3. custom error case (ex: MyCustomError())
+            errAllow(selector, allowedCustomErrors, errorContext);
+        } else {
+            t(false, "unexpected error type during allowErrors()");
+        }
+    }
+    
+    // Check whether the selector is a require failure e.g.: require(false, "error message");
+    function _isErrorString(bytes4 selector) internal pure returns (bool) {
+        // 0x08c379a0 is the selector for "Error(string)" which is the error type for require(...) failure
+        return selector == 0x08c379a0;
+    }
+    
+    function _handleEmptyError(bool allowEmptyError) internal {
+        t(allowEmptyError, "Becareful! It could be require or revert failure without message but also it could be something else such as calling non-existing address address(0xdead). The root-cause could be various. Please check the code and the context.");
+    }
+    
+    // check whether the errorData is an expected failure by checking the error message
+    function _allowRequireFailure(
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages
+    ) internal {
+        // remove the first 4 bytes which is the selector of the error
+        bytes memory strippedData = new bytes(errorData.length - 4);
+        
+        for (uint i = 0; i < errorData.length - 4; i++) {
+            strippedData[i] = errorData[i + 4];
+        }
+    
+        bool allowed = false;
+    
+        for (uint256 i = 0; i < allowedRequireErrorMessages.length; i++) {
+            if (keccak256(strippedData) == keccak256(abi.encode(allowedRequireErrorMessages[i]))) {
+                allowed = true;
+                break;
+            }
+        }
+    
+        string memory errorMsg = _convertToErrorMessage(strippedData);
+        t(allowed, errorMsg);
+    }
+    
+    function _convertToErrorMessage(bytes memory strippedData) internal pure returns (string memory) {
+        if (strippedData.length == 0) {
+            return "unknown error";
+        }
+        
+        return abi.decode(strippedData, (string));
+    }
 }
