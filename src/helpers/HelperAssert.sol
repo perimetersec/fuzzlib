@@ -358,7 +358,7 @@ abstract contract HelperAssert is HelperBase {
         bytes memory errorData,
         string[] memory allowedRequireErrorMessages
     ) public {
-        allowErrors(errorData, allowedRequireErrorMessages, new bytes4[](0), "", false);
+        allowErrors(errorData, allowedRequireErrorMessages, new bytes4[](0), "");
     }
     
     function allowErrors(  
@@ -366,42 +366,22 @@ abstract contract HelperAssert is HelperBase {
         bytes4[] memory allowedCustomErrors,
         string memory errorContext
     ) public {
-        allowErrors(errorData, new string[](0), allowedCustomErrors, errorContext, false);
-    }
-    
-    function allowErrors(  
-        bytes memory errorData,
-        string[] memory allowedRequireErrorMessages,
-        bytes4[] memory allowedCustomErrors,
-        string memory errorContext
-    ) public {
-        allowErrors(errorData, allowedRequireErrorMessages, allowedCustomErrors, errorContext, false);
+        allowErrors(errorData, new string[](0), allowedCustomErrors, errorContext);
     }
     
     /**
      * Allow require failure & custom errors
      * @param errorData: return data from a function call. In this case, it's a failure data
      * @param allowedRequireErrorMessages: allowed require failure messages. It's a string array
-     * @param allowedCustomErrors: allowed custom errors. It can be just 4 bytes function selector or it could be longer
+     * @param allowedCustomErrors: allowed custom errors. It can be just an array of 4 bytes function selector or it could be longer
      * @param errorContext: error context: A message to describe the error
-     * @param allowEmptyError: allow require failure without message
      */
     function allowErrors(  
         bytes memory errorData,
         string[] memory allowedRequireErrorMessages,
         bytes4[] memory allowedCustomErrors,
-        string memory errorContext,
-        bool allowEmptyError
+        string memory errorContext
     ) public {
-        if (allowEmptyError && errorData.length == 0) {
-            // 1. empty error case (ex: require(false)) <= useful when there is no error message, errorData is empty
-            // NOTE: Becareful! It could be "require" or "revert" failure without message BUT also it could be something else such as 
-            // calling non-existing address (ex: address(0xdead).call(...)). The root-cause could be various. Please check the 
-            // code and the context before use allowEmptyError = true.
-            _handleEmptyError(allowEmptyError);
-            return;
-        }
-    
         if (errorData.length < 4) {
             t(false, "unexpected error data length during allowErrors()");
             return;
@@ -424,10 +404,6 @@ abstract contract HelperAssert is HelperBase {
     function _isErrorString(bytes4 selector) internal pure returns (bool) {
         // 0x08c379a0 is the selector for "Error(string)" which is the error type for require(...) failure
         return selector == 0x08c379a0;
-    }
-    
-    function _handleEmptyError(bool allowEmptyError) internal {
-        t(allowEmptyError, "Becareful! It could be require or revert failure without message but also it could be something else such as calling non-existing address address(0xdead). The root-cause could be various. Please check the code and the context.");
     }
     
     // check whether the errorData is an expected failure by checking the error message

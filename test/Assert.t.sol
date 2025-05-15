@@ -278,35 +278,29 @@ contract TestAsserts is Test, HelperAssert {
 
         // Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        bytes memory randomErrorData = abi.encodeWithSelector(bytes4(0x08c379a0), "require failure message");
-        // This should fail
-        allowErrors(randomErrorData, allowedCustomErrors, customErrorContext);
-    }
+        vm.expectEmit(true, false, false, true);
+        // expected error message via event
+        emit AssertFail("this should fail");
 
-    // allowErrors() use case 4: allow empty failure such as require(false) or revert()
-    function test_allowErrors_allow_empty_failure() public {
-        string[] memory allowedRequireErrors = new string[](1);
-        allowedRequireErrors[0] = "require failure message 1";
+        bytes memory nonMatchingRequireFailData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");
+        // This should fail since the selector is require failure e.g.: Error(string). So nothing to do with allowedCustomErrors & customErrorContext.
+        allowErrors(nonMatchingRequireFailData, new string[](0), allowedCustomErrors, customErrorContext);
 
-        bytes4[] memory allowedCustomErrors = new bytes4[](1);
-        allowedCustomErrors[0] = bytes4(DummyContract.DummyCustomError2.selector);
-        string memory customErrorContext = "custom error test failed. here is the context";
-
-        // Test with actual require(false);
-        (bool success, bytes memory emptyErrorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
-        require(!success, "should fail");
-        allowErrors(emptyErrorData, allowedRequireErrors, allowedCustomErrors, customErrorContext, true);
-
-        // Test failure case: reusing the same emptyErrorData while allowEmptyError = false
+        // Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        allowErrors(emptyErrorData, allowedRequireErrors, allowedCustomErrors, customErrorContext, false); // note that allowEmptyError = false
+        bytes memory unexpectedErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
+        // This should fail. It will be treated as custom error but the third param is empty array. So it will throw an error.
+        allowErrors(unexpectedErrorData, allowedRequireErrors, new bytes4[](0), customErrorContext);
 
-        // Test with require(false, "message") while allowEmptyError = true
-        (bool success3, bytes memory errorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
-        require(!success3, "should fail");
-        // in this case, errorData is not empty. It's 0x08c379a0 + "require failure message 1"
-        // It tests that allowEmptyError = true should not affect other error cases
-        allowErrors(errorData, allowedRequireErrors, allowedCustomErrors, customErrorContext, true);
+        // Test with non-matching custom error (should fail): checking whether customErrorContext is emitted or not
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        vm.expectEmit(true, false, false, true);
+        // expected error message via event
+        emit AssertFail(customErrorContext);
+    
+        bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
+        // This should fail and emit AssertFail with customErrorContext before reverting
+        allowErrors(nonMatchingCustomErrorData, new string[](0), allowedCustomErrors, customErrorContext);
     }
 
     function test_isErrorString() public {
@@ -324,15 +318,6 @@ contract TestAsserts is Test, HelperAssert {
         (bool success3, bytes memory emptyErrorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success3, "should fail");
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
-    }
-
-    function test_handleEmptyError() public {
-        // Test when allowEmptyError is true
-        _handleEmptyError(true); // should not revert
-        
-        // Test when allowEmptyError is false
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        _handleEmptyError(false); // should revert
     }
 
     function test_allowRequireFailure() public {
