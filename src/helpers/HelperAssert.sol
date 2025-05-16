@@ -390,13 +390,11 @@ abstract contract HelperAssert is HelperBase {
         bytes4 selector = bytes4(errorData);
         
         if (_isErrorString(selector)) {
-            // 2. require failure case (ex: require(false, "error message"))
+            // 1. require failure case (ex: require(false, "error message"))
             _allowRequireFailure(errorData, allowedRequireErrorMessages);
-        } else if (allowedCustomErrors.length > 0) {
-            // 3. custom error case (ex: MyCustomError())
-            errAllow(selector, allowedCustomErrors, errorContext);
         } else {
-            t(false, "unexpected error type during allowErrors()");
+            // 2. custom error case (ex: MyCustomError())
+            errAllow(selector, allowedCustomErrors, errorContext);
         }
     }
     

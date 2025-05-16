@@ -262,6 +262,15 @@ contract TestAsserts is Test, HelperAssert {
         // this should fail: since the custom error is not in the allowedCustomErrors, it should emit AssertFail with customErrorContext. "some message" will be ignored.
         bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
         allowErrors(nonMatchingCustomErrorData, allowedCustomErrors, customErrorContext);
+
+        // #5: Test with non-matching error (should fail)
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        vm.expectEmit(true, false, false, true);
+        // expected error message via event
+        emit AssertFail(customErrorContext);
+        bytes memory unexpectedErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
+        // This should fail: allowedCustomErrors is empty array. But given unexpectedErrorData has a custom error. Therefore it will throw an error.
+        allowErrors(unexpectedErrorData, new bytes4[](0), customErrorContext);
     }
 
     // allowErrors() use case 3: allowing require failure AND custom error at the same time
@@ -309,6 +318,9 @@ contract TestAsserts is Test, HelperAssert {
 
         // #5: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        vm.expectEmit(true, false, false, true);
+        // expected error message via event
+        emit AssertFail(customErrorContext);
         bytes memory unexpectedErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
         // This should fail: It will be treated as custom error but the third param is empty array. So it will throw an error.
         allowErrors(unexpectedErrorData, allowedRequireErrors, new bytes4[](0), customErrorContext);
@@ -320,7 +332,7 @@ contract TestAsserts is Test, HelperAssert {
         emit AssertFail(customErrorContext);
     
         bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
-        // This should fail and emit AssertFail with customErrorContext before reverting
+        // This should fail and emit AssertFail with customErrorContext. "some message" will be ignored.
         allowErrors(nonMatchingCustomErrorData, new string[](0), allowedCustomErrors, customErrorContext);
     }
 
