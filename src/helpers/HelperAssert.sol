@@ -383,7 +383,7 @@ abstract contract HelperAssert is HelperBase {
         string memory errorContext
     ) public {
         if (errorData.length < 4) {
-            t(false, "unexpected error data length during allowErrors()");
+            t(false, "The length of errorData must be at least 4 or more");
             return;
         }
     
