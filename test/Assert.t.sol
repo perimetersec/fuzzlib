@@ -196,6 +196,10 @@ contract TestAsserts is Test, HelperAssert {
         neq(x, y, reason);
         }
 
+    /**
+     * "allowErrors" test
+     */
+
     // allowErrors() use case 1: allowing only require failure with message
     function test_allowErrors_only_require_failure_with_message() public {
         // set require failure related
@@ -381,5 +385,40 @@ contract TestAsserts is Test, HelperAssert {
         // Test with empty error data
         string memory emptyMessage = _convertToErrorMessage(new bytes(0));
         assertEq(emptyMessage, "unknown error", "should return unknown error for empty data");
+    }
+
+    /**
+     * "errAllow" test
+     */
+
+    // note: this test is for when "errorSelector" is an empty data. This can happen when require(false) or revert() or address(0xdead).call() is called.
+    // This is not an usual case but it proves that errAllow() can handle this case.
+    function test_errAllow_zero_selector() public {
+        // #1: Test with zero selector
+        // emptyRequireFailureData will be an empty data since require(false); returns an empty data
+        (bool success, bytes memory emptyRequireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        require(!success, "should fail");
+
+        bytes4[] memory allowedErrors = new bytes4[](1);
+        allowedErrors[0] = bytes4(0);
+        string memory message = "zero selector test";
+        
+        // This should pass since errorSelector (bytes4(0)) is in allowedErrors
+        errAllow(bytes4(emptyRequireFailureData), allowedErrors, message);
+
+        // #2: Test with different selector
+        (bool success2, bytes memory emptyRequireFailureData2) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        require(!success2, "should fail");
+
+        bytes4[] memory allowedErrors2 = new bytes4[](1);
+        allowedErrors2[0] = bytes4(0x12345678); // Different selector
+        string memory message2 = "zero selector test should fail";
+        
+        // This should fail since errorSelector (bytes4(0)) is not in allowedErrors
+        vm.expectEmit(true, false, false, true);
+        emit AssertFail(message2);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        
+        errAllow(bytes4(emptyRequireFailureData2), allowedErrors2, message2);
     }
 }
