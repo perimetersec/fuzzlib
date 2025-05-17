@@ -371,34 +371,6 @@ contract TestAsserts is Test, HelperAssert {
         _allowRequireFailure(errorData, nonMatchingErrors); // should revert
     }
 
-    function test_convertToErrorMessage() public {
-        // Test with require failure message
-        (bool success, bytes memory errorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
-        require(!success, "should fail");
-        
-        bytes memory strippedData = new bytes(errorData.length - 4);
-        // remove the first 4 bytes which is the selector of the error
-        for (uint i = 0; i < errorData.length - 4; i++) {
-            strippedData[i] = errorData[i + 4];
-        }
-        string memory decodedMessage = _convertToErrorMessage(strippedData);
-        assertEq(decodedMessage, "require failure message 1", "should extract correct error message");
-
-        // Test with custom error message
-        (bool success2, bytes memory customErrorData) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
-        require(!success2, "should fail");
-        bytes memory strippedCustomData = new bytes(customErrorData.length - 4);
-        for (uint i = 0; i < customErrorData.length - 4; i++) {
-            strippedCustomData[i] = customErrorData[i + 4];
-        }
-        string memory customMessage = _convertToErrorMessage(strippedCustomData);
-        assertEq(customMessage, "custom error message", "should extract correct custom error message");
-
-        // Test with empty error data
-        string memory emptyMessage = _convertToErrorMessage(new bytes(0));
-        assertEq(emptyMessage, "unknown error", "should return unknown error for empty data");
-    }
-
     /**
      * "errAllow" test
      */

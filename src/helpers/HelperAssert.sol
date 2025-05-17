@@ -382,10 +382,6 @@ abstract contract HelperAssert is HelperBase {
         bytes4[] memory allowedCustomErrors,
         string memory errorContext
     ) public {
-        if (errorData.length < 4) {
-            t(false, "The length of errorData must be at least 4 or more");
-            return;
-        }
     
         bytes4 selector = bytes4(errorData);
         
@@ -409,31 +405,37 @@ abstract contract HelperAssert is HelperBase {
         bytes memory errorData,
         string[] memory allowedRequireErrorMessages
     ) internal {
-        // remove the first 4 bytes which is the selector of the error
+        // space for error message without selector (4 bytes)
         bytes memory strippedData = new bytes(errorData.length - 4);
-        
-        for (uint i = 0; i < errorData.length - 4; i++) {
-            strippedData[i] = errorData[i + 4];
+        assembly {
+            // calculate the memory position of strippedData
+            let strippedDataPtr := add(strippedData, 32)
+            // calculate the memory position of errorData (4 bytes for selector)
+            let errorDataPtr := add(add(errorData, 32), 4)
+            // calculate the data length
+            let dataLength := sub(mload(errorData), 4)
+            // copy the data
+            // strippedDataPtr: memory position of where to copy the data
+            // errorDataPtr: memory position of what to copy
+            // dataLength: length of the data to copy
+            mcopy(strippedDataPtr, errorDataPtr, dataLength)
+
+            // now "strippedData" is the error message (string) without selector
         }
-    
+        
+        // extract the string from the remaining data
+        string memory decodedString = abi.decode(strippedData, (string));
+
+        // compare with allowedRequireErrorMessages
         bool allowed = false;
-    
         for (uint256 i = 0; i < allowedRequireErrorMessages.length; i++) {
-            if (keccak256(strippedData) == keccak256(abi.encode(allowedRequireErrorMessages[i]))) {
+            if (keccak256(abi.encode(decodedString)) == keccak256(abi.encode(allowedRequireErrorMessages[i]))) {
                 allowed = true;
                 break;
             }
         }
-    
-        string memory errorMsg = _convertToErrorMessage(strippedData);
-        t(allowed, errorMsg);
+
+        t(allowed, decodedString);
     }
     
-    function _convertToErrorMessage(bytes memory strippedData) internal pure returns (string memory) {
-        if (strippedData.length == 0) {
-            return "unknown error";
-        }
-        
-        return abi.decode(strippedData, (string));
-    }
 }
