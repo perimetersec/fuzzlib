@@ -200,7 +200,7 @@ contract TestAsserts is Test, HelperAssert {
      * "allowErrors" test
      */
 
-    // allowErrors() use case 1: allowing only require failure with message
+    // errAllow() use case 1: allowing only require failure with message
     function test_allowErrors_only_require_failure_with_message() public {
         // set require failure related
         string[] memory allowedRequireErrors = new string[](2);
@@ -211,19 +211,19 @@ contract TestAsserts is Test, HelperAssert {
         (bool success1, bytes memory requireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success1, "should fail");
         // This should pass
-        allowErrors(requireFailureData, allowedRequireErrors);
+        errAllow(requireFailureData, allowedRequireErrors, "BAL-01");
         
         // #2: Test with non-matching message (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail("this should fail");
-        bytes memory nonMatchingRequireFailData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");
+        emit AssertFail("BAL-02");
+        bytes memory nonMatchingRequireFailData = abi.encodeWithSelector(bytes4(0x08c379a0), "error message");
         // This should fail: since the failure message ("this should fail") is not in the allowedRequireErrors list.
-        allowErrors(nonMatchingRequireFailData, allowedRequireErrors);
+        errAllow(nonMatchingRequireFailData, allowedRequireErrors, "BAL-02");
     }
 
-    // allowErrors() use case 2: allowing only custom error
+    // errAllow() use case 2: allowing only custom error
     function test_allowErrors_only_custom_error() public {
         // set custom error related
         bytes4 customErrorSelector1 = bytes4(DummyContract.DummyCustomError1.selector);
@@ -231,49 +231,34 @@ contract TestAsserts is Test, HelperAssert {
         bytes4[] memory allowedCustomErrors = new bytes4[](2);
         allowedCustomErrors[0] = customErrorSelector1;
         allowedCustomErrors[1] = customErrorSelector2;
-        string memory customErrorContext = "custom error test failed. here is the context";
+        string memory errorContext = "BAL-03";
 
-        // #1: Test with custom error selector (with message)
+        // #1: Test with custom error selector
         (bool success1, bytes memory customErrorData1) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
         require(!success1, "should fail");
         // This should pass
-        allowErrors(customErrorData1, allowedCustomErrors, customErrorContext);
+        errAllow(bytes4(customErrorData1), allowedCustomErrors, errorContext);
 
-        // #2: Test with custom error selector (without message)
-        (bool success2, bytes memory customErrorData2) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
-        require(!success2, "should fail");
-        // This should pass
-        allowErrors(customErrorData2, allowedCustomErrors, customErrorContext);
-
-        // #3: Test with non-matching error (should fail)
+        // #2: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail("this should fail");
-        // This should fail: since the require failure with message, it should emit AssertFail with the message.
+        emit AssertFail(errorContext);
+        // This should fail: since the 0x08c379a0 is not in the allowedCustomErrors
         bytes memory randomErrorData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");   
-        allowErrors(randomErrorData, allowedCustomErrors, customErrorContext);
-
-        // #4: Test with non-matching error (should fail)
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        vm.expectEmit(true, false, false, true);
-        // expected error message via event
-        emit AssertFail(customErrorContext);
-        // this should fail: since the custom error is not in the allowedCustomErrors, it should emit AssertFail with customErrorContext. "some message" will be ignored.
-        bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
-        allowErrors(nonMatchingCustomErrorData, allowedCustomErrors, customErrorContext);
+        errAllow(bytes4(randomErrorData), allowedCustomErrors, errorContext);
 
         // #5: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail(customErrorContext);
+        emit AssertFail(errorContext);
         bytes memory unexpectedErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
         // This should fail: allowedCustomErrors is empty array. But given unexpectedErrorData has a custom error. Therefore it will throw an error.
-        allowErrors(unexpectedErrorData, new bytes4[](0), customErrorContext);
+        errAllow(bytes4(unexpectedErrorData), new bytes4[](0), errorContext);
     }
 
-    // allowErrors() use case 3: allowing require failure AND custom error at the same time
+    // errAllow() use case 3: allowing require failure AND custom error at the same time
     function test_allowErrors_require_failure_and_custom_error() public {
         // set require failure related
         string[] memory allowedRequireErrors = new string[](2);
@@ -286,54 +271,87 @@ contract TestAsserts is Test, HelperAssert {
         bytes4[] memory allowedCustomErrors = new bytes4[](2);
         allowedCustomErrors[0] = customErrorSelector1;
         allowedCustomErrors[1] = customErrorSelector2;
-        string memory customErrorContext = "custom error test failed. here is the context";
+        string memory errorContext = "BAL-03";
 
         // #1: Test with require failure with message
         (bool success1, bytes memory requireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success1, "should fail");
         // This should pass: testing require failure
-        allowErrors(requireFailureData, allowedRequireErrors, allowedCustomErrors, customErrorContext);
+        errAllow(requireFailureData, allowedRequireErrors, allowedCustomErrors, errorContext);
 
         // #2: Test with custom error without message
         (bool success2, bytes memory customErrorData1) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
         require(!success2, "should fail");
         // This should pass: testing custom error without message
-        allowErrors(customErrorData1, allowedRequireErrors, allowedCustomErrors, customErrorContext);
+        errAllow(customErrorData1, allowedRequireErrors, allowedCustomErrors, errorContext);
 
         // #3: Test with custom error with message
         (bool success3, bytes memory customErrorData2) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
         require(!success3, "should fail");
         // This should pass: testing custom error with message
-        allowErrors(customErrorData2, allowedRequireErrors, allowedCustomErrors, customErrorContext);
+        errAllow(customErrorData2, allowedRequireErrors, allowedCustomErrors, errorContext);
 
         // #4: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail("this should fail");
+        emit AssertFail(errorContext);
 
         bytes memory nonMatchingRequireFailData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");
-        // This should fail: since the selector is require failure e.g.: Error(string). So nothing to do with allowedCustomErrors & customErrorContext.
-        allowErrors(nonMatchingRequireFailData, new string[](0), allowedCustomErrors, customErrorContext);
+        // This should fail: since the selector is require failure e.g.: Error(string). So nothing to do with allowedCustomErrors & errorContext.
+        errAllow(nonMatchingRequireFailData, new string[](0), allowedCustomErrors, errorContext);
 
         // #5: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail(customErrorContext);
+        emit AssertFail(errorContext);
         bytes memory unexpectedErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
         // This should fail: It will be treated as custom error but the third param is empty array. So it will throw an error.
-        allowErrors(unexpectedErrorData, allowedRequireErrors, new bytes4[](0), customErrorContext);
+        errAllow(unexpectedErrorData, allowedRequireErrors, new bytes4[](0), errorContext);
 
-        // #6: Test with non-matching custom error (should fail): checking whether customErrorContext is emitted or not
+        // #6: Test with non-matching custom error (should fail): checking whether errorContext is emitted or not
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
-        emit AssertFail(customErrorContext);
+        emit AssertFail(errorContext);
     
         bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
-        // This should fail and emit AssertFail with customErrorContext. "some message" will be ignored.
-        allowErrors(nonMatchingCustomErrorData, new string[](0), allowedCustomErrors, customErrorContext);
+        // This should fail and emit AssertFail with errorContext. "some message" will be ignored.
+        errAllow(nonMatchingCustomErrorData, new string[](0), allowedCustomErrors, errorContext);
+    }
+
+    // errAllow() use case 4: with zero selector test
+    // note: this test is for when "errorSelector" is an empty data (0x00000000). This can happen from require(false) or revert() or address(0xdead).call().
+    // This is not an usual case but it proves that errAllow() can handle this case.
+    function test_errAllow_zero_selector() public {
+        // #1: Test with zero selector
+        // emptyRequireFailureData will be an empty data since require(false); returns an empty data
+        (bool success, bytes memory emptyRequireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        require(!success, "should fail");
+
+        bytes4[] memory allowedErrors = new bytes4[](1);
+        allowedErrors[0] = bytes4(0);
+        string memory message = "zero selector test";
+        
+        // emptyRequireFailureData is 0x00000000
+        // This should pass since errorSelector (bytes4(0)) is in allowedErrors
+        errAllow(bytes4(emptyRequireFailureData), allowedErrors, message);
+
+        // #2: Test with different selector
+        (bool success2, bytes memory emptyRequireFailureData2) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        require(!success2, "should fail");
+
+        bytes4[] memory allowedErrors2 = new bytes4[](1);
+        allowedErrors2[0] = bytes4(0x12345678); // Different selector
+        string memory message2 = "zero selector test should fail";
+        
+        // This should fail since errorSelector (bytes4(0)) is not in allowedErrors
+        vm.expectEmit(true, false, false, true);
+        emit AssertFail(message2);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        
+        errAllow(bytes4(emptyRequireFailureData2), allowedErrors2, message2);
     }
 
     function test_isErrorString() public {
@@ -362,47 +380,12 @@ contract TestAsserts is Test, HelperAssert {
         allowedRequireErrors[0] = "require failure message 1";
         
         // Test with matching message
-        _allowRequireFailure(errorData, allowedRequireErrors); // should not revert
+        _allowRequireFailure(errorData, allowedRequireErrors, "BAL-01"); // should not revert
         
         // Test with non-matching message
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         string[] memory nonMatchingErrors = new string[](1);
         nonMatchingErrors[0] = "different message";
-        _allowRequireFailure(errorData, nonMatchingErrors); // should revert
-    }
-
-    /**
-     * "errAllow" test
-     */
-
-    // note: this test is for when "errorSelector" is an empty data. This can happen when require(false) or revert() or address(0xdead).call() is called.
-    // This is not an usual case but it proves that errAllow() can handle this case.
-    function test_errAllow_zero_selector() public {
-        // #1: Test with zero selector
-        // emptyRequireFailureData will be an empty data since require(false); returns an empty data
-        (bool success, bytes memory emptyRequireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
-        require(!success, "should fail");
-
-        bytes4[] memory allowedErrors = new bytes4[](1);
-        allowedErrors[0] = bytes4(0);
-        string memory message = "zero selector test";
-        
-        // This should pass since errorSelector (bytes4(0)) is in allowedErrors
-        errAllow(bytes4(emptyRequireFailureData), allowedErrors, message);
-
-        // #2: Test with different selector
-        (bool success2, bytes memory emptyRequireFailureData2) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
-        require(!success2, "should fail");
-
-        bytes4[] memory allowedErrors2 = new bytes4[](1);
-        allowedErrors2[0] = bytes4(0x12345678); // Different selector
-        string memory message2 = "zero selector test should fail";
-        
-        // This should fail since errorSelector (bytes4(0)) is not in allowedErrors
-        vm.expectEmit(true, false, false, true);
-        emit AssertFail(message2);
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        
-        errAllow(bytes4(emptyRequireFailureData2), allowedErrors2, message2);
+        _allowRequireFailure(errorData, nonMatchingErrors, "BAL-02"); // should revert
     }
 }

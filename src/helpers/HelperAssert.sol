@@ -318,6 +318,7 @@ abstract contract HelperAssert is HelperBase {
         t(isEqual, assertMsg);
     }
 
+    // allow custom error only
     function errAllow(
         bytes4 errorSelector,
         bytes4[] memory allowedErrors,
@@ -353,20 +354,13 @@ abstract contract HelperAssert is HelperBase {
     function createAssertFailMessage(string memory aStr, string memory bStr, string memory operator, string memory reason)internal pure returns (string memory) {
         return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
     }
-
-    function allowErrors(  
+    // require failure only
+    function errAllow(  
         bytes memory errorData,
-        string[] memory allowedRequireErrorMessages
-    ) public {
-        allowErrors(errorData, allowedRequireErrorMessages, new bytes4[](0), "");
-    }
-    
-    function allowErrors(  
-        bytes memory errorData,
-        bytes4[] memory allowedCustomErrors,
+        string[] memory allowedRequireErrorMessages,
         string memory errorContext
     ) public {
-        allowErrors(errorData, new string[](0), allowedCustomErrors, errorContext);
+        errAllow(errorData, allowedRequireErrorMessages, new bytes4[](0), errorContext);
     }
     
     /**
@@ -376,7 +370,7 @@ abstract contract HelperAssert is HelperBase {
      * @param allowedCustomErrors: allowed custom errors. It can be just an array of 4 bytes function selector or it could be longer
      * @param errorContext: error context: A message to describe the error
      */
-    function allowErrors(  
+    function errAllow(  
         bytes memory errorData,
         string[] memory allowedRequireErrorMessages,
         bytes4[] memory allowedCustomErrors,
@@ -387,7 +381,7 @@ abstract contract HelperAssert is HelperBase {
         
         if (_isErrorString(selector)) {
             // 1. require failure case (ex: require(false, "error message"))
-            _allowRequireFailure(errorData, allowedRequireErrorMessages);
+            _allowRequireFailure(errorData, allowedRequireErrorMessages, errorContext);
         } else {
             // 2. custom error case (ex: MyCustomError())
             errAllow(selector, allowedCustomErrors, errorContext);
@@ -403,7 +397,8 @@ abstract contract HelperAssert is HelperBase {
     // check whether the errorData is an expected failure by checking the error message
     function _allowRequireFailure(
         bytes memory errorData,
-        string[] memory allowedRequireErrorMessages
+        string[] memory allowedRequireErrorMessages,
+        string memory errorContext
     ) internal {
         // space for error message without selector (4 bytes)
         bytes memory strippedData = new bytes(errorData.length - 4);
@@ -435,7 +430,6 @@ abstract contract HelperAssert is HelperBase {
             }
         }
 
-        t(allowed, decodedString);
+        t(allowed, errorContext);
     }
-    
 }
