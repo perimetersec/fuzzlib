@@ -371,7 +371,7 @@ contract TestAsserts is Test, HelperAssert {
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
     }
 
-    function test_allowRequireFailure() public {
+    function test_errAllow_require_only_failure() public {
         // Test with matching require failure message
         (bool success, bytes memory errorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success, "should fail");
@@ -380,12 +380,12 @@ contract TestAsserts is Test, HelperAssert {
         allowedRequireErrors[0] = "require failure message 1";
         
         // Test with matching message
-        _allowRequireFailure(errorData, allowedRequireErrors, "BAL-01"); // should not revert
+        errAllow(errorData, allowedRequireErrors, "BAL-01"); // should not revert
         
         // Test with non-matching message
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         string[] memory nonMatchingErrors = new string[](1);
         nonMatchingErrors[0] = "different message";
-        _allowRequireFailure(errorData, nonMatchingErrors, "BAL-02"); // should revert
+        errAllow(errorData, nonMatchingErrors, "BAL-02"); // should revert
     }
 }

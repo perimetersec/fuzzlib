@@ -355,51 +355,12 @@ abstract contract HelperAssert is HelperBase {
         return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
     }
     // require failure only
-    function errAllow(  
-        bytes memory errorData,
-        string[] memory allowedRequireErrorMessages,
-        string memory errorContext
-    ) public {
-        errAllow(errorData, allowedRequireErrorMessages, new bytes4[](0), errorContext);
-    }
-    
-    /**
-     * Allow require failure & custom errors
-     * @param errorData: return data from a function call. In this case, it's a failure data
-     * @param allowedRequireErrorMessages: allowed require failure messages. It's a string array
-     * @param allowedCustomErrors: allowed custom errors. It can be just an array of 4 bytes function selector or it could be longer
-     * @param errorContext: error context: A message to describe the error
-     */
-    function errAllow(  
-        bytes memory errorData,
-        string[] memory allowedRequireErrorMessages,
-        bytes4[] memory allowedCustomErrors,
-        string memory errorContext
-    ) public {
-    
-        bytes4 selector = bytes4(errorData);
-        
-        if (_isErrorString(selector)) {
-            // 1. require failure case (ex: require(false, "error message"))
-            _allowRequireFailure(errorData, allowedRequireErrorMessages, errorContext);
-        } else {
-            // 2. custom error case (ex: MyCustomError())
-            errAllow(selector, allowedCustomErrors, errorContext);
-        }
-    }
-    
-    // Check whether the selector is a require failure e.g.: require(false, "error message");
-    function _isErrorString(bytes4 selector) internal pure returns (bool) {
-        // 0x08c379a0 is the selector for "Error(string)" which is the error type for require(...) failure
-        return selector == 0x08c379a0;
-    }
-    
     // check whether the errorData is an expected failure by checking the error message
-    function _allowRequireFailure(
+    function errAllow(
         bytes memory errorData,
         string[] memory allowedRequireErrorMessages,
         string memory errorContext
-    ) internal {
+    ) public {
         // space for error message without selector (4 bytes)
         bytes memory strippedData = new bytes(errorData.length - 4);
         assembly {
@@ -431,5 +392,36 @@ abstract contract HelperAssert is HelperBase {
         }
 
         t(allowed, errorContext);
+    }
+    
+    /**
+     * Allow require failure & custom errors
+     * @param errorData: return data from a function call. In this case, it's a failure data
+     * @param allowedRequireErrorMessages: allowed require failure messages. It's a string array
+     * @param allowedCustomErrors: allowed custom errors. It can be just an array of 4 bytes function selector or it could be longer
+     * @param errorContext: error context: A message to describe the error
+     */
+    function errAllow(  
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages,
+        bytes4[] memory allowedCustomErrors,
+        string memory errorContext
+    ) public {
+    
+        bytes4 selector = bytes4(errorData);
+        
+        if (_isErrorString(selector)) {
+            // 1. require failure case (ex: require(false, "error message"))
+            errAllow(errorData, allowedRequireErrorMessages, errorContext);
+        } else {
+            // 2. custom error case (ex: MyCustomError())
+            errAllow(selector, allowedCustomErrors, errorContext);
+        }
+    }
+    
+    // Check whether the selector is a require failure e.g.: require(false, "error message");
+    function _isErrorString(bytes4 selector) internal pure returns (bool) {
+        // 0x08c379a0 is the selector for "Error(string)" which is the error type for require(...) failure
+        return selector == 0x08c379a0;
     }
 }
