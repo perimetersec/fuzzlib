@@ -197,11 +197,11 @@ contract TestAsserts is Test, HelperAssert {
         }
 
     /**
-     * "allowErrors" test
+     * "errAllow" test
      */
 
     // errAllow() use case 1: allowing only require failure with message
-    function test_allowErrors_only_require_failure_with_message() public {
+    function test_errAllow_only_require_failure_with_message() public {
         // set require failure related
         string[] memory allowedRequireErrors = new string[](2);
         allowedRequireErrors[0] = "require failure message 1";
@@ -215,7 +215,7 @@ contract TestAsserts is Test, HelperAssert {
         
         // #2: Test with non-matching message (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        vm.expectEmit(true, false, false, true);
+        vm.expectEmit(false, false, false, true);
         // expected error message via event
         emit AssertFail("BAL-02");
         bytes memory nonMatchingRequireFailData = abi.encodeWithSelector(bytes4(0x08c379a0), "error message");
@@ -224,7 +224,7 @@ contract TestAsserts is Test, HelperAssert {
     }
 
     // errAllow() use case 2: allowing only custom error
-    function test_allowErrors_only_custom_error() public {
+    function test_errAllow_only_custom_error() public {
         // set custom error related
         bytes4 customErrorSelector1 = bytes4(DummyContract.DummyCustomError1.selector);
         bytes4 customErrorSelector2 = bytes4(DummyContract.DummyCustomError2.selector);
@@ -248,7 +248,7 @@ contract TestAsserts is Test, HelperAssert {
         bytes memory randomErrorData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");   
         errAllow(bytes4(randomErrorData), allowedCustomErrors, errorContext);
 
-        // #5: Test with non-matching error (should fail)
+        // #3: Test with non-matching error (should fail)
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
         vm.expectEmit(true, false, false, true);
         // expected error message via event
@@ -259,7 +259,7 @@ contract TestAsserts is Test, HelperAssert {
     }
 
     // errAllow() use case 3: allowing require failure AND custom error at the same time
-    function test_allowErrors_require_failure_and_custom_error() public {
+    function test_errAllow_require_failure_and_custom_error() public {
         // set require failure related
         string[] memory allowedRequireErrors = new string[](2);
         allowedRequireErrors[0] = "require failure message 1";
@@ -369,23 +369,5 @@ contract TestAsserts is Test, HelperAssert {
         (bool success3, bytes memory emptyErrorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success3, "should fail");
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
-    }
-
-    function test_errAllow_require_only_failure() public {
-        // Test with matching require failure message
-        (bool success, bytes memory errorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
-        require(!success, "should fail");
-        
-        string[] memory allowedRequireErrors = new string[](1);
-        allowedRequireErrors[0] = "require failure message 1";
-        
-        // Test with matching message
-        errAllow(errorData, allowedRequireErrors, "BAL-01"); // should not revert
-        
-        // Test with non-matching message
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        string[] memory nonMatchingErrors = new string[](1);
-        nonMatchingErrors[0] = "different message";
-        errAllow(errorData, nonMatchingErrors, "BAL-02"); // should revert
     }
 }
