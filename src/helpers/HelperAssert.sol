@@ -318,6 +318,10 @@ abstract contract HelperAssert is HelperBase {
         t(isEqual, assertMsg);
     }
 
+    function createAssertFailMessage(string memory aStr, string memory bStr, string memory operator, string memory reason)internal pure returns (string memory) {
+        return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
+    }
+
     // allow custom error only
     function errAllow(
         bytes4 errorSelector,
@@ -332,27 +336,6 @@ abstract contract HelperAssert is HelperBase {
             }
         }
         t(allowed, message);
-    }
-
-    function errsAllow(
-        bytes4 errorSelector,
-        bytes4[] memory allowedErrors,
-        string[] memory messages
-    ) public {
-        bool allowed = false;
-        uint256 passIndex = 0;
-        for (uint256 i = 0; i < allowedErrors.length; i++) {
-            if (errorSelector == allowedErrors[i]) {
-                allowed = true;
-                passIndex = i;
-                break;
-            }
-        }
-        t(allowed, messages[passIndex]);
-    }
-
-    function createAssertFailMessage(string memory aStr, string memory bStr, string memory operator, string memory reason)internal pure returns (string memory) {
-        return string(abi.encodePacked("Invalid: ", aStr, operator, bStr, ", reason: ", reason));
     }
     // require failure only
     // check whether the errorData is an expected failure by checking the error message
