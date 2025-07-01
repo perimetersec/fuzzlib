@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @dev Library containing Solidity panic codes and cheat addresses.
+ * @author Perimeter <info@perimetersec.io>
+ */
 library Constants {
     // https://docs.soliditylang.org/en/latest/control-structures.html#panic-via-assert-and-error-via-require
     // 0x00: Used for generic compiler inserted panics.

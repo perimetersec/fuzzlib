@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 /**
- * A dummy contract for testing purposes
+ * @dev A dummy contract for testing purposes.
+ * @author Perimeter <info@perimetersec.io>
  */
 contract DummyContract {
     error DummyCustomError1();
