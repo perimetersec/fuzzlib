@@ -301,6 +301,421 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
+     * Tests for gte(uint256, uint256, string)
+     */
+    function test_gte_uint256_greater() public {
+        gte(uint256(10), uint256(5), "gte greater test");
+    }
+
+    function test_gte_uint256_equal() public {
+        gte(uint256(5), uint256(5), "gte equal test");
+    }
+
+    function test_gte_uint256_less() public {
+        string memory reason = "gte less test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(uint256(3)), FuzzLibString.toString(uint256(7)), "<", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gte(uint256(3), uint256(7), reason);
+    }
+
+    function test_gte_uint256_zero() public {
+        gte(uint256(0), uint256(0), "gte zero test");
+        gte(uint256(1), uint256(0), "gte from zero test");
+    }
+
+    function test_gte_uint256_max_values() public {
+        gte(type(uint256).max, type(uint256).max, "gte max values test");
+        gte(type(uint256).max, type(uint256).max - 1, "gte max vs max-1 test");
+    }
+
+    function testFuzz_gte_uint256_valid(uint256 a, uint256 b) public {
+        vm.assume(a >= b);
+        gte(a, b, "fuzz gte valid test");
+    }
+
+    function testFuzz_gte_uint256_invalid(uint256 a, uint256 b) public {
+        vm.assume(a < b);
+        string memory reason = "fuzz gte invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gte(a, b, reason);
+    }
+
+    /**
+     * Tests for gte(int256, int256, string)
+     */
+    function test_gte_int256_greater() public {
+        gte(int256(10), int256(5), "gte int256 greater test");
+    }
+
+    function test_gte_int256_equal() public {
+        gte(int256(5), int256(5), "gte int256 equal test");
+    }
+
+    function test_gte_int256_less() public {
+        string memory reason = "gte int256 less test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(3)), FuzzLibString.toString(int256(7)), "<", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gte(int256(3), int256(7), reason);
+    }
+
+    function test_gte_int256_negative() public {
+        gte(int256(-5), int256(-10), "gte negative test");
+    }
+
+    function test_gte_int256_mixed_signs() public {
+        gte(int256(5), int256(-5), "gte mixed signs test");
+    }
+
+    function test_gte_int256_extreme_values() public {
+        gte(type(int256).max, type(int256).min, "gte extreme values test");
+        gte(type(int256).max, type(int256).max, "gte max values test");
+    }
+
+    function testFuzz_gte_int256_valid(int256 a, int256 b) public {
+        vm.assume(a >= b);
+        gte(a, b, "fuzz gte int256 valid test");
+    }
+
+    function testFuzz_gte_int256_invalid(int256 a, int256 b) public {
+        vm.assume(a < b);
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(a != type(int256).min && b != type(int256).min);
+        string memory reason = "fuzz gte int256 invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gte(a, b, reason);
+    }
+
+    /**
+     * Tests for gt(uint256, uint256, string)
+     */
+    function test_gt_uint256_greater() public {
+        gt(uint256(10), uint256(5), "gt greater test");
+    }
+
+    function test_gt_uint256_equal() public {
+        string memory reason = "gt equal test";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(5)), FuzzLibString.toString(uint256(5)), "<=", reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(uint256(5), uint256(5), reason);
+    }
+
+    function test_gt_uint256_less() public {
+        string memory reason = "gt less test";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(3)), FuzzLibString.toString(uint256(7)), "<=", reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(uint256(3), uint256(7), reason);
+    }
+
+    function test_gt_uint256_max_values() public {
+        gt(type(uint256).max, type(uint256).max - 1, "gt max values test");
+    }
+
+    function testFuzz_gt_uint256_valid(uint256 a, uint256 b) public {
+        vm.assume(a > b);
+        gt(a, b, "fuzz gt valid test");
+    }
+
+    function testFuzz_gt_uint256_invalid(uint256 a, uint256 b) public {
+        vm.assume(a <= b);
+        string memory reason = "fuzz gt invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(a, b, reason);
+    }
+
+    /**
+     * Tests for gt(int256, int256, string)
+     */
+    function test_gt_int256_greater() public {
+        gt(int256(10), int256(5), "gt int256 greater test");
+    }
+
+    function test_gt_int256_equal() public {
+        string memory reason = "gt int256 equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(5)), FuzzLibString.toString(int256(5)), "<=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(int256(5), int256(5), reason);
+    }
+
+    function test_gt_int256_less() public {
+        string memory reason = "gt int256 less test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(3)), FuzzLibString.toString(int256(7)), "<=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(int256(3), int256(7), reason);
+    }
+
+    function test_gt_int256_negative() public {
+        gt(int256(-5), int256(-10), "gt negative test");
+    }
+
+    function test_gt_int256_mixed_signs() public {
+        gt(int256(5), int256(-5), "gt mixed signs test");
+    }
+
+    function test_gt_int256_extreme_values() public {
+        gt(type(int256).max, type(int256).min, "gt extreme values test");
+    }
+
+    function testFuzz_gt_int256_valid(int256 a, int256 b) public {
+        vm.assume(a > b);
+        gt(a, b, "fuzz gt int256 valid test");
+    }
+
+    function testFuzz_gt_int256_invalid(int256 a, int256 b) public {
+        vm.assume(a <= b);
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(a != type(int256).min && b != type(int256).min);
+        string memory reason = "fuzz gt int256 invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertGtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        gt(a, b, reason);
+    }
+
+    /**
+     * Tests for lte(uint256, uint256, string)
+     */
+    function test_lte_uint256_less() public {
+        lte(uint256(5), uint256(10), "lte less test");
+    }
+
+    function test_lte_uint256_equal() public {
+        lte(uint256(5), uint256(5), "lte equal test");
+    }
+
+    function test_lte_uint256_greater() public {
+        string memory reason = "lte greater test";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(10)), FuzzLibString.toString(uint256(5)), ">", reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertLteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lte(uint256(10), uint256(5), reason);
+    }
+
+    function test_lte_uint256_zero() public {
+        lte(uint256(0), uint256(0), "lte zero test");
+        lte(uint256(0), uint256(1), "lte to one test");
+    }
+
+    function test_lte_uint256_max_values() public {
+        lte(type(uint256).max - 1, type(uint256).max, "lte max values test");
+        lte(type(uint256).max, type(uint256).max, "lte max equal test");
+    }
+
+    function testFuzz_lte_uint256_valid(uint256 a, uint256 b) public {
+        vm.assume(a <= b);
+        lte(a, b, "fuzz lte valid test");
+    }
+
+    function testFuzz_lte_uint256_invalid(uint256 a, uint256 b) public {
+        vm.assume(a > b);
+        string memory reason = "fuzz lte invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lte(a, b, reason);
+    }
+
+    /**
+     * Tests for lte(int256, int256, string)
+     */
+    function test_lte_int256_less() public {
+        lte(int256(5), int256(10), "lte int256 less test");
+    }
+
+    function test_lte_int256_equal() public {
+        lte(int256(5), int256(5), "lte int256 equal test");
+    }
+
+    function test_lte_int256_greater() public {
+        string memory reason = "lte int256 greater test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(10)), FuzzLibString.toString(int256(5)), ">", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lte(int256(10), int256(5), reason);
+    }
+
+    function test_lte_int256_negative() public {
+        lte(int256(-10), int256(-5), "lte negative test");
+    }
+
+    function test_lte_int256_mixed_signs() public {
+        lte(int256(-5), int256(5), "lte mixed signs test");
+    }
+
+    function test_lte_int256_extreme_values() public {
+        lte(type(int256).min, type(int256).max, "lte extreme values test");
+        lte(type(int256).min, type(int256).min, "lte min equal test");
+    }
+
+    function testFuzz_lte_int256_valid(int256 a, int256 b) public {
+        vm.assume(a <= b);
+        lte(a, b, "fuzz lte int256 valid test");
+    }
+
+    function testFuzz_lte_int256_invalid(int256 a, int256 b) public {
+        vm.assume(a > b);
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(a != type(int256).min && b != type(int256).min);
+        string memory reason = "fuzz lte int256 invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLteFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lte(a, b, reason);
+    }
+
+    /**
+     * Tests for lt(uint256, uint256, string)
+     */
+    function test_lt_uint256_less() public {
+        lt(uint256(5), uint256(10), "lt less test");
+    }
+
+    function test_lt_uint256_equal() public {
+        string memory reason = "lt equal test";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(5)), FuzzLibString.toString(uint256(5)), ">=", reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(uint256(5), uint256(5), reason);
+    }
+
+    function test_lt_uint256_greater() public {
+        string memory reason = "lt greater test";
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(10)), FuzzLibString.toString(uint256(5)), ">=", reason
+        );
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(uint256(10), uint256(5), reason);
+    }
+
+    function test_lt_uint256_zero() public {
+        lt(uint256(0), uint256(1), "lt from zero test");
+    }
+
+    function test_lt_uint256_max_values() public {
+        lt(type(uint256).max - 1, type(uint256).max, "lt max values test");
+    }
+
+    function testFuzz_lt_uint256_valid(uint256 a, uint256 b) public {
+        vm.assume(a < b);
+        lt(a, b, "fuzz lt valid test");
+    }
+
+    function testFuzz_lt_uint256_invalid(uint256 a, uint256 b) public {
+        vm.assume(a >= b);
+        string memory reason = "fuzz lt invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(a, b, reason);
+    }
+
+    /**
+     * Tests for lt(int256, int256, string)
+     */
+    function test_lt_int256_less() public {
+        lt(int256(5), int256(10), "lt int256 less test");
+    }
+
+    function test_lt_int256_equal() public {
+        string memory reason = "lt int256 equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(5)), FuzzLibString.toString(int256(5)), ">=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(int256(5), int256(5), reason);
+    }
+
+    function test_lt_int256_greater() public {
+        string memory reason = "lt int256 greater test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(10)), FuzzLibString.toString(int256(5)), ">=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(int256(10), int256(5), reason);
+    }
+
+    function test_lt_int256_negative() public {
+        lt(int256(-10), int256(-5), "lt negative test");
+    }
+
+    function test_lt_int256_mixed_signs() public {
+        lt(int256(-5), int256(5), "lt mixed signs test");
+    }
+
+    function test_lt_int256_extreme_values() public {
+        lt(type(int256).min, type(int256).max, "lt extreme values test");
+    }
+
+    function testFuzz_lt_int256_valid(int256 a, int256 b) public {
+        vm.assume(a < b);
+        lt(a, b, "fuzz lt int256 valid test");
+    }
+
+    function testFuzz_lt_int256_invalid(int256 a, int256 b) public {
+        vm.assume(a >= b);
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(a != type(int256).min && b != type(int256).min);
+        string memory reason = "fuzz lt int256 invalid test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertLtFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        lt(a, b, reason);
+    }
+
+    /**
      * "errAllow" test
      */
 
