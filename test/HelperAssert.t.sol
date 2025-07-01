@@ -716,6 +716,196 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
+     * Cross-boundary edge case tests
+     */
+    function test_cross_boundary_uint256_max_vs_zero() public {
+        gte(type(uint256).max, uint256(0), "max >= 0");
+        gt(type(uint256).max, uint256(0), "max > 0");
+        lte(uint256(0), type(uint256).max, "0 <= max");
+        lt(uint256(0), type(uint256).max, "0 < max");
+    }
+
+    function test_cross_boundary_int256_extremes() public {
+        gte(type(int256).max, type(int256).min, "max >= min");
+        gt(type(int256).max, type(int256).min, "max > min");
+        lte(type(int256).min, type(int256).max, "min <= max");
+        lt(type(int256).min, type(int256).max, "min < max");
+    }
+
+    function test_cross_boundary_int256_vs_zero() public {
+        gte(type(int256).max, int256(0), "max >= 0");
+        gt(type(int256).max, int256(0), "max > 0");
+        lte(type(int256).min, int256(0), "min <= 0");
+        lt(type(int256).min, int256(0), "min < 0");
+
+        gte(int256(0), type(int256).min, "0 >= min");
+        gt(int256(0), type(int256).min, "0 > min");
+        lte(int256(0), type(int256).max, "0 <= max");
+        lt(int256(0), type(int256).max, "0 < max");
+    }
+
+    /**
+     * Sequential boundary tests
+     */
+    function test_sequential_boundary_uint256_zero_one() public {
+        // Test the boundary between 0 and 1
+        gt(uint256(1), uint256(0), "1 > 0");
+        gte(uint256(1), uint256(0), "1 >= 0");
+        gte(uint256(0), uint256(0), "0 >= 0");
+
+        lt(uint256(0), uint256(1), "0 < 1");
+        lte(uint256(0), uint256(1), "0 <= 1");
+        lte(uint256(0), uint256(0), "0 <= 0");
+
+        neq(uint256(1), uint256(0), "1 != 0");
+        eq(uint256(0), uint256(0), "0 == 0");
+    }
+
+    function test_sequential_boundary_uint256_max() public {
+        // Test boundary around max value
+        gt(type(uint256).max, type(uint256).max - 1, "max > max-1");
+        gte(type(uint256).max, type(uint256).max - 1, "max >= max-1");
+        gte(type(uint256).max, type(uint256).max, "max >= max");
+
+        lt(type(uint256).max - 1, type(uint256).max, "max-1 < max");
+        lte(type(uint256).max - 1, type(uint256).max, "max-1 <= max");
+        lte(type(uint256).max, type(uint256).max, "max <= max");
+
+        neq(type(uint256).max, type(uint256).max - 1, "max != max-1");
+        eq(type(uint256).max, type(uint256).max, "max == max");
+    }
+
+    function test_sequential_boundary_int256_around_zero() public {
+        // Test boundary around zero
+        gt(int256(1), int256(0), "1 > 0");
+        gt(int256(0), int256(-1), "0 > -1");
+        gt(int256(1), int256(-1), "1 > -1");
+
+        gte(int256(1), int256(0), "1 >= 0");
+        gte(int256(0), int256(-1), "0 >= -1");
+        gte(int256(0), int256(0), "0 >= 0");
+
+        lt(int256(-1), int256(0), "-1 < 0");
+        lt(int256(0), int256(1), "0 < 1");
+        lt(int256(-1), int256(1), "-1 < 1");
+
+        lte(int256(-1), int256(0), "-1 <= 0");
+        lte(int256(0), int256(1), "0 <= 1");
+        lte(int256(0), int256(0), "0 <= 0");
+    }
+
+    function test_sequential_boundary_int256_max() public {
+        // Test boundary around max value
+        gt(type(int256).max, type(int256).max - 1, "max > max-1");
+        gte(type(int256).max, type(int256).max - 1, "max >= max-1");
+        gte(type(int256).max, type(int256).max, "max >= max");
+
+        lt(type(int256).max - 1, type(int256).max, "max-1 < max");
+        lte(type(int256).max - 1, type(int256).max, "max-1 <= max");
+        lte(type(int256).max, type(int256).max, "max <= max");
+
+        neq(type(int256).max, type(int256).max - 1, "max != max-1");
+        eq(type(int256).max, type(int256).max, "max == max");
+    }
+
+    function test_sequential_boundary_int256_min() public {
+        // Test boundary around min value
+        gt(type(int256).min + 1, type(int256).min, "min+1 > min");
+        gte(type(int256).min + 1, type(int256).min, "min+1 >= min");
+        gte(type(int256).min, type(int256).min, "min >= min");
+
+        lt(type(int256).min, type(int256).min + 1, "min < min+1");
+        lte(type(int256).min, type(int256).min + 1, "min <= min+1");
+        lte(type(int256).min, type(int256).min, "min <= min");
+
+        neq(type(int256).min, type(int256).min + 1, "min != min+1");
+        eq(type(int256).min, type(int256).min, "min == min");
+    }
+
+    /**
+     * Comprehensive int256 edge combinations
+     */
+    function test_int256_edge_min_plus_one_combinations() public {
+        // Test min+1 in various combinations
+        gte(type(int256).min + 1, type(int256).min, "min+1 >= min");
+        gt(type(int256).min + 1, type(int256).min, "min+1 > min");
+        gte(type(int256).min + 2, type(int256).min + 1, "min+2 >= min+1");
+        gt(type(int256).min + 2, type(int256).min + 1, "min+2 > min+1");
+
+        lte(type(int256).min, type(int256).min + 1, "min <= min+1");
+        lt(type(int256).min, type(int256).min + 1, "min < min+1");
+        lte(type(int256).min + 1, type(int256).min + 2, "min+1 <= min+2");
+        lt(type(int256).min + 1, type(int256).min + 2, "min+1 < min+2");
+
+        neq(type(int256).min, type(int256).min + 1, "min != min+1");
+        neq(type(int256).min + 1, type(int256).min + 2, "min+1 != min+2");
+    }
+
+    function test_int256_edge_max_minus_one_combinations() public {
+        // Test max-1 in various combinations
+        gte(type(int256).max, type(int256).max - 1, "max >= max-1");
+        gt(type(int256).max, type(int256).max - 1, "max > max-1");
+        gte(type(int256).max - 1, type(int256).max - 2, "max-1 >= max-2");
+        gt(type(int256).max - 1, type(int256).max - 2, "max-1 > max-2");
+
+        lte(type(int256).max - 1, type(int256).max, "max-1 <= max");
+        lt(type(int256).max - 1, type(int256).max, "max-1 < max");
+        lte(type(int256).max - 2, type(int256).max - 1, "max-2 <= max-1");
+        lt(type(int256).max - 2, type(int256).max - 1, "max-2 < max-1");
+
+        neq(type(int256).max, type(int256).max - 1, "max != max-1");
+        neq(type(int256).max - 1, type(int256).max - 2, "max-1 != max-2");
+    }
+
+    function test_int256_edge_extreme_vs_near_zero() public {
+        // Test extreme values against values near zero
+        gt(type(int256).max, int256(1), "max > 1");
+        gt(type(int256).max, int256(-1), "max > -1");
+        gte(type(int256).max, int256(1), "max >= 1");
+        gte(type(int256).max, int256(-1), "max >= -1");
+
+        lt(type(int256).min, int256(-1), "min < -1");
+        lt(type(int256).min, int256(1), "min < 1");
+        lte(type(int256).min, int256(-1), "min <= -1");
+        lte(type(int256).min, int256(1), "min <= 1");
+
+        gt(int256(1), type(int256).min, "1 > min");
+        gt(int256(-1), type(int256).min, "-1 > min");
+        gte(int256(1), type(int256).min, "1 >= min");
+        gte(int256(-1), type(int256).min, "-1 >= min");
+
+        lt(int256(1), type(int256).max, "1 < max");
+        lt(int256(-1), type(int256).max, "-1 < max");
+        lte(int256(1), type(int256).max, "1 <= max");
+        lte(int256(-1), type(int256).max, "-1 <= max");
+
+        neq(type(int256).max, int256(1), "max != 1");
+        neq(type(int256).max, int256(-1), "max != -1");
+        neq(type(int256).min, int256(1), "min != 1");
+        neq(type(int256).min, int256(-1), "min != -1");
+    }
+
+    function test_int256_edge_boundary_crossings() public {
+        // Test boundary crossings around critical points
+        gt(int256(1), int256(0), "1 > 0 (pos/zero boundary)");
+        lt(int256(-1), int256(0), "-1 < 0 (neg/zero boundary)");
+        gt(int256(0), int256(-1), "0 > -1 (zero/neg boundary)");
+
+        gte(type(int256).max, int256(0), "max >= 0 (max/zero)");
+        lte(type(int256).min, int256(0), "min <= 0 (min/zero)");
+
+        // Test largest positive vs smallest magnitude negative
+        gt(type(int256).max, int256(-1), "max > -1");
+        lt(int256(-1), type(int256).max, "-1 < max");
+
+        // Test smallest magnitude positive vs largest negative
+        gt(int256(1), type(int256).min, "1 > min");
+        lt(type(int256).min, int256(1), "min < 1");
+
+        neq(type(int256).max, type(int256).min, "max != min (extreme boundary)");
+    }
+
+    /**
      * "errAllow" test
      */
 
