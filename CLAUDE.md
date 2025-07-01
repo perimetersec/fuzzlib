@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Test**: `foundry test` - Runs the test suite using Foundry
 - **Build**: Foundry automatically compiles contracts when running tests
+- **Format**: `forge fmt` - Formats code using Foundry's built-in formatter (run after making changes)
 
 ## Architecture Overview
 
@@ -52,6 +53,32 @@ contract MyFuzzTest is FuzzBase {
 ```
 
 The library automatically sets up the appropriate platform and provides access to all helper functions through the `fl` instance.
+
+## Testing Guidelines
+
+### Test Structure and Organization
+- Test files are located in `test/` directory with `.t.sol` extension
+- Each helper contract has a corresponding test file (e.g., `HelperMath.sol` → `HelperMath.t.sol`)
+- Test contracts inherit from both `Test` (Foundry) and the helper being tested
+- Use descriptive test names following the pattern: `test_[function]_[scenario]` and `testFuzz_[function]_[scenario]`
+
+### Testing Best Practices
+- **Test actual functions**: Always test the actual helper functions, never duplicate logic in tests
+- **Comprehensive coverage**: Include unit tests for specific cases and fuzz tests for broad validation
+- **Edge cases**: Test boundary values (zero, max values, negative numbers, overflow conditions)
+- **Function overloads**: Use low-level calls with explicit selectors when testing overloaded functions
+- **Type safety**: Explicitly cast literal values to avoid compiler ambiguity (e.g., `uint256(5)`, `int256(-1)`)
+- **Overflow handling**: Use `vm.assume()` to avoid problematic values in fuzz tests (e.g., `type(int256).min`)
+
+### Test Organization Pattern
+```solidity
+/**
+ * Tests for functionName(param1, param2)
+ */
+function test_functionName_specific_case() public { ... }
+function test_functionName_edge_case() public { ... }
+function testFuzz_functionName(type param) public { ... }
+```
 
 ## Documentation Standards
 
