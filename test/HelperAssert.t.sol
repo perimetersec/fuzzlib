@@ -58,8 +58,9 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function test_eq_uint256_not_equal() public {
         string memory reason = "example message";
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(uint256(2)), FuzzLibString.toString(uint256(4)), "!=", reason);
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(2)), FuzzLibString.toString(uint256(4)), "!=", reason
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -129,8 +130,9 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function test_neq_uint256_equal() public {
         string memory reason = "should not be equal";
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(uint256(5)), FuzzLibString.toString(uint256(5)), "==", reason);
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(5)), FuzzLibString.toString(uint256(5)), "==", reason
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertNeqFail(failReason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
