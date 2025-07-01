@@ -13,12 +13,4 @@ import {HelperCall} from "./helpers/HelperCall.sol";
  * @dev Main contract that inherits from all helper contracts, providing the complete Fuzzlib API.
  * @author Perimeter <info@perimetersec.io>
  */
-contract Fuzzlib is
-    HelperBase,
-    HelperAssert,
-    HelperClamp,
-    HelperLog,
-    HelperMath,
-    HelperRandom,
-    HelperCall
-{}
+contract Fuzzlib is HelperBase, HelperAssert, HelperClamp, HelperLog, HelperMath, HelperRandom, HelperCall {}

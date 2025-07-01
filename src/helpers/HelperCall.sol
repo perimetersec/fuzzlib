@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
  */
 abstract contract HelperCall {
     // Private temporary vm to remain unopinionated from naming clashes
-    IPrank constant private tempvm = IPrank(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+    IPrank private constant tempvm = IPrank(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
 
     /**
      * @dev Executes a function call with msg.sender as the caller.

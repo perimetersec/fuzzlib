@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -12,7 +11,7 @@ contract PlatformCrytic is IPlatform {
     /**
      * @dev Triggers an assertion failure using assert(false).
      */
-    function assertFail() pure public override{
+    function assertFail() public pure override {
         assert(false);
     }
 }

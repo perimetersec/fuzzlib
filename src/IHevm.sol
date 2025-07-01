@@ -42,10 +42,7 @@ interface IHevm {
     /**
      * @dev Signs data (privateKey, digest) => (v, r, s)
      */
-    function sign(
-        uint256 privateKey,
-        bytes32 digest
-    ) external returns (uint8 v, bytes32 r, bytes32 s);
+    function sign(uint256 privateKey, bytes32 digest) external returns (uint8 v, bytes32 r, bytes32 s);
 
     /**
      * @dev Gets address for a given private key
@@ -55,9 +52,7 @@ interface IHevm {
     /**
      * @dev Performs a foreign function call via terminal
      */
-    function ffi(
-        string[] calldata inputs
-    ) external returns (bytes memory result);
+    function ffi(string[] calldata inputs) external returns (bytes memory result);
 
     /**
      * @dev Performs the next smart contract call with specified `msg.sender`

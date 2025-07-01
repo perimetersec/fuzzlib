@@ -24,4 +24,4 @@ contract DummyContract {
     function revertWithCustomErrorWithMessage() public pure {
         revert DummyCustomError2("custom error message");
     }
-} 
+}
