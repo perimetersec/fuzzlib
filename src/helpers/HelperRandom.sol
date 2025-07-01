@@ -9,6 +9,8 @@ abstract contract HelperRandom {
     /**
      * @dev Shuffles an array in-place using the Fisher-Yates algorithm.
      * Based on https://gist.github.com/scammi/602387a22e04c77beb73c0ebc0f0bc18
+     * @param shuffle The array to shuffle in-place
+     * @param entropy Random value used as seed for shuffling
      */
     function shuffleArray(
         uint256[] memory shuffle,

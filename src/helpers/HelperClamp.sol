@@ -20,6 +20,10 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps unsigned integer value to be between low and high bounds (inclusive).
+     * @param value The value to clamp
+     * @param low The minimum bound (inclusive)
+     * @param high The maximum bound (inclusive)
+     * @return The clamped value
      */
     function clamp(uint256 value, uint256 low, uint256 high) public returns (uint256) {
         return clamp(value, low, high, true);
@@ -27,6 +31,10 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer value to be between low and high bounds (inclusive).
+     * @param value The value to clamp
+     * @param low The minimum bound (inclusive)
+     * @param high The maximum bound (inclusive)
+     * @return The clamped value
      */
     function clamp(int256 value, int256 low, int256 high) public returns (int256) {
         return clamp(value, low, high, true);
@@ -95,7 +103,12 @@ abstract contract HelperClamp is HelperAssert {
      */
 
     /**
-     * @dev Clamps unsigned integer value to be between low and high bounds with optional logging.
+     * @dev Clamps unsigned integer value to be between low and high bounds (inclusive) with optional logging.
+     * @param value The value to clamp
+     * @param low The minimum bound (inclusive)
+     * @param high The maximum bound (inclusive)
+     * @param enableLogs Whether to emit Clamped events
+     * @return The clamped value
      */
     function clamp(uint256 value, uint256 low, uint256 high, bool enableLogs) public returns (uint256) {
         if (value < low || value > high) {
@@ -112,7 +125,12 @@ abstract contract HelperClamp is HelperAssert {
     }
 
     /**
-     * @dev Clamps signed integer value to be between low and high bounds with optional logging.
+     * @dev Clamps signed integer value to be between low and high bounds (inclusive) with optional logging.
+     * @param value The value to clamp
+     * @param low The minimum bound (inclusive)
+     * @param high The maximum bound (inclusive)
+     * @param enableLogs Whether to emit Clamped events
+     * @return The clamped value
      */
     function clamp(int256 value, int256 low, int256 high, bool enableLogs) public returns (int256) {
         if (value < low || value > high) {
