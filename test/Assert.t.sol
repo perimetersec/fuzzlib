@@ -27,16 +27,16 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
      * "t" test
      */
     function test_HelperAssert_t_true() public {
-        string memory reason = "example message"; 
-        t(true, reason); 
+        string memory reason = "example message";
+        t(true, reason);
     }
 
     function test_HelperAssert_t_false() public {
         string memory reason = "example message";
         vm.expectEmit(true, false, false, true);
-        emit AssertFail(reason); 
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);        
-        t(false, reason); 
+        emit AssertFail(reason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        t(false, reason);
     }
 
     /**
@@ -56,12 +56,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         uint256 y = 4;
 
         string memory reason = "example message";
-        string memory failReason = createAssertFailMessage(
-                FuzzLibString.toString(x),
-                FuzzLibString.toString(y),
-                "!=",
-                reason
-        );
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
 
@@ -75,12 +71,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         string memory reason = "example message";
 
         vm.expectEmit(true, false, false, true);
-        string memory failReason = createAssertFailMessage(
-                FuzzLibString.toString(x),
-                FuzzLibString.toString(y),
-                "!=",
-                reason
-        );
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
         emit AssertEqFail(failReason);
 
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -103,12 +95,7 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         bool y = false;
 
         string memory reason = "example message";
-        string memory failReason = createAssertFailMessage(
-                x ? "true" : "false",
-                y ? "true" : "false",
-                "!=",
-                reason
-        );
+        string memory failReason = createAssertFailMessage(x ? "true" : "false", y ? "true" : "false", "!=", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
 
@@ -122,18 +109,13 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         string memory reason = "example message";
 
         vm.expectEmit(true, false, false, true);
-        string memory failReason = createAssertFailMessage(
-                x ? "true" : "false",
-                y ? "true" : "false",
-                "!=",
-                reason
-        );
+        string memory failReason = createAssertFailMessage(x ? "true" : "false", y ? "true" : "false", "!=", reason);
         emit AssertEqFail(failReason);
 
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
 
         eq(x, y, reason);
-    } 
+    }
 
     /**
      * "neq" test
@@ -155,12 +137,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         uint256 y = 1;
 
         string memory reason = "x and y should not be the same";
-        string memory failReason = createAssertFailMessage(
-            FuzzLibString.toString(x),
-            FuzzLibString.toString(y),
-            "==",
-            reason
-        );
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "==", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertNeqFail(failReason);
 
@@ -176,7 +154,7 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         neq(x, y, "example message");
     }
 
-     function testFuzz_neq_x_y_int256_param(int256 x, int256 y) public {
+    function testFuzz_neq_x_y_int256_param(int256 x, int256 y) public {
         vm.assume(x != y);
         neq(x, y, "example message");
     }
@@ -187,19 +165,15 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         int256 y = 1;
 
         string memory reason = "x and y should not be the same";
-        string memory failReason = createAssertFailMessage(
-            FuzzLibString.toString(x),
-            FuzzLibString.toString(y),
-            "==",
-            reason
-        );
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "==", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertNeqFail(failReason);
 
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
 
         neq(x, y, reason);
-        }
+    }
 
     /**
      * "errAllow" test
@@ -211,7 +185,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         string[] memory allowedRequireErrors = setup_errAllow_require_error();
 
         // Test with require failure: Error(string) selector (0x08c379a0)
-        (bool success, bytes memory requireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        (bool success, bytes memory requireFailureData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success, "should fail");
         // This should pass since the error message is in the allowedRequireErrors list.
         errAllow(requireFailureData, allowedRequireErrors, "ERR_ALLOW_01");
@@ -233,13 +208,14 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
 
     // errAllow() use case 2-1: allowing only custom error
     function test_errAllow_only_custom_error_happy_path() public {
-       bytes4[] memory allowedCustomErrors = setup_errAllow_custom_error();
+        bytes4[] memory allowedCustomErrors = setup_errAllow_custom_error();
 
-       // Test with custom error selector
-       (bool success, bytes memory customErrorData) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
-       require(!success, "This test supposes to fail");
-       // Nothing should happen since the error is in the allowedCustomErrors list.
-       errAllow(bytes4(customErrorData), allowedCustomErrors, "ERR_ALLOW_03");
+        // Test with custom error selector
+        (bool success, bytes memory customErrorData) =
+            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
+        require(!success, "This test supposes to fail");
+        // Nothing should happen since the error is in the allowedCustomErrors list.
+        errAllow(bytes4(customErrorData), allowedCustomErrors, "ERR_ALLOW_03");
     }
 
     // errAllow() use case 2-2: allowing only custom error
@@ -252,7 +228,7 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         emit AssertFail("ERR_ALLOW_04");
         // This should fail: since the 0x08c379a0 is not in the allowedCustomErrors
         // 0x08c379a0 is Error(string) which is not a custom error but a require failure.
-        bytes memory randomErrorData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");   
+        bytes memory randomErrorData = abi.encodeWithSelector(bytes4(0x08c379a0), "this should fail");
         errAllow(bytes4(randomErrorData), allowedCustomErrors, "ERR_ALLOW_04");
     }
 
@@ -274,7 +250,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         // set custom error related
         bytes4[] memory allowedCustomErrors = setup_errAllow_custom_error();
 
-        (bool success, bytes memory requireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        (bool success, bytes memory requireFailureData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success, "This test supposes to fail");
         // This should pass: testing require failure
         errAllow(requireFailureData, allowedRequireErrors, allowedCustomErrors, "ERR_ALLOW_06");
@@ -287,7 +264,8 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         // set custom error related
         bytes4[] memory allowedCustomErrors = setup_errAllow_custom_error();
 
-        (bool success, bytes memory customErrorData) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
+        (bool success, bytes memory customErrorData) =
+            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
         require(!success, "This test supposes to fail");
         // This should pass: testing custom error without message
         errAllow(customErrorData, allowedRequireErrors, allowedCustomErrors, "ERR_ALLOW_07");
@@ -299,8 +277,9 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         string[] memory allowedRequireErrors = setup_errAllow_require_error();
         // set custom error related
         bytes4[] memory allowedCustomErrors = setup_errAllow_custom_error();
-        
-        (bool success, bytes memory customErrorData) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
+
+        (bool success, bytes memory customErrorData) =
+            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithMessage()"));
         require(!success, "This test supposes to fail");
         // This should pass: testing custom error with message
         errAllow(customErrorData, allowedRequireErrors, allowedCustomErrors, "ERR_ALLOW_08");
@@ -344,7 +323,7 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
         vm.expectEmit(false, false, false, true);
         // expected error message via event
         emit AssertFail("ERR_ALLOW_11");
-    
+
         bytes memory nonMatchingCustomErrorData = abi.encodeWithSelector(bytes4(0x12345678), "some message");
         // This should fail and emit AssertFail with errorContext. "some message" will be ignored.
         errAllow(nonMatchingCustomErrorData, new string[](0), allowedCustomErrors, "ERR_ALLOW_11");
@@ -356,12 +335,13 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
     function test_errAllow_zero_selector_happy_path() public {
         // #1: Test with zero selector
         // emptyRequireFailureData will be an empty data since require(false); returns an empty data
-        (bool success, bytes memory emptyRequireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        (bool success, bytes memory emptyRequireFailureData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success, "should fail");
 
         bytes4[] memory allowedErrors = new bytes4[](1);
         allowedErrors[0] = bytes4(0);
-        
+
         // emptyRequireFailureData is 0x00000000
         // This should pass since errorSelector (bytes4(0)) is in allowedErrors
         errAllow(bytes4(emptyRequireFailureData), allowedErrors, "ERR_ALLOW_12");
@@ -371,34 +351,38 @@ contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
     // note: this test is for when "errorSelector" is an empty data (0x00000000). This can happen from require(false) or revert() or address(0xdead).call().
     // This is not an usual case but it proves that errAllow() can handle this case.
     function test_errAllow_zero_selector_unhappy_path() public {
-        (bool success, bytes memory emptyRequireFailureData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        (bool success, bytes memory emptyRequireFailureData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success, "should fail");
 
         bytes4[] memory allowedErrors = new bytes4[](1);
         allowedErrors[0] = bytes4(0x12345678); // Different selector
-        
+
         // This should fail since errorSelector (bytes4(0)) is not in allowedErrors
         vm.expectEmit(false, false, false, true);
         emit AssertFail("ERR_ALLOW_13");
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-        
-        // This should fail since errorSelector (bytes4(0)) is not in allowedErrors. 
+
+        // This should fail since errorSelector (bytes4(0)) is not in allowedErrors.
         errAllow(bytes4(emptyRequireFailureData), allowedErrors, "ERR_ALLOW_13");
     }
 
     function test_isErrorString() public {
         // Test with Error(string) selector
-        (bool success, bytes memory errorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
         require(!success, "should fail");
         assertTrue(_isErrorString(bytes4(errorData)), "should be Error(string) type");
 
         // Test with custom error
-        (bool success2, bytes memory customErrorData) = address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
+        (bool success2, bytes memory customErrorData) =
+            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
         require(!success2, "should fail");
         assertFalse(_isErrorString(bytes4(customErrorData)), "should not be Error(string) type");
 
         // Test with empty error (require(false))
-        (bool success3, bytes memory emptyErrorData) = address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        (bool success3, bytes memory emptyErrorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success3, "should fail");
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
     }

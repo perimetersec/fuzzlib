@@ -10,7 +10,7 @@ import {IPlatform} from "../../src/platform/IPlatform.sol";
 contract PlatformTest is IPlatform {
     error TestAssertFail();
 
-    function assertFail() pure public override {
+    function assertFail() public pure override {
         revert TestAssertFail();
     }
 }

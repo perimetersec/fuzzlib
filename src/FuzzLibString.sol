@@ -60,7 +60,7 @@ library FuzzLibString {
                 // Keep dividing temp until zero.
                 temp := div(temp, 10)
 
-                 // prettier-ignore
+                // prettier-ignore
                 if iszero(temp) { break }
             }
 
@@ -81,9 +81,7 @@ library FuzzLibString {
     function toString(address value) internal pure returns (string memory str) {
         bytes memory s = new bytes(40);
         for (uint256 i = 0; i < 20; i++) {
-            bytes1 b = bytes1(
-                uint8(uint256(uint160(value)) / (2**(8 * (19 - i))))
-            );
+            bytes1 b = bytes1(uint8(uint256(uint160(value)) / (2 ** (8 * (19 - i)))));
             bytes1 hi = bytes1(uint8(b) / 16);
             bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
             s[2 * i] = char(hi);
@@ -105,11 +103,7 @@ library FuzzLibString {
      * Based on OZ's toHexString
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
      */
-    function toHexString(bytes memory value)
-        internal
-        pure
-        returns (string memory)
-    {
+    function toHexString(bytes memory value) internal pure returns (string memory) {
         bytes memory buffer = new bytes(2 * value.length + 2);
         buffer[0] = "0";
         buffer[1] = "x";
@@ -125,18 +119,15 @@ library FuzzLibString {
      * @dev Extracts revert message from return data.
      * https://ethereum.stackexchange.com/a/83577
      */
-    function getRevertMsg(bytes memory returnData)
-        internal
-        pure
-        returns (string memory)
-    {
+    function getRevertMsg(bytes memory returnData) internal pure returns (string memory) {
         // Check that the data has the right size: 4 bytes for signature + 32 bytes for panic code
         if (returnData.length == 4 + 32) {
             // Check that the data starts with the Panic signature
             bytes4 panicSignature = bytes4(keccak256(bytes("Panic(uint256)")));
             for (uint256 i = 0; i < 4; i++) {
-                if (returnData[i] != panicSignature[i])
+                if (returnData[i] != panicSignature[i]) {
                     return "Undefined signature";
+                }
             }
 
             uint256 panicCode;
@@ -167,12 +158,7 @@ library FuzzLibString {
     /**
      * @dev Checks if revert reason in return data equals expected reason.
      */
-    function isRevertReasonEqual(bytes memory returnData, string memory reason)
-        internal
-        pure
-        returns (bool)
-    {
-        return (keccak256(abi.encodePacked(getRevertMsg(returnData))) ==
-            keccak256(abi.encodePacked(reason)));
+    function isRevertReasonEqual(bytes memory returnData, string memory reason) internal pure returns (bool) {
+        return (keccak256(abi.encodePacked(getRevertMsg(returnData))) == keccak256(abi.encodePacked(reason)));
     }
 }

@@ -28,6 +28,5 @@ library Constants {
     uint256 public constant PANIC_ALLOC_TOO_MUCH_MEMORY = 0x41;
     uint256 public constant PANIC_ZERO_INIT_INTERNAL_FUNCTION = 0x51;
 
-    address public constant ADDRESS_CHEATS =
-        0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
+    address public constant ADDRESS_CHEATS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 }

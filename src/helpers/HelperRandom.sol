@@ -12,10 +12,7 @@ abstract contract HelperRandom {
      * @param shuffle The array to shuffle in-place
      * @param entropy Random value used as seed for shuffling
      */
-    function shuffleArray(
-        uint256[] memory shuffle,
-        uint256 entropy
-    ) public pure {
+    function shuffleArray(uint256[] memory shuffle, uint256 entropy) public pure {
         for (uint256 i = shuffle.length - 1; i > 0; i--) {
             uint256 swapIndex = entropy % (shuffle.length - i);
 

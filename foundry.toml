@@ -3,4 +3,11 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+[fmt]
+# Maximum line length where formatter will try to wrap the line
+line_length = 120
+# Number of spaces per indentation level
+tab_width = 4
+# Style of uint/int256 types
+int_types = "long"

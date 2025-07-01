@@ -320,6 +320,7 @@ abstract contract HelperAssert is HelperBase {
      * @param allowedRequireErrorMessages Array of allowed require failure message strings
      * @param errorContext Context message for assertion failure
      */
+
     function errAllow(bytes memory errorData, string[] memory allowedRequireErrorMessages, string memory errorContext)
         public
     {

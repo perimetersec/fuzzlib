@@ -9,5 +9,5 @@ interface IPlatform {
     /**
      * @dev Triggers an assertion failure in the fuzzing platform.
      */
-    function assertFail() pure external;
+    function assertFail() external pure;
 }
