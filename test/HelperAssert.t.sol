@@ -25,15 +25,24 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
-     * "t" test
+     * Tests for t(bool, string)
      */
-    function test_HelperAssert_t_true() public {
-        string memory reason = "example message";
+    function test_t_true() public {
+        t(true, "example message");
+    }
+
+    function test_t_false() public {
+        vm.expectEmit(true, false, false, true);
+        emit AssertFail("example message");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        t(false, "example message");
+    }
+
+    function testFuzz_t_true(string memory reason) public {
         t(true, reason);
     }
 
-    function test_HelperAssert_t_false() public {
-        string memory reason = "example message";
+    function testFuzz_t_false(string memory reason) public {
         vm.expectEmit(true, false, false, true);
         emit AssertFail(reason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -41,139 +50,160 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
-     * "eq" test
+     * Tests for eq(uint256, uint256, string)
      */
-    function test_eq_x_x() public {
-        uint256 x = 1;
-        eq(x, x, "example message");
+    function test_eq_uint256_equal() public {
+        eq(uint256(5), uint256(5), "example message");
     }
 
-    function testFuzz_eq_x_x(uint256 x) public {
-        eq(x, x, "example message");
-    }
-
-    function test_eq_x_y() public {
-        uint256 x = 2;
-        uint256 y = 4;
-
+    function test_eq_uint256_not_equal() public {
         string memory reason = "example message";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(uint256(2)), FuzzLibString.toString(uint256(4)), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(uint256(2), uint256(4), reason);
+    }
+
+    function test_eq_uint256_zero() public {
+        eq(uint256(0), uint256(0), "zero test");
+    }
+
+    function test_eq_uint256_max_values() public {
+        eq(type(uint256).max, type(uint256).max, "max values test");
+    }
+
+    function testFuzz_eq_uint256_equal(uint256 x) public {
+        eq(x, x, "fuzz equal test");
+    }
+
+    function testFuzz_eq_uint256_not_equal(uint256 x, uint256 y) public {
+        vm.assume(x != y);
+        string memory reason = "fuzz not equal test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
-
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-
-        eq(x, y, reason);
-    }
-
-    function testFuzz_eq_x_y(uint256 x, uint256 y) public {
-        vm.assume(x != y);
-        string memory reason = "example message";
-
-        vm.expectEmit(true, false, false, true);
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
-        emit AssertEqFail(failReason);
-
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-
-        eq(x, y, reason);
-    }
-
-    /// @notice bool version of eq tests
-    function test_eq_bool_x_x() public {
-        bool x = true;
-        eq(x, x, "example message");
-    }
-
-    function testFuzz_eq_bool_x_x(bool x) public {
-        eq(x, x, "example message");
-    }
-
-    function test_eq_bool_x_y() public {
-        bool x = true;
-        bool y = false;
-
-        string memory reason = "example message";
-        string memory failReason = createAssertFailMessage(x ? "true" : "false", y ? "true" : "false", "!=", reason);
-        vm.expectEmit(true, false, false, true);
-        emit AssertEqFail(failReason);
-
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-
-        eq(x, y, reason);
-    }
-
-    function testFuzz_eq_bool_x_y(bool x, bool y) public {
-        vm.assume(x != y);
-        string memory reason = "example message";
-
-        vm.expectEmit(true, false, false, true);
-        string memory failReason = createAssertFailMessage(x ? "true" : "false", y ? "true" : "false", "!=", reason);
-        emit AssertEqFail(failReason);
-
-        vm.expectRevert(PlatformTest.TestAssertFail.selector);
-
         eq(x, y, reason);
     }
 
     /**
-     * "neq" test
+     * Tests for eq(bool, bool, string)
      */
-    function test_neq_x_y() public {
-        uint256 x = 1;
-        uint256 y = 2;
-        neq(x, y, "example message");
+    function test_eq_bool_equal() public {
+        eq(true, true, "bool equal test");
+        eq(false, false, "bool equal test");
     }
 
-    function testFuzz_neq_x_y(uint256 x, uint256 y) public {
+    function test_eq_bool_not_equal() public {
+        string memory reason = "bool not equal test";
+        string memory failReason = createAssertFailMessage("true", "false", "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(true, false, reason);
+    }
+
+    function testFuzz_eq_bool_equal(bool x) public {
+        eq(x, x, "fuzz bool equal test");
+    }
+
+    function testFuzz_eq_bool_not_equal(bool x, bool y) public {
         vm.assume(x != y);
-        neq(x, y, "example message");
+        string memory reason = "fuzz bool not equal test";
+        string memory failReason = createAssertFailMessage(x ? "true" : "false", y ? "true" : "false", "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(x, y, reason);
     }
 
-    // neq: unhappy path
-    function test_neq_x_y_unhappy_path() public {
-        uint256 x = 1;
-        uint256 y = 1;
+    /**
+     * Tests for neq(uint256, uint256, string)
+     */
+    function test_neq_uint256_not_equal() public {
+        neq(uint256(1), uint256(2), "neq test");
+    }
 
-        string memory reason = "x and y should not be the same";
+    function test_neq_uint256_equal() public {
+        string memory reason = "should not be equal";
         string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "==", reason);
+            createAssertFailMessage(FuzzLibString.toString(uint256(5)), FuzzLibString.toString(uint256(5)), "==", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertNeqFail(failReason);
-
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
-
-        neq(x, y, reason);
+        neq(uint256(5), uint256(5), reason);
     }
 
-    // note that params are int instead of uint
-    function test_neq_x_y_int256_param() public {
-        int256 x = 1;
-        int256 y = 2;
-        neq(x, y, "example message");
+    function test_neq_uint256_zero() public {
+        neq(uint256(0), uint256(1), "zero neq test");
     }
 
-    function testFuzz_neq_x_y_int256_param(int256 x, int256 y) public {
+    function test_neq_uint256_max_values() public {
+        neq(type(uint256).max, type(uint256).max - 1, "max values neq test");
+    }
+
+    function testFuzz_neq_uint256_not_equal(uint256 x, uint256 y) public {
         vm.assume(x != y);
-        neq(x, y, "example message");
+        neq(x, y, "fuzz neq test");
     }
 
-    // neq: unhappy path
-    function test_neq_x_y_unhappy_path_int256_param() public {
-        int256 x = 1;
-        int256 y = 1;
-
-        string memory reason = "x and y should not be the same";
+    function testFuzz_neq_uint256_equal(uint256 x) public {
+        string memory reason = "fuzz equal failure test";
         string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "==", reason);
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(x), "==", reason);
         vm.expectEmit(true, false, false, true);
         emit AssertNeqFail(failReason);
-
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        neq(x, x, reason);
+    }
 
-        neq(x, y, reason);
+    /**
+     * Tests for neq(int256, int256, string)
+     */
+    function test_neq_int256_not_equal() public {
+        neq(int256(1), int256(2), "int256 neq test");
+    }
+
+    function test_neq_int256_equal() public {
+        string memory reason = "int256 should not be equal";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(7)), FuzzLibString.toString(int256(7)), "==", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertNeqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        neq(int256(7), int256(7), reason);
+    }
+
+    function test_neq_int256_negative() public {
+        neq(int256(-5), int256(-10), "negative neq test");
+    }
+
+    function test_neq_int256_mixed_signs() public {
+        neq(int256(-5), int256(5), "mixed signs neq test");
+    }
+
+    function test_neq_int256_extreme_values() public {
+        neq(type(int256).max, type(int256).min, "extreme values neq test");
+    }
+
+    function testFuzz_neq_int256_not_equal(int256 x, int256 y) public {
+        vm.assume(x != y);
+        neq(x, y, "fuzz int256 neq test");
+    }
+
+    function testFuzz_neq_int256_equal(int256 x) public {
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(x != type(int256).min);
+        string memory reason = "fuzz int256 equal failure test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(x), "==", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertNeqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        neq(x, x, reason);
     }
 
     /**
