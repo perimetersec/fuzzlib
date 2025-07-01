@@ -70,6 +70,8 @@ The library automatically sets up the appropriate platform and provides access t
 - **Function overloads**: Use low-level calls with explicit selectors when testing overloaded functions
 - **Type safety**: Explicitly cast literal values to avoid compiler ambiguity (e.g., `uint256(5)`, `int256(-1)`)
 - **Overflow handling**: Use `vm.assume()` to avoid problematic values in fuzz tests (e.g., `type(int256).min`)
+- **Fail-fast testing**: Avoid empty catch blocks or overly defensive error handling - tests should fail when unexpected behavior occurs
+- **Test expected behavior**: Assert that operations work as expected rather than defensively handling edge cases that shouldn't fail in test environments
 
 ### Fuzz Testing Guidelines
 - **Keep it simple**: Fuzz tests should be straightforward and direct, avoiding complex conditional logic
@@ -92,6 +94,7 @@ function testFuzz_functionName(type param) public { ... }
 - **Sequential boundary tests**: Test values immediately adjacent to boundaries (e.g., `max`, `max-1`, `max-2`)
 - **Comprehensive combinations**: For critical types like `int256`, test all combinations of extreme values
 - **Platform-specific behavior**: Test error handling with `errAllow` functions using multiple error types
+- **Address verification**: Use `extcodesize` to verify addresses have no code when testing non-contract scenarios
 
 ## Documentation Standards
 
