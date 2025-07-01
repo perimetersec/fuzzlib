@@ -9,6 +9,10 @@ import {HelperMath} from "./helpers/HelperMath.sol";
 import {HelperRandom} from "./helpers/HelperRandom.sol";
 import {HelperCall} from "./helpers/HelperCall.sol";
 
+/**
+ * @dev Main contract that inherits from all helper contracts, providing the complete Fuzzlib API.
+ * @author Perimeter <info@perimetersec.io>
+ */
 contract Fuzzlib is
     HelperBase,
     HelperAssert,
