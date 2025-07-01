@@ -200,6 +200,15 @@ contract TestHelperCall is Test, HelperCall {
         assertEq(target.lastCaller(), address(this));
     }
 
+    function test_doFunctionCall_malformed_calldata() public {
+        // Test with invalid ABI encoding - too short for function selector
+        bytes memory callData = hex"1234";
+        (bool success, bytes memory returnData) = this.doFunctionCall(address(target), callData);
+
+        assertFalse(success);
+        assertEq(returnData.length, 0);
+    }
+
     /**
      * Tests for doFunctionCall(address target, bytes memory callData, address actor)
      */
@@ -427,5 +436,27 @@ contract TestHelperCall is Test, HelperCall {
         assertTrue(success);
         uint256 result = abi.decode(returnData, (uint256));
         assertEq(result, setValue);
+    }
+
+    function test_doFunctionStaticCall_malformed_calldata() public {
+        // Test static call with invalid ABI encoding
+        bytes memory callData = hex"1234";
+        (bool success, bytes memory returnData) = this.doFunctionStaticCall(address(target), callData);
+
+        assertFalse(success);
+        assertEq(returnData.length, 0);
+    }
+
+    function test_doFunctionCall_gas_limit_edge_case() public {
+        // Test call with very large return data that might approach gas limits
+        bytes memory callData = abi.encodeWithSignature("returnLargeData()");
+
+        // This should succeed but we test it handles gas appropriately
+        (bool success, bytes memory returnData) = this.doFunctionCall(address(target), callData);
+
+        assertTrue(success);
+        // Verify we got the expected large data
+        string memory result = abi.decode(returnData, (string));
+        assertEq(bytes(result).length, 1000);
     }
 }
