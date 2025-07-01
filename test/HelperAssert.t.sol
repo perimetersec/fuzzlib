@@ -122,6 +122,98 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
+     * Tests for eq(address, address, string)
+     */
+    function test_eq_address_equal() public {
+        address addr = address(0x1234567890123456789012345678901234567890);
+        eq(addr, addr, "address equal test");
+    }
+
+    function test_eq_address_not_equal() public {
+        address addr1 = address(0x1234567890123456789012345678901234567890);
+        address addr2 = address(0x0987654321098765432109876543210987654321);
+        string memory reason = "address not equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(addr1), FuzzLibString.toString(addr2), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(addr1, addr2, reason);
+    }
+
+    function test_eq_address_zero() public {
+        eq(address(0), address(0), "zero address test");
+    }
+
+    function test_eq_address_max_value() public {
+        address maxAddr = address(type(uint160).max);
+        eq(maxAddr, maxAddr, "max address test");
+    }
+
+    function testFuzz_eq_address_equal(address x) public {
+        eq(x, x, "fuzz address equal test");
+    }
+
+    function testFuzz_eq_address_not_equal(address x, address y) public {
+        vm.assume(x != y);
+        string memory reason = "fuzz address not equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(x, y, reason);
+    }
+
+    /**
+     * Tests for eq(bytes4, bytes4, string)
+     */
+    function test_eq_bytes4_equal() public {
+        bytes4 value = bytes4(0x12345678);
+        eq(value, value, "bytes4 equal test");
+    }
+
+    function test_eq_bytes4_not_equal() public {
+        bytes4 value1 = bytes4(0x12345678);
+        bytes4 value2 = bytes4(0x87654321);
+        string memory reason = "bytes4 not equal test";
+        bytes memory aBytes = abi.encodePacked(value1);
+        bytes memory bBytes = abi.encodePacked(value2);
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toHexString(aBytes), FuzzLibString.toHexString(bBytes), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(value1, value2, reason);
+    }
+
+    function test_eq_bytes4_zero() public {
+        eq(bytes4(0), bytes4(0), "zero bytes4 test");
+    }
+
+    function test_eq_bytes4_max_value() public {
+        bytes4 maxValue = bytes4(type(uint32).max);
+        eq(maxValue, maxValue, "max bytes4 test");
+    }
+
+    function testFuzz_eq_bytes4_equal(bytes4 x) public {
+        eq(x, x, "fuzz bytes4 equal test");
+    }
+
+    function testFuzz_eq_bytes4_not_equal(bytes4 x, bytes4 y) public {
+        vm.assume(x != y);
+        string memory reason = "fuzz bytes4 not equal test";
+        bytes memory aBytes = abi.encodePacked(x);
+        bytes memory bBytes = abi.encodePacked(y);
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toHexString(aBytes), FuzzLibString.toHexString(bBytes), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(x, y, reason);
+    }
+
+    /**
      * Tests for neq(uint256, uint256, string)
      */
     function test_neq_uint256_not_equal() public {
