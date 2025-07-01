@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {DummyContract} from "./DummyContract.sol";
 
+/**
+ * @dev Helper contract for errAllow testing functionality.
+ * @author Perimeter <info@perimetersec.io>
+ */
 contract ErrAllowTestHelper {
     function setup_errAllow_require_error() internal pure returns (string[] memory) {
         // set require failure related

@@ -11,6 +11,10 @@ import {PlatformTest} from "./util/PlatformTest.sol";
 import {DummyContract} from "./util/DummyContract.sol";
 import {ErrAllowTestHelper} from "./util/ErrAllowTestHelper.sol";
 
+/**
+ * @dev Test contract for HelperAssert functionality.
+ * @author Perimeter <info@perimetersec.io>
+ */
 contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
     DummyContract dummy;
 
