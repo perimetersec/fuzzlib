@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Test**: `foundry test` - Runs the test suite using Foundry
 - **Build**: Foundry automatically compiles contracts when running tests
 - **Format**: `forge fmt` - Formats code using Foundry's built-in formatter (run after making changes)
+- **Extended Fuzz Testing**: `forge test --fuzz-runs 10000` - Run comprehensive fuzz testing after large edits (resource intensive, use sparingly)
 
 ## Architecture Overview
 
