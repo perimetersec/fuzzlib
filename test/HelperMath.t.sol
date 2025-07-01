@@ -7,7 +7,8 @@ import "forge-std/console.sol";
 import {HelperMath} from "../src/helpers/HelperMath.sol";
 
 /**
- * @dev Test contract for HelperMath functionality.
+ * @dev Comprehensive tests for HelperMath functionality including mathematical utilities,
+ * boundary conditions, and edge cases with proper overflow handling.
  * @author Perimeter <info@perimetersec.io>
  */
 contract TestHelperMath is Test, HelperMath {

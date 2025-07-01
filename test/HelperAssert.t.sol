@@ -12,10 +12,11 @@ import {DummyContract} from "./util/DummyContract.sol";
 import {ErrAllowTestHelper} from "./util/ErrAllowTestHelper.sol";
 
 /**
- * @dev Test contract for HelperAssert functionality.
+ * @dev Comprehensive tests for HelperAssert functionality including assertion utilities,
+ * error handling with errAllow functions, and platform-specific behavior.
  * @author Perimeter <info@perimetersec.io>
  */
-contract TestAsserts is Test, HelperAssert, ErrAllowTestHelper {
+contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     DummyContract dummy;
 
     function setUp() public {
