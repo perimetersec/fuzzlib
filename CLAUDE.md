@@ -72,26 +72,10 @@ The library automatically sets up the appropriate platform and provides access t
 - **Overflow handling**: Use `vm.assume()` to avoid problematic values in fuzz tests (e.g., `type(int256).min`)
 
 ### Fuzz Testing Guidelines
-- **Ensure meaningful coverage**: Fuzz tests must exercise both success and failure paths regularly
-- **Avoid low-probability conditions**: Never rely on random inputs matching specific values (e.g., random strings matching specific messages, random bytes4 matching specific selectors)
-- **Use controlled inputs**: Structure fuzz inputs using `uint8` choice parameters to deterministically control test paths
-- **Target 4-10% success rate**: Design fuzz tests so success paths occur 4-10% of the time for adequate coverage
-- **Precise selector generation**: When generating invalid selectors, use fixed ranges that provably cannot match valid ones
-- **Comment precision**: Comments must precisely describe what the code does, never use imprecise terms like "unlikely"
-
-### Fuzz Test Pattern for Low-Probability Success Cases
-```solidity
-function testFuzz_function_with_specific_inputs(uint8 choice, string memory randomData) public {
-    if (choice < 20) {
-        // ~8% - Test valid inputs (cycle through known valid values)
-        uint8 validIndex = choice % validInputs.length;
-        // Test with validInputs[validIndex]
-    } else {
-        // ~92% - Test invalid inputs with guaranteed non-matching values
-        // Use fixed ranges that cannot match valid inputs
-    }
-}
-```
+- **Keep it simple**: Fuzz tests should be straightforward and direct, avoiding complex conditional logic
+- **Test natural properties**: Focus on testing mathematical properties and invariants that hold for all valid inputs
+- **Use vm.assume sparingly**: Only use assumptions to avoid overflow or undefined behavior, not to control test paths
+- **When in doubt, remove**: If a fuzz test requires complex logic to be meaningful, consider removing it in favor of targeted unit tests
 
 ### Test Organization Pattern
 ```solidity
