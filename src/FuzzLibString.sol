@@ -15,6 +15,12 @@ library FuzzLibString {
      * @dev Converts a signed integer to its string representation.
      */
     function toString(int256 value) internal pure returns (string memory str) {
+        if (value == type(int256).min) {
+            // Special case: type(int256).min cannot be negated without overflow
+            // type(int256).min = -57896044618658097711785492504343953926634992332820282019728792003956564819968
+            return "-57896044618658097711785492504343953926634992332820282019728792003956564819968";
+        }
+
         uint256 absValue = value >= 0 ? uint256(value) : uint256(-value);
         str = toString(absValue);
 

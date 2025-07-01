@@ -259,8 +259,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function testFuzz_eq_int256_not_equal(int256 x, int256 y) public {
         vm.assume(x != y);
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(x != type(int256).min && y != type(int256).min);
         string memory reason = "fuzz int256 not equal test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
@@ -346,8 +344,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     function testFuzz_neq_int256_equal(int256 x) public {
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(x != type(int256).min);
         string memory reason = "fuzz int256 equal failure test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(x), "==", reason);
@@ -445,8 +441,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function testFuzz_gte_int256_invalid(int256 a, int256 b) public {
         vm.assume(a < b);
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(a != type(int256).min && b != type(int256).min);
         string memory reason = "fuzz gte int256 invalid test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<", reason);
@@ -551,8 +545,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function testFuzz_gt_int256_invalid(int256 a, int256 b) public {
         vm.assume(a <= b);
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(a != type(int256).min && b != type(int256).min);
         string memory reason = "fuzz gt int256 invalid test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), "<=", reason);
@@ -651,8 +643,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function testFuzz_lte_int256_invalid(int256 a, int256 b) public {
         vm.assume(a > b);
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(a != type(int256).min && b != type(int256).min);
         string memory reason = "fuzz lte int256 invalid test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">", reason);
@@ -761,8 +751,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function testFuzz_lt_int256_invalid(int256 a, int256 b) public {
         vm.assume(a >= b);
-        // Avoid type(int256).min which can cause overflow in toString
-        vm.assume(a != type(int256).min && b != type(int256).min);
         string memory reason = "fuzz lt int256 invalid test";
         string memory failReason =
             createAssertFailMessage(FuzzLibString.toString(a), FuzzLibString.toString(b), ">=", reason);
