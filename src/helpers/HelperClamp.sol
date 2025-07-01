@@ -113,12 +113,7 @@ abstract contract HelperClamp is HelperAssert {
     function clamp(uint256 value, uint256 low, uint256 high, bool enableLogs) public returns (uint256) {
         if (value < low || value > high) {
             uint256 ans = low + (value % (high - low + 1));
-            if (enableLogs) {
-                string memory valueStr = FuzzLibString.toString(value);
-                string memory ansStr = FuzzLibString.toString(ans);
-                bytes memory message = abi.encodePacked("Clamping value ", valueStr, " to ", ansStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(value, ans);
             return ans;
         }
         return value;
@@ -138,12 +133,7 @@ abstract contract HelperClamp is HelperAssert {
             int256 clamped = (value - low) % (range);
             if (clamped < 0) clamped += range;
             int256 ans = low + clamped;
-            if (enableLogs) {
-                string memory valueStr = FuzzLibString.toString(value);
-                string memory ansStr = FuzzLibString.toString(ans);
-                bytes memory message = abi.encodePacked("Clamping value ", valueStr, " to ", ansStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(value, ans);
             return ans;
         }
         return value;
@@ -156,12 +146,7 @@ abstract contract HelperClamp is HelperAssert {
         if (!(a < b)) {
             neq(b, 0, "clampLt cannot clamp value a to be less than zero. Check your inputs/assumptions.");
             uint256 value = a % b;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
@@ -173,12 +158,7 @@ abstract contract HelperClamp is HelperAssert {
     function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (!(a < b)) {
             int256 value = b - 1;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
@@ -190,12 +170,7 @@ abstract contract HelperClamp is HelperAssert {
     function clampLte(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
         if (!(a <= b)) {
             uint256 value = a % (b + 1);
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
@@ -207,12 +182,7 @@ abstract contract HelperClamp is HelperAssert {
     function clampLte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (!(a <= b)) {
             int256 value = b;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
@@ -229,12 +199,7 @@ abstract contract HelperClamp is HelperAssert {
                 "clampGt cannot clamp value a to be larger than uint256.max. Check your inputs/assumptions."
             );
             uint256 value = b + 1;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         } else {
             return a;
@@ -247,12 +212,7 @@ abstract contract HelperClamp is HelperAssert {
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (!(a > b)) {
             int256 value = b + 1;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         } else {
             return a;
@@ -265,12 +225,7 @@ abstract contract HelperClamp is HelperAssert {
     function clampGte(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
         if (!(a > b)) {
             uint256 value = b;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
@@ -282,14 +237,39 @@ abstract contract HelperClamp is HelperAssert {
     function clampGte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (!(a > b)) {
             int256 value = b;
-            if (enableLogs) {
-                string memory aStr = FuzzLibString.toString(a);
-                string memory valueStr = FuzzLibString.toString(value);
-                bytes memory message = abi.encodePacked("Clamping value ", aStr, " to ", valueStr);
-                emit Clamped(string(message));
-            }
+            if (enableLogs) logClamp(a, value);
             return value;
         }
         return a;
+    }
+
+    /*
+     **************************************************************************
+     * Private Helper Functions
+     **************************************************************************
+     */
+
+    function logClamp(
+        uint256 value,
+        uint256 ans
+    ) private {
+        emit Clamped(string(abi.encodePacked(
+            "Clamping value ",
+            FuzzLibString.toString(value),
+            " to ",
+            FuzzLibString.toString(ans)
+        )));
+    }
+
+    function logClamp(
+        int256 value,
+        int256 ans
+    ) private {
+        emit Clamped(string(abi.encodePacked(
+            "Clamping value ",
+            FuzzLibString.toString(value),
+            " to ",
+            FuzzLibString.toString(ans)
+        )));
     }
 }
