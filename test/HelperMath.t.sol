@@ -230,7 +230,7 @@ contract TestHelperMath is Test, HelperMath {
     }
 
     function testFuzz_abs_int256(int256 n) public {
-        vm.assume(n != type(int256).min); // Avoid overflow for fuzz test  
+        vm.assume(n != type(int256).min); // Avoid overflow for fuzz test
         bytes memory data = abi.encodeWithSelector(bytes4(keccak256("abs(int256)")), n);
         (bool success, bytes memory result) = address(this).call(data);
         assertTrue(success);
@@ -287,7 +287,7 @@ contract TestHelperMath is Test, HelperMath {
         } else if (a < 0 && b >= 0) {
             vm.assume(b <= type(int256).max + a); // Avoid b - a overflow
         }
-        
+
         uint256 result = diff(a, b);
         if (a >= b) {
             assertEq(result, uint256(a - b));
