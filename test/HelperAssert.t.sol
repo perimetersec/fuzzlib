@@ -1248,26 +1248,6 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
         errAllow(errorData, emptyRequireErrors, "fuzz empty require array test");
     }
 
-    function test_isErrorString() public {
-        // Test with Error(string) selector
-        (bool success, bytes memory errorData) =
-            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
-        require(!success, "should fail");
-        assertTrue(_isErrorString(bytes4(errorData)), "should be Error(string) type");
-
-        // Test with custom error
-        (bool success2, bytes memory customErrorData) =
-            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
-        require(!success2, "should fail");
-        assertFalse(_isErrorString(bytes4(customErrorData)), "should not be Error(string) type");
-
-        // Test with empty error (require(false))
-        (bool success3, bytes memory emptyErrorData) =
-            address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
-        require(!success3, "should fail");
-        assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
-    }
-
     /**
      * Tests for assertRevertReasonEqual functions
      */
@@ -1419,5 +1399,28 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
         string memory result = createAssertFailMessage("", "", "!=", "");
         string memory expected = "Invalid: !=, reason: ";
         assertEq(keccak256(bytes(result)), keccak256(bytes(expected)), "empty strings format incorrect");
+    }
+
+    /**
+     * Tests for _isErrorString helper function
+     */
+    function test_isErrorString() public {
+        // Test with Error(string) selector
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+        assertTrue(_isErrorString(bytes4(errorData)), "should be Error(string) type");
+
+        // Test with custom error
+        (bool success2, bytes memory customErrorData) =
+            address(dummy).call(abi.encodeWithSignature("revertWithCustomErrorWithoutMessage()"));
+        require(!success2, "should fail");
+        assertFalse(_isErrorString(bytes4(customErrorData)), "should not be Error(string) type");
+
+        // Test with empty error (require(false))
+        (bool success3, bytes memory emptyErrorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
+        require(!success3, "should fail");
+        assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
     }
 }
