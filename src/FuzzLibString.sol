@@ -1,13 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/// @notice Efficient library for creating string representations of integers.
-/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/LibString.sol)
-/// @author Modified from Solady (https://github.com/Vectorized/solady/blob/main/src/utils/LibString.sol)
-/// @author Modified from Crytic Properties (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
+/**
+ * @dev Efficient library for creating string representations of integers.
+ * @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/LibString.sol)
+ * @author Modified from Solady (https://github.com/Vectorized/solady/blob/main/src/utils/LibString.sol)
+ * @author Modified from Crytic Properties (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
+ * @author Perimeter <info@perimetersec.io>
+ */
 library FuzzLibString {
     bytes16 internal constant HEX_DIGITS = "0123456789abcdef";
 
+    /**
+     * @dev Converts a signed integer to its string representation.
+     */
     function toString(int256 value) internal pure returns (string memory str) {
         uint256 absValue = value >= 0 ? uint256(value) : uint256(-value);
         str = toString(absValue);
@@ -17,6 +23,9 @@ library FuzzLibString {
         }
     }
 
+    /**
+     * @dev Converts an unsigned integer to its string representation.
+     */
     function toString(uint256 value) internal pure returns (string memory str) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -66,6 +75,9 @@ library FuzzLibString {
         }
     }
 
+    /**
+     * @dev Converts an address to its hexadecimal string representation.
+     */
     function toString(address value) internal pure returns (string memory str) {
         bytes memory s = new bytes(40);
         for (uint256 i = 0; i < 20; i++) {
@@ -80,13 +92,19 @@ library FuzzLibString {
         return string(s);
     }
 
+    /**
+     * @dev Converts a single byte to its hexadecimal character representation.
+     */
     function char(bytes1 b) internal pure returns (bytes1 c) {
         if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
         else return bytes1(uint8(b) + 0x57);
     }
 
-    // based on OZ's toHexString
-    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
+    /**
+     * @dev Converts bytes to their hexadecimal string representation.
+     * Based on OZ's toHexString
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
+     */
     function toHexString(bytes memory value)
         internal
         pure
@@ -103,7 +121,10 @@ library FuzzLibString {
         return string(buffer);
     }
 
-    // https://ethereum.stackexchange.com/a/83577
+    /**
+     * @dev Extracts revert message from return data.
+     * https://ethereum.stackexchange.com/a/83577
+     */
     function getRevertMsg(bytes memory returnData)
         internal
         pure
@@ -143,6 +164,9 @@ library FuzzLibString {
         return abi.decode(returnData, (string)); // All that remains is the revert string
     }
 
+    /**
+     * @dev Checks if revert reason in return data equals expected reason.
+     */
     function isRevertReasonEqual(bytes memory returnData, string memory reason)
         internal
         pure
