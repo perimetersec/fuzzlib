@@ -249,27 +249,19 @@ abstract contract HelperClamp is HelperAssert {
      **************************************************************************
      */
 
-    function logClamp(
-        uint256 value,
-        uint256 ans
-    ) private {
-        emit Clamped(string(abi.encodePacked(
-            "Clamping value ",
-            FuzzLibString.toString(value),
-            " to ",
-            FuzzLibString.toString(ans)
-        )));
+    function logClamp(uint256 value, uint256 ans) private {
+        emit Clamped(
+            string(
+                abi.encodePacked("Clamping value ", FuzzLibString.toString(value), " to ", FuzzLibString.toString(ans))
+            )
+        );
     }
 
-    function logClamp(
-        int256 value,
-        int256 ans
-    ) private {
-        emit Clamped(string(abi.encodePacked(
-            "Clamping value ",
-            FuzzLibString.toString(value),
-            " to ",
-            FuzzLibString.toString(ans)
-        )));
+    function logClamp(int256 value, int256 ans) private {
+        emit Clamped(
+            string(
+                abi.encodePacked("Clamping value ", FuzzLibString.toString(value), " to ", FuzzLibString.toString(ans))
+            )
+        );
     }
 }
