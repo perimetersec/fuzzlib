@@ -214,6 +214,63 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
     }
 
     /**
+     * Tests for eq(int256, int256, string)
+     */
+    function test_eq_int256_equal() public {
+        eq(int256(5), int256(5), "int256 equal test");
+    }
+
+    function test_eq_int256_not_equal() public {
+        string memory reason = "int256 not equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(2)), FuzzLibString.toString(int256(4)), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(int256(2), int256(4), reason);
+    }
+
+    function test_eq_int256_zero() public {
+        eq(int256(0), int256(0), "zero int256 test");
+    }
+
+    function test_eq_int256_negative() public {
+        eq(int256(-5), int256(-5), "negative int256 test");
+    }
+
+    function test_eq_int256_mixed_signs() public {
+        string memory reason = "mixed signs test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(int256(-5)), FuzzLibString.toString(int256(5)), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(int256(-5), int256(5), reason);
+    }
+
+    function test_eq_int256_extreme_values() public {
+        eq(type(int256).max, type(int256).max, "max int256 test");
+        eq(type(int256).min, type(int256).min, "min int256 test");
+    }
+
+    function testFuzz_eq_int256_equal(int256 x) public {
+        eq(x, x, "fuzz int256 equal test");
+    }
+
+    function testFuzz_eq_int256_not_equal(int256 x, int256 y) public {
+        vm.assume(x != y);
+        // Avoid type(int256).min which can cause overflow in toString
+        vm.assume(x != type(int256).min && y != type(int256).min);
+        string memory reason = "fuzz int256 not equal test";
+        string memory failReason =
+            createAssertFailMessage(FuzzLibString.toString(x), FuzzLibString.toString(y), "!=", reason);
+        vm.expectEmit(true, false, false, true);
+        emit AssertEqFail(failReason);
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        eq(x, y, reason);
+    }
+
+    /**
      * Tests for neq(uint256, uint256, string)
      */
     function test_neq_uint256_not_equal() public {
@@ -1209,5 +1266,158 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
             address(dummy).call(abi.encodeWithSignature("requireFailWithoutMessage()"));
         require(!success3, "should fail");
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
+    }
+
+    /**
+     * Tests for assertRevertReasonEqual functions
+     */
+    function test_assertRevertReasonEqual_single_reason_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since the message matches
+        assertRevertReasonEqual(errorData, "require failure message 1");
+    }
+
+    function test_assertRevertReasonEqual_single_reason_no_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("different message");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        assertRevertReasonEqual(errorData, "different message");
+    }
+
+    function test_assertRevertReasonEqual_two_reasons_first_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since first message matches
+        assertRevertReasonEqual(errorData, "require failure message 1", "other message");
+    }
+
+    function test_assertRevertReasonEqual_two_reasons_second_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since second message matches
+        assertRevertReasonEqual(errorData, "other message", "require failure message 1");
+    }
+
+    function test_assertRevertReasonEqual_two_reasons_no_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("msg1 OR msg2");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        assertRevertReasonEqual(errorData, "msg1", "msg2");
+    }
+
+    function test_assertRevertReasonEqual_three_reasons_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since second message matches
+        assertRevertReasonEqual(errorData, "msg1", "require failure message 1", "msg3");
+    }
+
+    function test_assertRevertReasonEqual_three_reasons_no_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("msg1 OR msg2 OR msg3");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        assertRevertReasonEqual(errorData, "msg1", "msg2", "msg3");
+    }
+
+    function test_assertRevertReasonEqual_four_reasons_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since third message matches
+        assertRevertReasonEqual(errorData, "msg1", "msg2", "require failure message 1", "msg4");
+    }
+
+    function test_assertRevertReasonEqual_four_reasons_no_match() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("msg1 OR msg2 OR msg3 OR msg4");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        assertRevertReasonEqual(errorData, "msg1", "msg2", "msg3", "msg4");
+    }
+
+    /**
+     * Tests for assertRevertReasonNotEqual function
+     */
+    function test_assertRevertReasonNotEqual_different_message() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Should pass since messages are different
+        assertRevertReasonNotEqual(errorData, "different message");
+    }
+
+    function test_assertRevertReasonNotEqual_same_message() public {
+        // Call function that reverts with "require failure message 1"
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("require failure message 1");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        assertRevertReasonNotEqual(errorData, "require failure message 1");
+    }
+
+    /**
+     * Tests for createAssertFailMessage function
+     */
+    function test_createAssertFailMessage_basic() public {
+        string memory result = createAssertFailMessage("5", "10", "!=", "test reason");
+        string memory expected = "Invalid: 5!=10, reason: test reason";
+
+        // Compare using keccak256 since we can't directly compare strings
+        assertEq(keccak256(bytes(result)), keccak256(bytes(expected)), "message format incorrect");
+    }
+
+    function test_createAssertFailMessage_different_operators() public {
+        string memory result1 = createAssertFailMessage("1", "2", "==", "equal test");
+        string memory expected1 = "Invalid: 1==2, reason: equal test";
+        assertEq(keccak256(bytes(result1)), keccak256(bytes(expected1)), "equal operator format incorrect");
+
+        string memory result2 = createAssertFailMessage("10", "5", ">", "greater test");
+        string memory expected2 = "Invalid: 10>5, reason: greater test";
+        assertEq(keccak256(bytes(result2)), keccak256(bytes(expected2)), "greater operator format incorrect");
+    }
+
+    function test_createAssertFailMessage_empty_strings() public {
+        string memory result = createAssertFailMessage("", "", "!=", "");
+        string memory expected = "Invalid: !=, reason: ";
+        assertEq(keccak256(bytes(result)), keccak256(bytes(expected)), "empty strings format incorrect");
     }
 }
