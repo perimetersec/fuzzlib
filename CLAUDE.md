@@ -70,6 +70,28 @@ The library automatically sets up the appropriate platform and provides access t
 - **Type safety**: Explicitly cast literal values to avoid compiler ambiguity (e.g., `uint256(5)`, `int256(-1)`)
 - **Overflow handling**: Use `vm.assume()` to avoid problematic values in fuzz tests (e.g., `type(int256).min`)
 
+### Fuzz Testing Guidelines
+- **Ensure meaningful coverage**: Fuzz tests must exercise both success and failure paths regularly
+- **Avoid low-probability conditions**: Never rely on random inputs matching specific values (e.g., random strings matching specific messages, random bytes4 matching specific selectors)
+- **Use controlled inputs**: Structure fuzz inputs using `uint8` choice parameters to deterministically control test paths
+- **Target 4-10% success rate**: Design fuzz tests so success paths occur 4-10% of the time for adequate coverage
+- **Precise selector generation**: When generating invalid selectors, use fixed ranges that provably cannot match valid ones
+- **Comment precision**: Comments must precisely describe what the code does, never use imprecise terms like "unlikely"
+
+### Fuzz Test Pattern for Low-Probability Success Cases
+```solidity
+function testFuzz_function_with_specific_inputs(uint8 choice, string memory randomData) public {
+    if (choice < 20) {
+        // ~8% - Test valid inputs (cycle through known valid values)
+        uint8 validIndex = choice % validInputs.length;
+        // Test with validInputs[validIndex]
+    } else {
+        // ~92% - Test invalid inputs with guaranteed non-matching values
+        // Use fixed ranges that cannot match valid inputs
+    }
+}
+```
+
 ### Test Organization Pattern
 ```solidity
 /**
@@ -79,6 +101,12 @@ function test_functionName_specific_case() public { ... }
 function test_functionName_edge_case() public { ... }
 function testFuzz_functionName(type param) public { ... }
 ```
+
+### Advanced Edge Case Testing
+- **Cross-boundary tests**: Test interactions between extreme values (e.g., `type(uint256).max` vs `uint256(0)`)
+- **Sequential boundary tests**: Test values immediately adjacent to boundaries (e.g., `max`, `max-1`, `max-2`)
+- **Comprehensive combinations**: For critical types like `int256`, test all combinations of extreme values
+- **Platform-specific behavior**: Test error handling with `errAllow` functions using multiple error types
 
 ## Documentation Standards
 
