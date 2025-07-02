@@ -44,7 +44,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps unsigned integer to be less than specified value.
      */
     function clampLt(uint256 a, uint256 b) public returns (uint256) {
-        return clampLt(a, b);
+        return clampLt(a, b, true);
     }
 
     /**
