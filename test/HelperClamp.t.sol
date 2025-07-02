@@ -66,6 +66,42 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(result, uint256(5));
     }
 
+    function test_clamp_uint256_invalid_range() public {
+        // When low > high, the range calculation will underflow/wrap around
+        // For uint256: high - low + 1 will wrap to a very large number
+        // This tests the behavior with invalid ranges - but we expect it to revert
+        vm.expectRevert(); // The function should revert due to underflow in range calculation
+        this.clamp(uint256(50), uint256(100), uint256(10));
+    }
+
+    function test_clamp_uint256_boundary_conditions() public {
+        uint256 max = type(uint256).max;
+
+        // Test boundary values
+        assertEq(this.clamp(uint256(0), uint256(0), uint256(1)), uint256(0));
+
+        // Test around uint256 max
+        assertEq(this.clamp(max, max - 2, max), max);
+        assertEq(this.clamp(max - 1, max - 2, max), max - 1);
+        assertEq(this.clamp(max - 2, max - 2, max), max - 2);
+
+        // Test around zero boundary
+        assertEq(this.clamp(uint256(0), uint256(0), uint256(2)), uint256(0));
+        assertEq(this.clamp(uint256(1), uint256(0), uint256(2)), uint256(1));
+        assertEq(this.clamp(uint256(2), uint256(0), uint256(2)), uint256(2));
+    }
+
+    function test_clamp_uint256_extreme_value_combinations() public {
+        uint256 maxUint = type(uint256).max;
+
+        // Test extreme value combinations
+        assertEq(this.clamp(maxUint, maxUint - 1, maxUint), maxUint);
+
+        // Cross-boundary tests - combinations of extreme values
+        assertEq(this.clamp(maxUint, uint256(0), maxUint - 1), uint256(0)); // Wraps to 0 due to modulo
+        assertEq(this.clamp(uint256(0), maxUint - 1, maxUint), maxUint - 1);
+    }
+
     function testFuzz_clamp_uint256(uint256 value, uint256 low, uint256 high) public {
         vm.assume(low <= high);
 
@@ -124,20 +160,59 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(this.clamp(int256(-100), int256(-5), int256(-5)), int256(-5));
     }
 
-    function test_clamp_int256_extreme_values() public {
-        int256 minVal = type(int256).min;
-        int256 maxVal = type(int256).max;
-
-        assertEq(this.clamp(maxVal, minVal, maxVal), maxVal);
-        assertEq(this.clamp(minVal, minVal, maxVal), minVal);
-    }
-
     function test_clamp_int256_with_logging() public {
         vm.expectEmit(true, true, true, true);
         emit Clamped("Clamping value 15 to -6");
 
         int256 result = this.clamp(int256(15), int256(-10), int256(10));
         assertEq(result, int256(-6));
+    }
+
+    function test_clamp_int256_invalid_range() public {
+        // When low > high for signed integers, the behavior is more complex
+        // For int256: high - low + 1 will be negative, affecting the modulo
+        int256 result = this.clamp(int256(50), int256(100), int256(10));
+        // With low=100, high=10: range = 10 - 100 + 1 = -89
+        // The modulo with negative range creates interesting edge case behavior
+        assertTrue(result >= type(int256).min && result <= type(int256).max); // Always true, documents behavior
+    }
+
+    function test_clamp_int256_boundary_conditions() public {
+        int256 max = type(int256).max;
+        int256 min = type(int256).min;
+
+        // Test boundary values
+        assertEq(this.clamp(int256(-1), int256(-1), int256(0)), int256(-1));
+
+        // Test around int256 max
+        assertEq(this.clamp(max, max - 2, max), max);
+        assertEq(this.clamp(max - 1, max - 2, max), max - 1);
+        assertEq(this.clamp(max - 2, max - 2, max), max - 2);
+
+        // Test around int256 min
+        assertEq(this.clamp(min, min, min + 2), min);
+        assertEq(this.clamp(min + 1, min, min + 2), min + 1);
+        assertEq(this.clamp(min + 2, min, min + 2), min + 2);
+
+        // Test around zero crossing for signed integers
+        assertEq(this.clamp(int256(-1), int256(-2), int256(2)), int256(-1));
+        assertEq(this.clamp(int256(0), int256(-2), int256(2)), int256(0));
+        assertEq(this.clamp(int256(1), int256(-2), int256(2)), int256(1));
+    }
+
+    function test_clamp_int256_extreme_value_combinations() public {
+        int256 maxInt = type(int256).max;
+        int256 minInt = type(int256).min;
+
+        // Test extreme values in full range
+        assertEq(this.clamp(maxInt, minInt, maxInt), maxInt);
+        assertEq(this.clamp(minInt, minInt, maxInt), minInt);
+
+        // Cross-boundary tests with safer ranges to avoid overflow
+        int256 safeMax = maxInt / 2;
+        int256 safeMin = minInt / 2;
+        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), safeMin);
+        assertEq(this.clamp(safeMin, safeMax - 1, safeMax), safeMax - 1);
     }
 
     function testFuzz_clamp_int256(int256 value, int256 low, int256 high) public {
@@ -158,107 +233,5 @@ contract TestHelperClamp is Test, HelperClamp {
         if (value >= low && value <= high) {
             assertEq(result, value);
         }
-    }
-
-    /**
-     * Edge case tests
-     */
-    function test_edge_cases_boundary_values() public {
-        // Test all functions with boundary values
-        assertEq(this.clamp(uint256(0), uint256(0), uint256(1)), uint256(0));
-        assertEq(this.clamp(int256(-1), int256(-1), int256(0)), int256(-1));
-    }
-
-    function test_clamp_invalid_range_uint256() public {
-        // When low > high, the range calculation will underflow/wrap around
-        // For uint256: high - low + 1 will wrap to a very large number
-        // This tests the behavior with invalid ranges - but we expect it to revert
-        vm.expectRevert(); // The function should revert due to underflow in range calculation
-        this.clamp(uint256(50), uint256(100), uint256(10));
-    }
-
-    function test_clamp_invalid_range_int256() public {
-        // When low > high for signed integers, the behavior is more complex
-        // For int256: high - low + 1 will be negative, affecting the modulo
-        int256 result = this.clamp(int256(50), int256(100), int256(10));
-        // With low=100, high=10: range = 10 - 100 + 1 = -89
-        // The modulo with negative range creates interesting edge case behavior
-        assertTrue(result >= type(int256).min && result <= type(int256).max); // Always true, documents behavior
-    }
-
-    /**
-     * Sequential boundary tests - testing values immediately adjacent to boundaries
-     */
-    function test_sequential_boundary_uint256_max() public {
-        uint256 max = type(uint256).max;
-
-        // Test around uint256 max for different clamp functions
-        assertEq(this.clamp(max, max - 2, max), max);
-        assertEq(this.clamp(max - 1, max - 2, max), max - 1);
-        assertEq(this.clamp(max - 2, max - 2, max), max - 2);
-    }
-
-    function test_sequential_boundary_uint256_zero() public {
-        // Test around zero boundary
-        assertEq(this.clamp(uint256(0), uint256(0), uint256(2)), uint256(0));
-        assertEq(this.clamp(uint256(1), uint256(0), uint256(2)), uint256(1));
-        assertEq(this.clamp(uint256(2), uint256(0), uint256(2)), uint256(2));
-    }
-
-    function test_sequential_boundary_int256_max() public {
-        int256 max = type(int256).max;
-
-        // Test around int256 max
-        assertEq(this.clamp(max, max - 2, max), max);
-        assertEq(this.clamp(max - 1, max - 2, max), max - 1);
-        assertEq(this.clamp(max - 2, max - 2, max), max - 2);
-    }
-
-    function test_sequential_boundary_int256_min() public {
-        int256 min = type(int256).min;
-
-        // Test around int256 min
-        assertEq(this.clamp(min, min, min + 2), min);
-        assertEq(this.clamp(min + 1, min, min + 2), min + 1);
-        assertEq(this.clamp(min + 2, min, min + 2), min + 2);
-    }
-
-    function test_sequential_boundary_int256_zero_crossing() public {
-        // Test around zero crossing for signed integers
-        assertEq(this.clamp(int256(-1), int256(-2), int256(2)), int256(-1));
-        assertEq(this.clamp(int256(0), int256(-2), int256(2)), int256(0));
-        assertEq(this.clamp(int256(1), int256(-2), int256(2)), int256(1));
-    }
-
-    function test_cross_boundary_extreme_combinations() public {
-        // Test combinations of extreme values across different boundaries
-        uint256 maxUint = type(uint256).max;
-        int256 maxInt = type(int256).max;
-        int256 minInt = type(int256).min;
-
-        // Cross-boundary uint256 tests
-        assertEq(this.clamp(maxUint, uint256(0), maxUint - 1), uint256(0)); // Wraps to 0 due to modulo
-        assertEq(this.clamp(uint256(0), maxUint - 1, maxUint), maxUint - 1);
-
-        // Cross-boundary int256 tests with safer ranges to avoid overflow
-        int256 safeMax = maxInt / 2;
-        int256 safeMin = minInt / 2;
-        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), safeMin);
-        assertEq(this.clamp(safeMin, safeMax - 1, safeMax), safeMax - 1);
-    }
-
-    /**
-     * Cross-boundary tests with extreme values
-     */
-    function test_extreme_value_combinations() public {
-        // Test combinations of extreme values
-        uint256 maxUint = type(uint256).max;
-        int256 maxInt = type(int256).max;
-        int256 minInt = type(int256).min;
-
-        // Test clamp with max values
-        assertEq(this.clamp(maxUint, maxUint - 1, maxUint), maxUint);
-        assertEq(this.clamp(maxInt, minInt, maxInt), maxInt);
-        assertEq(this.clamp(minInt, minInt, maxInt), minInt);
     }
 }
