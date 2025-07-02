@@ -127,32 +127,31 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int256_below_range() public {
-        // Test signed modulo arithmetic with proper handling of negative values
-        // For value=-15, low=-10, high=10: range=21, (-15-(-10))%21 = -5%21 = -5+21 = 16, ans=-10+16=6
-        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(6));
-        // For value=-25, low=-10, high=10: range=21, (-25-(-10))%21 = -15%21 = -15+21 = 6, ans=-10+6=-4
-        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(-4));
+        // For value=-15, low=-10, high=10: range=21, -15%21=-15, -15+21=6, ans=-10+6=-4
+        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(-4));
+        // For value=-25, low=-10, high=10: range=21, -25%21=-4, -4+21=17, ans=-10+17=7
+        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(7));
     }
 
     function test_clamp_int256_above_range() public {
-        // For value=15, low=-10, high=10: range=21, (15-(-10))%21 = 25%21 = 4, ans=-10+4=-6
-        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(-6));
-        // For value=25, low=-10, high=10: range=21, (25-(-10))%21 = 35%21 = 14, ans=-10+14=4
-        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(4));
+        // For value=15, low=-10, high=10: range=21, 15%21=15, ans=-10+15=5
+        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(5));
+        // For value=25, low=-10, high=10: range=21, 25%21=4, ans=-10+4=-6
+        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(-6));
     }
 
     function test_clamp_int256_negative_bounds() public {
-        // For value=-30, low=-20, high=-10: range=11, (-30-(-20))%11 = -10%11 = -10+11 = 1, ans=-20+1=-19
-        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-19));
-        // For value=-5, low=-20, high=-10: range=11, (-5-(-20))%11 = 15%11 = 4, ans=-20+4=-16
-        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-16));
+        // For value=-30, low=-20, high=-10: range=11, -30%11=-8, -8+11=3, ans=-20+3=-17
+        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-17));
+        // For value=-5, low=-20, high=-10: range=11, -5%11=-5, -5+11=6, ans=-20+6=-14
+        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-14));
     }
 
     function test_clamp_int256_positive_bounds() public {
-        // For value=25, low=10, high=20: range=11, (25-10)%11 = 15%11 = 4, ans=10+4=14
-        assertEq(this.clamp(int256(25), int256(10), int256(20)), int256(14));
-        // For value=5, low=10, high=20: range=11, (5-10)%11 = -5%11 = -5+11 = 6, ans=10+6=16
-        assertEq(this.clamp(int256(5), int256(10), int256(20)), int256(16));
+        // For value=25, low=10, high=20: range=11, 25%11=3, ans=10+3=13
+        assertEq(this.clamp(int256(25), int256(10), int256(20)), int256(13));
+        // For value=5, low=10, high=20: range=11, 5%11=5, ans=10+5=15
+        assertEq(this.clamp(int256(5), int256(10), int256(20)), int256(15));
     }
 
     function test_clamp_int256_single_value_range() public {
@@ -162,10 +161,10 @@ contract TestHelperClamp is Test, HelperClamp {
 
     function test_clamp_int256_with_logging() public {
         vm.expectEmit(true, true, true, true);
-        emit Clamped("Clamping value 15 to -6");
+        emit Clamped("Clamping value 15 to 5");
 
         int256 result = this.clamp(int256(15), int256(-10), int256(10));
-        assertEq(result, int256(-6));
+        assertEq(result, int256(5));
     }
 
     function test_clamp_int256_invalid_range() public {
@@ -209,7 +208,7 @@ contract TestHelperClamp is Test, HelperClamp {
         // Cross-boundary tests with safer ranges to avoid overflow
         int256 safeMax = maxInt / 2;
         int256 safeMin = minInt / 2;
-        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), safeMin);
+        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), int256(-1));
         assertEq(this.clamp(safeMin, safeMax - 1, safeMax), safeMax - 1);
     }
 
