@@ -143,104 +143,56 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps unsigned integer to be less than specified value with optional logging.
      */
     function clampLt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (!(a < b)) {
-            neq(b, 0, "clampLt cannot clamp value a to be less than zero. Check your inputs/assumptions.");
-            uint256 value = a % b;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, 0, b - 1, enableLogs);
     }
 
     /**
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
     function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (!(a < b)) {
-            int256 value = b - 1;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, type(int256).min, b - 1, enableLogs);
     }
 
     /**
      * @dev Clamps unsigned integer to be less than or equal to specified value with optional logging.
      */
     function clampLte(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (!(a <= b)) {
-            uint256 value = a % (b + 1);
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, 0, b, enableLogs);
     }
 
     /**
      * @dev Clamps signed integer to be less than or equal to specified value with optional logging.
      */
     function clampLte(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (!(a <= b)) {
-            int256 value = b;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, type(int256).min, b, enableLogs);
     }
 
     /**
      * @dev Clamps unsigned integer to be greater than specified value with optional logging.
      */
     function clampGt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (!(a > b)) {
-            neq(
-                b,
-                type(uint256).max,
-                "clampGt cannot clamp value a to be larger than uint256.max. Check your inputs/assumptions."
-            );
-            uint256 value = b + 1;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        } else {
-            return a;
-        }
+        return clamp(a, b + 1, type(uint256).max, enableLogs);
     }
 
     /**
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (!(a > b)) {
-            int256 value = b + 1;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        } else {
-            return a;
-        }
+        return clamp(a, b + 1, type(int256).max, enableLogs);
     }
 
     /**
      * @dev Clamps unsigned integer to be greater than or equal to specified value with optional logging.
      */
     function clampGte(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (!(a > b)) {
-            uint256 value = b;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, b, type(uint256).max, enableLogs);
     }
 
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value with optional logging.
      */
     function clampGte(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (!(a > b)) {
-            int256 value = b;
-            if (enableLogs) logClamp(a, value);
-            return value;
-        }
-        return a;
+        return clamp(a, b, type(int256).max, enableLogs);
     }
 
     /*
