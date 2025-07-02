@@ -237,7 +237,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps unsigned integer to be less than specified value with optional logging.
      */
     function clampLt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        require(b > 0, "HelperClamp: clampLt requires b > 0");
+        require(b > 0, "HelperClamp: clampLt unsupported value");
         return clamp(a, 0, b - 1, enableLogs);
     }
 
@@ -245,7 +245,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
     function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        require(b > type(int256).min, "HelperClamp: clampLt would underflow");
+        require(b > type(int256).min, "HelperClamp: clampLt unsupported value");
         return clamp(a, type(int256).min, b - 1, enableLogs);
     }
 
@@ -267,7 +267,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps unsigned integer to be greater than specified value with optional logging.
      */
     function clampGt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        require(b < type(uint256).max, "HelperClamp: clampGt would overflow");
+        require(b < type(uint256).max, "HelperClamp: clampGt unsupported value");
         return clamp(a, b + 1, type(uint256).max, enableLogs);
     }
 
@@ -275,7 +275,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        require(b < type(int256).max, "HelperClamp: clampGt would overflow");
+        require(b < type(int256).max, "HelperClamp: clampGt unsupported value");
         return clamp(a, b + 1, type(int256).max, enableLogs);
     }
 
