@@ -61,7 +61,7 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test ranges of size 2
         assertEq(this.clamp(uint256(10), uint256(5), uint256(6)), uint256(5)); // 5 + (10 % 2) = 5 + 0
         assertEq(this.clamp(uint256(11), uint256(5), uint256(6)), uint256(6)); // 5 + (11 % 2) = 5 + 1
-        
+
         // Test ranges of size 3
         assertEq(this.clamp(uint256(15), uint256(10), uint256(12)), uint256(10)); // 10 + (15 % 3) = 10 + 0
         assertEq(this.clamp(uint256(16), uint256(10), uint256(12)), uint256(11)); // 10 + (16 % 3) = 10 + 1
@@ -79,12 +79,12 @@ contract TestHelperClamp is Test, HelperClamp {
 
     function test_clamp_uint256_max_values() public {
         uint256 maxVal = type(uint256).max;
-        
+
         // Test max value in various ranges
         assertEq(this.clamp(maxVal, maxVal - 2, maxVal), maxVal);
         assertEq(this.clamp(maxVal - 1, maxVal - 2, maxVal), maxVal - 1);
         assertEq(this.clamp(maxVal - 2, maxVal - 2, maxVal), maxVal - 2);
-        
+
         // Test max value wrapping in smaller ranges
         assertEq(this.clamp(maxVal, uint256(0), uint256(10)), uint256(8)); // 0 + (max % 11) = 0 + 8
         assertEq(this.clamp(maxVal, uint256(100), uint256(110)), uint256(108)); // 100 + (max % 11) = 100 + 8
@@ -102,10 +102,10 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test sequential boundary values
         uint256 low = 50;
         uint256 high = 60;
-        
+
         // range = 60 - 50 + 1 = 11
         assertEq(this.clamp(uint256(49), low, high), uint256(55)); // 50 + (49 % 11) = 50 + 5
-        assertEq(this.clamp(uint256(61), low, high), uint256(56)); // 50 + (61 % 11) = 50 + 6  
+        assertEq(this.clamp(uint256(61), low, high), uint256(56)); // 50 + (61 % 11) = 50 + 6
         assertEq(this.clamp(uint256(71), low, high), uint256(55)); // 50 + (71 % 11) = 50 + 5
     }
 
@@ -123,12 +123,12 @@ contract TestHelperClamp is Test, HelperClamp {
 
     function test_clamp_uint256_extreme_value_combinations() public {
         uint256 maxUint = type(uint256).max;
-        
+
         // Cross-boundary tests with extreme values
         assertEq(this.clamp(maxUint, uint256(0), maxUint - 1), uint256(0)); // maxUint % maxUint = 0
         assertEq(this.clamp(uint256(0), maxUint - 1, maxUint), maxUint - 1);
         assertEq(this.clamp(maxUint - 1, uint256(0), maxUint), maxUint - 1);
-        
+
         // Test with very large but not max values
         uint256 largeVal = maxUint / 2;
         assertEq(this.clamp(largeVal, uint256(0), uint256(100)), uint256(68)); // (maxUint/2) % 101 = 68
@@ -140,11 +140,11 @@ contract TestHelperClamp is Test, HelperClamp {
         uint256 low = 10;
         uint256 high = 20;
         uint256 range = high - low + 1; // 11
-        
+
         uint256 result1 = this.clamp(value, low, high);
         uint256 result2 = this.clamp(value + range, low, high);
         uint256 result3 = this.clamp(value + 2 * range, low, high);
-        
+
         assertEq(result1, result2);
         assertEq(result2, result3);
     }
@@ -202,9 +202,9 @@ contract TestHelperClamp is Test, HelperClamp {
     function test_clamp_int128_zero_crossing() public {
         // Test ranges that cross zero
         // For clamp(-50, -5, 5): range = 5 - (-5) + 1 = 11, offset = -50 % 11 = -6, -6 + 11 = 5, ans = -5 + 5 = 0
-        assertEq(this.clamp(int128(-50), int128(-5), int128(5)), int128(0)); 
+        assertEq(this.clamp(int128(-50), int128(-5), int128(5)), int128(0));
         // For clamp(50, -5, 5): range = 11, offset = 50 % 11 = 6, ans = -5 + 6 = 1
-        assertEq(this.clamp(int128(50), int128(-5), int128(5)), int128(1)); 
+        assertEq(this.clamp(int128(50), int128(-5), int128(5)), int128(1));
         assertEq(this.clamp(int128(100), int128(-10), int128(10)), int128(6)); // range=21, 100%21=16, -10+16=6
         assertEq(this.clamp(int128(-100), int128(-10), int128(10)), int128(-5)); // range=21, -100%21=-16, -16+21=5, -10+5=-5
     }
@@ -227,7 +227,7 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(this.clamp(max - 2, max - 2, max), max - 2);
         assertEq(this.clamp(max - 3, max - 2, max), max - 1); // range=3, (max-3)%3=1, (max-2)+1=max-1
 
-        // Test around int128 min  
+        // Test around int128 min
         assertEq(this.clamp(min, min, min + 2), min);
         assertEq(this.clamp(min + 1, min, min + 2), min + 1);
         assertEq(this.clamp(min + 2, min, min + 2), min + 2);
@@ -246,11 +246,11 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test extreme values in full range
         assertEq(this.clamp(maxInt, minInt, maxInt), maxInt);
         assertEq(this.clamp(minInt, minInt, maxInt), minInt);
-        
+
         // Test extreme values in smaller ranges
         assertEq(this.clamp(maxInt, int128(0), int128(100)), int128(39)); // range=101, maxInt%101=39, 0+39=39
         assertEq(this.clamp(minInt, int128(0), int128(100)), int128(61)); // range=101, minInt%101=61, 0+61=61
-        
+
         // Cross-boundary tests
         assertEq(this.clamp(maxInt, int128(-50), int128(50)), int128(-11)); // range=101, maxInt%101=39, -50+39=-11
         assertEq(this.clamp(minInt, int128(-50), int128(50)), int128(11)); // range=101, minInt%101=61, -50+61=11
@@ -260,7 +260,7 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test with large ranges within int128 bounds
         int128 low = -10000;
         int128 high = 10000;
-        
+
         assertEq(this.clamp(int128(50000), low, high), int128(-2)); // range=20001, 50000%20001=9998, -10000+9998=-2
         assertEq(this.clamp(int128(-50000), low, high), int128(3)); // range=20001, -50000%20001=10003, -10000+10003=3
         assertEq(this.clamp(int128(0), low, high), int128(0)); // Already in range
@@ -270,8 +270,8 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test ranges of size 2
         assertEq(this.clamp(int128(10), int128(-1), int128(0)), int128(-1)); // range=2, 10%2=0, -1+0=-1
         assertEq(this.clamp(int128(11), int128(-1), int128(0)), int128(0)); // range=2, 11%2=1, -1+1=0
-        
-        // Test ranges of size 3  
+
+        // Test ranges of size 3
         assertEq(this.clamp(int128(15), int128(-1), int128(1)), int128(-1)); // range=3, 15%3=0, -1+0=-1
         assertEq(this.clamp(int128(16), int128(-1), int128(1)), int128(0)); // range=3, 16%3=1, -1+1=0
         assertEq(this.clamp(int128(17), int128(-1), int128(1)), int128(1)); // range=3, 17%3=2, -1+2=1
@@ -295,11 +295,11 @@ contract TestHelperClamp is Test, HelperClamp {
         int128 low = -10;
         int128 high = 10;
         int256 range = int256(high) - int256(low) + 1; // 21
-        
+
         int128 result1 = this.clamp(value, low, high);
         // Test with smaller multiples to avoid overflow
         int128 result2 = this.clamp(int128(int256(value) + range), low, high);
-        
+
         assertEq(result1, result2);
     }
 
@@ -527,11 +527,11 @@ contract TestHelperClamp is Test, HelperClamp {
         uint256 b = 7;
         uint256 low = 10;
         uint256 high = 20;
-        
+
         // Both values should map to same relative positions
         uint256 result_a = this.clamp(a, low, high);
         uint256 result_b = this.clamp(b, low, high);
-        
+
         // The difference should be preserved modulo the range
         uint256 range = high - low + 1;
         assertEq((result_b - result_a + range) % range, (b - a) % range);
@@ -543,10 +543,10 @@ contract TestHelperClamp is Test, HelperClamp {
         int128 neg_val = -50;
         int128 low = -10;
         int128 high = 10;
-        
+
         int128 pos_result = this.clamp(pos_val, low, high);
         int128 neg_result = this.clamp(neg_val, low, high);
-        
+
         // Both should be in range
         assertTrue(pos_result >= low && pos_result <= high);
         assertTrue(neg_result >= low && neg_result <= high);
@@ -562,11 +562,19 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test consecutive values to ensure smooth wrapping
         uint256 low = 100;
         uint256 high = 105;
-        
+
         uint256[] memory inputs = new uint256[](10);
-        inputs[0] = 90; inputs[1] = 91; inputs[2] = 92; inputs[3] = 93; inputs[4] = 94;
-        inputs[5] = 110; inputs[6] = 111; inputs[7] = 112; inputs[8] = 113; inputs[9] = 114;
-        
+        inputs[0] = 90;
+        inputs[1] = 91;
+        inputs[2] = 92;
+        inputs[3] = 93;
+        inputs[4] = 94;
+        inputs[5] = 110;
+        inputs[6] = 111;
+        inputs[7] = 112;
+        inputs[8] = 113;
+        inputs[9] = 114;
+
         for (uint256 i = 0; i < inputs.length; i++) {
             uint256 result = this.clamp(inputs[i], low, high);
             assertTrue(result >= low && result <= high);
@@ -577,12 +585,20 @@ contract TestHelperClamp is Test, HelperClamp {
         // Test values around zero with symmetric range
         int128 low = -5;
         int128 high = 5;
-        
+
         int128[] memory inputs = new int128[](11);
-        inputs[0] = -10; inputs[1] = -9; inputs[2] = -8; inputs[3] = -7; inputs[4] = -6;
+        inputs[0] = -10;
+        inputs[1] = -9;
+        inputs[2] = -8;
+        inputs[3] = -7;
+        inputs[4] = -6;
         inputs[5] = 0;
-        inputs[6] = 6; inputs[7] = 7; inputs[8] = 8; inputs[9] = 9; inputs[10] = 10;
-        
+        inputs[6] = 6;
+        inputs[7] = 7;
+        inputs[8] = 8;
+        inputs[9] = 9;
+        inputs[10] = 10;
+
         for (uint256 i = 0; i < inputs.length; i++) {
             int128 result = this.clamp(inputs[i], low, high);
             assertTrue(result >= low && result <= high);
@@ -592,8 +608,12 @@ contract TestHelperClamp is Test, HelperClamp {
     function test_clamp_all_single_value_ranges() public {
         // Test various single-value ranges
         uint256[] memory values = new uint256[](5);
-        values[0] = 0; values[1] = 1; values[2] = 100; values[3] = 1000; values[4] = type(uint256).max;
-        
+        values[0] = 0;
+        values[1] = 1;
+        values[2] = 100;
+        values[3] = 1000;
+        values[4] = type(uint256).max;
+
         for (uint256 i = 0; i < values.length; i++) {
             uint256 target = values[i];
             assertEq(this.clamp(uint256(999), target, target), target);
