@@ -169,12 +169,10 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int256_invalid_range() public {
-        // When low > high for signed integers, the behavior is more complex
-        // For int256: high - low + 1 will be negative, affecting the modulo
-        int256 result = this.clamp(int256(50), int256(100), int256(10));
-        // With low=100, high=10: range = 10 - 100 + 1 = -89
-        // The modulo with negative range creates interesting edge case behavior
-        assertTrue(result >= type(int256).min && result <= type(int256).max); // Always true, documents behavior
+        // When low > high, the improved implementation now reverts to prevent undefined behavior
+        // This is a security improvement to prevent overflow/underflow issues
+        vm.expectRevert("HelperClamp: invalid range");
+        this.clamp(int256(50), int256(100), int256(10));
     }
 
     function test_clamp_int256_boundary_conditions() public {
