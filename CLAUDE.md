@@ -120,6 +120,10 @@ Fuzzlib follows OpenZeppelin-inspired documentation standards for consistency an
 - Keep descriptions brief and technically precise
 - Avoid redundant `@param` and `@return` tags unless they add significant value
 
+### Documentation Separation
+- **NatSpec for users**: Focus on what the function does, its purpose, and expected behavior
+- **Inline comments for implementers**: Focus on how the code works, technical details, and implementation rationale
+
 ### Example Documentation Pattern
 ```solidity
 /**
