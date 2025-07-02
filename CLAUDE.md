@@ -80,6 +80,10 @@ The library automatically sets up the appropriate platform and provides access t
 - **When in doubt, remove**: If a fuzz test requires complex logic to be meaningful, consider removing it in favor of targeted unit tests
 
 ### Test Organization Pattern
+- **Group by function**: Tests should be organized by the function being tested, not by test type (unit/fuzz/edge)
+- **Sequential organization**: All tests for a single function should be grouped together in the test file
+- **Clear function sections**: Use comments to separate test groups for different functions
+
 ```solidity
 /**
  * Tests for functionName(param1, param2)
@@ -87,6 +91,12 @@ The library automatically sets up the appropriate platform and provides access t
 function test_functionName_specific_case() public { ... }
 function test_functionName_edge_case() public { ... }
 function testFuzz_functionName(type param) public { ... }
+
+/**
+ * Tests for anotherFunction(param1)
+ */
+function test_anotherFunction_basic_case() public { ... }
+function testFuzz_anotherFunction(type param) public { ... }
 ```
 
 ### Advanced Edge Case Testing
