@@ -118,112 +118,109 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clamp(int256, int256, int256)
+     * Tests for clamp(int128, int128, int128)
      */
-    function test_clamp_int256_within_bounds() public {
-        assertEq(this.clamp(int256(5), int256(-10), int256(10)), int256(5));
-        assertEq(this.clamp(int256(-5), int256(-10), int256(10)), int256(-5));
-        assertEq(this.clamp(int256(0), int256(-10), int256(10)), int256(0));
+    function test_clamp_int128_within_bounds() public {
+        assertEq(this.clamp(int128(5), int128(-10), int128(10)), int128(5));
+        assertEq(this.clamp(int128(-5), int128(-10), int128(10)), int128(-5));
+        assertEq(this.clamp(int128(0), int128(-10), int128(10)), int128(0));
     }
 
-    function test_clamp_int256_below_range() public {
-        // New algorithm: sign-preserving with alternating pattern for mixed ranges
-        // For value=-15, low=-10, high=10: negative input, odd absValue (15), maps to negative portion
-        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(-3));
-        // For value=-25, low=-10, high=10: negative input, odd absValue (25), maps to negative portion
-        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(-8));
+    function test_clamp_int128_below_range() public {
+        // Original algorithm: modular arithmetic with negative remainder handling
+        // For value=-15, low=-10, high=10: range=21, -15%21=-15, -15+21=6, ans=-10+6=-4
+        assertEq(this.clamp(int128(-15), int128(-10), int128(10)), int128(-4));
+        // For value=-25, low=-10, high=10: range=21, -25%21=-4, -4+21=17, ans=-10+17=7
+        assertEq(this.clamp(int128(-25), int128(-10), int128(10)), int128(7));
     }
 
-    function test_clamp_int256_above_range() public {
-        // New algorithm: positive inputs with odd absValue map to negative portion in mixed ranges
-        // For value=15, low=-10, high=10: positive input, odd absValue (15), maps to negative portion
-        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(-3));
-        // For value=25, low=-10, high=10: positive input, odd absValue (25), maps to negative portion
-        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(-8));
+    function test_clamp_int128_above_range() public {
+        // Original algorithm: modular arithmetic with negative remainder handling
+        // For value=15, low=-10, high=10: range=21, 15%21=15, ans=-10+15=5
+        assertEq(this.clamp(int128(15), int128(-10), int128(10)), int128(5));
+        // For value=25, low=-10, high=10: range=21, 25%21=4, ans=-10+4=-6
+        assertEq(this.clamp(int128(25), int128(-10), int128(10)), int128(-6));
     }
 
-    function test_clamp_int256_negative_bounds() public {
-        // New algorithm: entirely negative range uses negative modular arithmetic
-        // For value=-30, low=-20, high=-10: negative range, absValue=30, negRange=11, offset=30%11=8, ans=-(10+8)=-18
-        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-18));
-        // For value=-5, low=-20, high=-10: negative range, absValue=5, negRange=11, offset=5%11=5, ans=-(10+5)=-15
-        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-15));
+    function test_clamp_int128_negative_bounds() public {
+        // Original algorithm: modular arithmetic with negative remainder handling
+        // For value=-30, low=-20, high=-10: range=11, -30%11=-8, -8+11=3, ans=-20+3=-17
+        assertEq(this.clamp(int128(-30), int128(-20), int128(-10)), int128(-17));
+        // For value=-5, low=-20, high=-10: range=11, -5%11=-5, -5+11=6, ans=-20+6=-14
+        assertEq(this.clamp(int128(-5), int128(-20), int128(-10)), int128(-14));
     }
 
-    function test_clamp_int256_positive_bounds() public {
+    function test_clamp_int128_positive_bounds() public {
         // For value=25, low=10, high=20: range=11, 25%11=3, ans=10+3=13
-        assertEq(this.clamp(int256(25), int256(10), int256(20)), int256(13));
+        assertEq(this.clamp(int128(25), int128(10), int128(20)), int128(13));
         // For value=5, low=10, high=20: range=11, 5%11=5, ans=10+5=15
-        assertEq(this.clamp(int256(5), int256(10), int256(20)), int256(15));
+        assertEq(this.clamp(int128(5), int128(10), int128(20)), int128(15));
     }
 
-    function test_clamp_int256_single_value_range() public {
-        assertEq(this.clamp(int256(100), int256(5), int256(5)), int256(5));
-        assertEq(this.clamp(int256(-100), int256(-5), int256(-5)), int256(-5));
+    function test_clamp_int128_single_value_range() public {
+        assertEq(this.clamp(int128(100), int128(5), int128(5)), int128(5));
+        assertEq(this.clamp(int128(-100), int128(-5), int128(-5)), int128(-5));
     }
 
-    function test_clamp_int256_with_logging() public {
+    function test_clamp_int128_with_logging() public {
         vm.expectEmit(true, true, true, true);
-        emit Clamped("Clamping value 15 to -3");
+        emit Clamped("Clamping value 15 to 5");
 
-        int256 result = this.clamp(int256(15), int256(-10), int256(10));
-        assertEq(result, int256(-3));
+        int128 result = this.clamp(int128(15), int128(-10), int128(10));
+        assertEq(result, int128(5));
     }
 
-    function test_clamp_int256_invalid_range() public {
+    function test_clamp_int128_invalid_range() public {
         // When low > high, the improved implementation now reverts to prevent undefined behavior
         // This is a security improvement to prevent overflow/underflow issues
         vm.expectRevert("HelperClamp: invalid range");
-        this.clamp(int256(50), int256(100), int256(10));
+        this.clamp(int128(50), int128(100), int128(10));
     }
 
-    function test_clamp_int256_boundary_conditions() public {
-        int256 max = type(int256).max;
-        int256 min = type(int256).min;
+    function test_clamp_int128_boundary_conditions() public {
+        int128 max = type(int128).max;
+        int128 min = type(int128).min;
 
         // Test boundary values
-        assertEq(this.clamp(int256(-1), int256(-1), int256(0)), int256(-1));
+        assertEq(this.clamp(int128(-1), int128(-1), int128(0)), int128(-1));
 
-        // Test around int256 max
+        // Test around int128 max
         assertEq(this.clamp(max, max - 2, max), max);
         assertEq(this.clamp(max - 1, max - 2, max), max - 1);
         assertEq(this.clamp(max - 2, max - 2, max), max - 2);
 
-        // Test around int256 min
+        // Test around int128 min
         assertEq(this.clamp(min, min, min + 2), min);
         assertEq(this.clamp(min + 1, min, min + 2), min + 1);
         assertEq(this.clamp(min + 2, min, min + 2), min + 2);
 
         // Test around zero crossing for signed integers
-        assertEq(this.clamp(int256(-1), int256(-2), int256(2)), int256(-1));
-        assertEq(this.clamp(int256(0), int256(-2), int256(2)), int256(0));
-        assertEq(this.clamp(int256(1), int256(-2), int256(2)), int256(1));
+        assertEq(this.clamp(int128(-1), int128(-2), int128(2)), int128(-1));
+        assertEq(this.clamp(int128(0), int128(-2), int128(2)), int128(0));
+        assertEq(this.clamp(int128(1), int128(-2), int128(2)), int128(1));
     }
 
-    function test_clamp_int256_extreme_value_combinations() public {
-        int256 maxInt = type(int256).max;
-        int256 minInt = type(int256).min;
+    function test_clamp_int128_extreme_value_combinations() public {
+        int128 maxInt = type(int128).max;
+        int128 minInt = type(int128).min;
 
         // Test extreme values in full range
         assertEq(this.clamp(maxInt, minInt, maxInt), maxInt);
         assertEq(this.clamp(minInt, minInt, maxInt), minInt);
 
         // Cross-boundary tests with safer ranges to avoid overflow
-        int256 safeMax = maxInt / 2;
-        int256 safeMin = minInt / 2;
-        // Note: New algorithm uses alternating pattern for mixed ranges
-        // For mixed ranges, the algorithm alternates between negative and positive portions
-        assertEq(
-            this.clamp(safeMax, safeMin, safeMax - 1),
-            int256(-14474011154664524427946373126085988481658748083205070504932198000989141204993)
-        );
+        int128 safeMax = maxInt / 2;
+        int128 safeMin = minInt / 2;
+        // Note: Original algorithm uses modular arithmetic correctly
+        // These results are mathematically correct based on modular wrapping
+        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), int128(-1));
         assertEq(this.clamp(safeMin, safeMax - 1, safeMax), safeMax - 1);
     }
 
-    function testFuzz_clamp_int256(int256 value, int256 low, int256 high) public {
+    function testFuzz_clamp_int128(int128 value, int128 low, int128 high) public {
         vm.assume(low <= high);
 
-        int256 result = this.clamp(value, low, high);
+        int128 result = this.clamp(value, low, high);
 
         // Result should always be within bounds
         assertTrue(result >= low);
@@ -276,27 +273,27 @@ contract TestHelperClamp is Test, HelperClamp {
     /**
      * Tests for clampLt(int256, int256) - calls clamp(a, type(int256).min, b - 1)
      */
-    function test_clampLt_int256_basic_behavior() public {
+    function test_clampLt_int128_basic_behavior() public {
         // Test with safe values to avoid overflow
-        int256 b = int256(10);
+        int128 b = int128(10);
 
         // Test with values that are already < b (should return unchanged)
-        assertEq(this.clampLt(int256(5), b), int256(5));
-        assertEq(this.clampLt(int256(-5), b), int256(-5));
+        assertEq(this.clampLt(int128(5), b), int128(5));
+        assertEq(this.clampLt(int128(-5), b), int128(-5));
 
         // The function uses type(int256).min as low bound which causes overflow in range calculation
         // So we only test basic functional behavior without testing overflow scenarios
     }
 
-    function test_clampLt_int256_overflow_cases() public {
+    function test_clampLt_int128_overflow_cases() public {
         // Test overflow case: clampLt(value, type(int256).min) calls clamp(value, type(int256).min, type(int256).min - 1)
         // This should overflow when computing b - 1
         vm.expectRevert();
-        this.clampLt(int256(100), type(int256).min);
+        this.clampLt(int128(100), type(int128).min);
     }
 
-    // Note: int256 fuzz test omitted due to inherent overflow in extreme bounds
-    // The function uses type(int256).min as low bound which causes arithmetic overflow
+    // Note: int128 fuzz test omitted due to inherent overflow in extreme bounds
+    // The function uses type(int128).min as low bound which causes arithmetic overflow
     // in the underlying clamp function. Unit tests above cover the basic behavior.
 
     /**
@@ -320,21 +317,21 @@ contract TestHelperClamp is Test, HelperClamp {
         }
     }
 
-    // Note: int256 fuzz test omitted due to inherent overflow in extreme bounds
-    // The function uses type(int256).min as low bound which causes arithmetic overflow
+    // Note: int128 fuzz test omitted due to inherent overflow in extreme bounds
+    // The function uses type(int128).min as low bound which causes arithmetic overflow
     // in the underlying clamp function. Unit tests above cover the basic behavior.
 
     /**
      * Tests for clampLte(int256, int256) - calls clamp(a, type(int256).min, b)
      */
-    function test_clampLte_int256_basic_behavior() public {
+    function test_clampLte_int128_basic_behavior() public {
         // Test with safe values to avoid overflow
-        int256 b = int256(10);
+        int128 b = int128(10);
 
         // Test with values that are already <= b (should return unchanged)
-        assertEq(this.clampLte(int256(5), b), int256(5));
-        assertEq(this.clampLte(int256(10), b), int256(10));
-        assertEq(this.clampLte(int256(-5), b), int256(-5));
+        assertEq(this.clampLte(int128(5), b), int128(5));
+        assertEq(this.clampLte(int128(10), b), int128(10));
+        assertEq(this.clampLte(int128(-5), b), int128(-5));
 
         // The function uses type(int256).min as low bound which causes overflow in range calculation
         // So we only test basic functional behavior without testing overflow scenarios
@@ -373,22 +370,22 @@ contract TestHelperClamp is Test, HelperClamp {
     /**
      * Tests for clampGt(int256, int256) - calls clamp(a, b + 1, type(int256).max)
      */
-    function test_clampGt_int256_basic_behavior() public {
-        // Test that clampGt(a, b) equivalent to clamp(a, b + 1, type(int256).max)
-        int256 b = int256(10);
-        assertEq(this.clampGt(int256(5), b), this.clamp(int256(5), b + 1, type(int256).max));
-        assertEq(this.clampGt(int256(15), b), this.clamp(int256(15), b + 1, type(int256).max));
+    function test_clampGt_int128_basic_behavior() public {
+        // Test that clampGt(a, b) equivalent to clamp(a, b + 1, type(int128).max)
+        int128 b = int128(10);
+        assertEq(this.clampGt(int128(5), b), this.clamp(int128(5), b + 1, type(int128).max));
+        assertEq(this.clampGt(int128(15), b), this.clamp(int128(15), b + 1, type(int128).max));
     }
 
-    function test_clampGt_int256_overflow_cases() public {
+    function test_clampGt_int128_overflow_cases() public {
         // Test overflow case: clampGt(value, type(int256).max) calls clamp(value, type(int256).max + 1, type(int256).max)
         // This should overflow when computing b + 1
         vm.expectRevert();
-        this.clampGt(int256(100), type(int256).max);
+        this.clampGt(int128(100), type(int128).max);
     }
 
     // Note: int256 fuzz test omitted due to inherent overflow in extreme bounds
-    // The function uses type(int256).max as high bound which causes arithmetic overflow
+    // The function uses type(int128).max as high bound which causes arithmetic overflow
     // in the underlying clamp function. Unit tests above cover the basic behavior.
 
     /**
@@ -415,15 +412,15 @@ contract TestHelperClamp is Test, HelperClamp {
     /**
      * Tests for clampGte(int256, int256) - calls clamp(a, b, type(int256).max)
      */
-    function test_clampGte_int256_basic_behavior() public {
-        // Test that clampGte(a, b) equivalent to clamp(a, b, type(int256).max)
-        int256 b = int256(10);
-        assertEq(this.clampGte(int256(5), b), this.clamp(int256(5), b, type(int256).max));
-        assertEq(this.clampGte(int256(15), b), this.clamp(int256(15), b, type(int256).max));
+    function test_clampGte_int128_basic_behavior() public {
+        // Test that clampGte(a, b) equivalent to clamp(a, b, type(int128).max)
+        int128 b = int128(10);
+        assertEq(this.clampGte(int128(5), b), this.clamp(int128(5), b, type(int128).max));
+        assertEq(this.clampGte(int128(15), b), this.clamp(int128(15), b, type(int128).max));
     }
 
     // Note: int256 fuzz test omitted due to inherent overflow in extreme bounds
-    // The function uses type(int256).max as high bound which causes arithmetic overflow
+    // The function uses type(int128).max as high bound which causes arithmetic overflow
     // in the underlying clamp function. Unit tests above cover the basic behavior.
 
     function test_clampGte_uint256_logging() public {

@@ -36,7 +36,7 @@ abstract contract HelperClamp is HelperAssert {
      * @param high The maximum bound (inclusive)
      * @return The clamped value
      */
-    function clamp(int256 value, int256 low, int256 high) public returns (int256) {
+    function clamp(int128 value, int128 low, int128 high) public returns (int128) {
         return clamp(value, low, high, true);
     }
 
@@ -50,7 +50,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value.
      */
-    function clampLt(int256 a, int256 b) public returns (int256) {
+    function clampLt(int128 a, int128 b) public returns (int128) {
         return clampLt(a, b, true);
     }
 
@@ -64,7 +64,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value.
      */
-    function clampLte(int256 a, int256 b) public returns (int256) {
+    function clampLte(int128 a, int128 b) public returns (int128) {
         return clampLte(a, b, true);
     }
 
@@ -78,7 +78,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value.
      */
-    function clampGt(int256 a, int256 b) public returns (int256) {
+    function clampGt(int128 a, int128 b) public returns (int128) {
         return clampGt(a, b, true);
     }
 
@@ -92,7 +92,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value.
      */
-    function clampGte(int256 a, int256 b) public returns (int256) {
+    function clampGte(int128 a, int128 b) public returns (int128) {
         return clampGte(a, b, true);
     }
 
@@ -180,114 +180,58 @@ abstract contract HelperClamp is HelperAssert {
      * @param enableLogs Whether to emit Clamped events when value is adjusted
      * @return The clamped value, guaranteed to be in range [low, high]
      */
-    function clamp(int256 value, int256 low, int256 high, bool enableLogs) public returns (int256) {
+    function clamp(int128 value, int128 low, int128 high, bool enableLogs) public returns (int128) {
         // Input validation: Ensure low <= high to prevent overflow
-        // This is especially critical for signed integers where range calculation
-        // can overflow more easily (e.g., type(int256).min to type(int256).max)
         require(low <= high, "HelperClamp: invalid range");
 
         // Return values already in range without modification.
-        // This optimization also handles the full int256 range case where
-        // every possible value would pass this check
         if (value >= low && value <= high) {
             return value; // Already in range - no clamping or logging needed
         }
 
         // At this point: value is outside [low, high] and needs wrapping
-        int256 ans;
+        int128 ans;
 
         if (low == high) {
             // Single-value range: everything maps to the same value
             // Avoids potential division by zero in modulo calculation
             ans = low;
         } else {
-            // New algorithm: Split by value sign to preserve signage and avoid overflow
-            // Key insight: Split ranges into negative and positive portions, ensuring
-            // all range calculations fit safely in uint256
-
-            if (value == 0) {
-                // Zero always maps to zero if in range, otherwise to closest bound
-                ans = (low <= 0 && high >= 0) ? int256(0) : ((0 < low) ? low : high);
-            } else if (value > 0) {
-                // Positive value: work only with positive ranges and absolute values
-                uint256 absValue = uint256(value);
-
-                if (high <= 0) {
-                    // Range is entirely negative: map to negative portion using absolute values
-                    uint256 negLow = uint256(-high); // |high| (smallest absolute value)
-                    uint256 negHigh = (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low); // |low| (largest absolute value)
-                    uint256 negRange = negHigh - negLow + 1;
-                    uint256 negOffset = absValue % negRange;
-                    ans = -(int256(negLow + negOffset));
-                } else if (low >= 0) {
-                    // Range is entirely positive: standard positive modular arithmetic
-                    uint256 posRange = uint256(high - low + 1);
-                    uint256 posOffset = absValue % posRange;
-                    ans = low + int256(posOffset);
-                } else {
-                    // Range spans zero: alternate between positive and negative portions
-                    // Use simple modulo to decide which portion, avoiding any arithmetic that could overflow
-
-                    if (absValue % 2 == 0) {
-                        // Even values map to positive portion [0, high]
-                        uint256 posPortionSize = uint256(high) + 1;
-                        uint256 posOffset = (absValue / 2) % posPortionSize;
-                        ans = int256(posOffset);
-                    } else {
-                        // Odd values map to negative portion [low, -1]
-                        uint256 negPortionSize =
-                            (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low);
-                        uint256 negOffset = (absValue / 2) % negPortionSize;
-                        ans = low + int256(negOffset);
-                    }
-                }
-            } else {
-                // Negative value: work with absolute value to avoid overflow
-                uint256 absValue = (value == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-value);
-
-                if (low >= 0) {
-                    // Range is entirely positive: map to positive portion using absolute values
-                    uint256 posRange = uint256(high - low + 1);
-                    uint256 posOffset = absValue % posRange;
-                    ans = low + int256(posOffset);
-                } else if (high <= 0) {
-                    // Range is entirely negative: standard negative modular arithmetic with absolute values
-                    uint256 negLow = uint256(-high); // |high| (smallest absolute value)
-                    uint256 negHigh = (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low); // |low| (largest absolute value)
-                    uint256 negRange = negHigh - negLow + 1;
-                    uint256 negOffset = absValue % negRange;
-                    ans = -(int256(negLow + negOffset));
-                } else {
-                    // Range spans zero: alternate between negative and positive portions
-                    // Use simple modulo to decide which portion, avoiding any arithmetic that could overflow
-
-                    if (absValue % 2 == 1) {
-                        // Odd values map to negative portion [low, -1] (prefer negative for negative inputs)
-                        uint256 negPortionSize =
-                            (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low);
-                        uint256 negOffset = (absValue / 2) % negPortionSize;
-                        ans = low + int256(negOffset);
-                    } else {
-                        // Even values map to positive portion [0, high]
-                        uint256 posPortionSize = uint256(high) + 1;
-                        uint256 posOffset = (absValue / 2) % posPortionSize;
-                        ans = int256(posOffset);
-                    }
-                }
+            // Main algorithm: Wrap out-of-range values using modular arithmetic
+            // Use int256 internally to handle calculations safely
+            //
+            // The formula: ans = low + (offset % range_size)
+            // Where range_size = (high - low + 1) = total valid values in range
+            //
+            // Key difference: Solidity's % can return negative values for signed integers,
+            // so we must convert negative offsets to positive equivalents because we're
+            // adding the offset to `low` and need the result to stay within [low, high].
+            //
+            // Examples:
+            // clamp(-50, 10, 20) with range [10,11,12,13,14,15,16,17,18,19,20] (size=11)
+            // → -50 % 11 = -6, then -6 + 11 = 5, so 10 + 5 = 15 ✓
+            //
+            // clamp(-25, -10, 5) with range [-10,-9,-8,...,3,4,5] (size=16)
+            // → -25 % 16 = -9, then -9 + 16 = 7, so -10 + 7 = -3 ✓
+            int256 range = int256(high) - int256(low) + 1;
+            int256 offset = int256(value) % range;
+            if (offset < 0) {
+                offset += range; // Convert negative remainder to positive equivalent
             }
+            ans = int128(int256(low) + offset);
         }
 
         // Optional logging: Record when values were actually clamped
         if (enableLogs) {
-            logClamp(value, ans);
+            logClamp(int256(value), int256(ans));
         }
 
         return ans;
     }
-
     /**
      * @dev Clamps unsigned integer to be less than specified value with optional logging.
      */
+
     function clampLt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
         require(b > 0, "HelperClamp: clampLt unsupported value");
         return clamp(a, 0, b - 1, enableLogs);
@@ -296,9 +240,9 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
-    function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        require(b > type(int256).min, "HelperClamp: clampLt unsupported value");
-        return clamp(a, type(int256).min, b - 1, enableLogs);
+    function clampLt(int128 a, int128 b, bool enableLogs) public returns (int128) {
+        require(b > type(int128).min, "HelperClamp: clampLt unsupported value");
+        return clamp(a, type(int128).min, b - 1, enableLogs);
     }
 
     /**
@@ -311,8 +255,8 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value with optional logging.
      */
-    function clampLte(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        return clamp(a, type(int256).min, b, enableLogs);
+    function clampLte(int128 a, int128 b, bool enableLogs) public returns (int128) {
+        return clamp(a, type(int128).min, b, enableLogs);
     }
 
     /**
@@ -326,9 +270,9 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
-    function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        require(b < type(int256).max, "HelperClamp: clampGt unsupported value");
-        return clamp(a, b + 1, type(int256).max, enableLogs);
+    function clampGt(int128 a, int128 b, bool enableLogs) public returns (int128) {
+        require(b < type(int128).max, "HelperClamp: clampGt unsupported value");
+        return clamp(a, b + 1, type(int128).max, enableLogs);
     }
 
     /**
@@ -341,8 +285,8 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value with optional logging.
      */
-    function clampGte(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        return clamp(a, b, type(int256).max, enableLogs);
+    function clampGte(int128 a, int128 b, bool enableLogs) public returns (int128) {
+        return clamp(a, b, type(int128).max, enableLogs);
     }
 
     /*
