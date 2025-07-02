@@ -6,3 +6,9 @@ Fuzzlib is an unopinionated Solidity library designed for both stateful and stat
 ## Branches
 * `main`: Latest `fl.` namespace
 * `v0_2`: Old namespace version for backwards compatibility
+
+
+## Known limitations
+- Clamping close to `type(uint256).max`, `type(int256).min`, and `type(int256).max` can cause overflow errors
+
+
