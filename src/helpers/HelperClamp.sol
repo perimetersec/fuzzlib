@@ -201,28 +201,80 @@ abstract contract HelperClamp is HelperAssert {
             // Avoids potential division by zero in modulo calculation
             ans = low;
         } else {
-            // Main algorithm: Wrap out-of-range values using modular arithmetic
-            // More complex than uint256 because we must handle negative remainders
-            //
-            // The formula: ans = low + (offset % range_size)
-            // Where range_size = (high - low + 1) = total valid values in range
-            //
-            // Key difference: Solidity's % can return negative values for signed integers,
-            // so we must convert negative offsets to positive equivalents because we're
-            // adding the offset to `low` and need the result to stay within [low, high].
-            //
-            // Examples:
-            // clamp(-50, 10, 20) with range [10,11,12,13,14,15,16,17,18,19,20] (size=11)
-            // → -50 % 11 = -6, then -6 + 11 = 5, so 10 + 5 = 15 ✓
-            //
-            // clamp(-25, -10, 5) with range [-10,-9,-8,...,3,4,5] (size=16)
-            // → -25 % 16 = -9, then -9 + 16 = 7, so -10 + 7 = -3 ✓
-            int256 range = high - low + 1;
-            int256 offset = value % range;
-            if (offset < 0) {
-                offset += range; // Convert negative remainder to positive equivalent
+            // New algorithm: Split by value sign to preserve signage and avoid overflow
+            // Key insight: Split ranges into negative and positive portions, ensuring
+            // all range calculations fit safely in uint256
+
+            if (value == 0) {
+                // Zero always maps to zero if in range, otherwise to closest bound
+                ans = (low <= 0 && high >= 0) ? int256(0) : ((0 < low) ? low : high);
+            } else if (value > 0) {
+                // Positive value: work only with positive ranges and absolute values
+                uint256 absValue = uint256(value);
+
+                if (high <= 0) {
+                    // Range is entirely negative: map to negative portion using absolute values
+                    uint256 negLow = uint256(-high); // |high| (smallest absolute value)
+                    uint256 negHigh = (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low); // |low| (largest absolute value)
+                    uint256 negRange = negHigh - negLow + 1;
+                    uint256 negOffset = absValue % negRange;
+                    ans = -(int256(negLow + negOffset));
+                } else if (low >= 0) {
+                    // Range is entirely positive: standard positive modular arithmetic
+                    uint256 posRange = uint256(high - low + 1);
+                    uint256 posOffset = absValue % posRange;
+                    ans = low + int256(posOffset);
+                } else {
+                    // Range spans zero: alternate between positive and negative portions
+                    // Use simple modulo to decide which portion, avoiding any arithmetic that could overflow
+
+                    if (absValue % 2 == 0) {
+                        // Even values map to positive portion [0, high]
+                        uint256 posPortionSize = uint256(high) + 1;
+                        uint256 posOffset = (absValue / 2) % posPortionSize;
+                        ans = int256(posOffset);
+                    } else {
+                        // Odd values map to negative portion [low, -1]
+                        uint256 negPortionSize =
+                            (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low);
+                        uint256 negOffset = (absValue / 2) % negPortionSize;
+                        ans = low + int256(negOffset);
+                    }
+                }
+            } else {
+                // Negative value: work with absolute value to avoid overflow
+                uint256 absValue = (value == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-value);
+
+                if (low >= 0) {
+                    // Range is entirely positive: map to positive portion using absolute values
+                    uint256 posRange = uint256(high - low + 1);
+                    uint256 posOffset = absValue % posRange;
+                    ans = low + int256(posOffset);
+                } else if (high <= 0) {
+                    // Range is entirely negative: standard negative modular arithmetic with absolute values
+                    uint256 negLow = uint256(-high); // |high| (smallest absolute value)
+                    uint256 negHigh = (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low); // |low| (largest absolute value)
+                    uint256 negRange = negHigh - negLow + 1;
+                    uint256 negOffset = absValue % negRange;
+                    ans = -(int256(negLow + negOffset));
+                } else {
+                    // Range spans zero: alternate between negative and positive portions
+                    // Use simple modulo to decide which portion, avoiding any arithmetic that could overflow
+
+                    if (absValue % 2 == 1) {
+                        // Odd values map to negative portion [low, -1] (prefer negative for negative inputs)
+                        uint256 negPortionSize =
+                            (low == type(int256).min) ? (uint256(type(int256).max) + 1) : uint256(-low);
+                        uint256 negOffset = (absValue / 2) % negPortionSize;
+                        ans = low + int256(negOffset);
+                    } else {
+                        // Even values map to positive portion [0, high]
+                        uint256 posPortionSize = uint256(high) + 1;
+                        uint256 posOffset = (absValue / 2) % posPortionSize;
+                        ans = int256(posOffset);
+                    }
+                }
             }
-            ans = low + offset;
         }
 
         // Optional logging: Record when values were actually clamped

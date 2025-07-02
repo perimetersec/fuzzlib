@@ -127,24 +127,27 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int256_below_range() public {
-        // For value=-15, low=-10, high=10: range=21, -15%21=-15, -15+21=6, ans=-10+6=-4
-        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(-4));
-        // For value=-25, low=-10, high=10: range=21, -25%21=-4, -4+21=17, ans=-10+17=7
-        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(7));
+        // New algorithm: sign-preserving with alternating pattern for mixed ranges
+        // For value=-15, low=-10, high=10: negative input, odd absValue (15), maps to negative portion
+        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(-3));
+        // For value=-25, low=-10, high=10: negative input, odd absValue (25), maps to negative portion
+        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(-8));
     }
 
     function test_clamp_int256_above_range() public {
-        // For value=15, low=-10, high=10: range=21, 15%21=15, ans=-10+15=5
-        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(5));
-        // For value=25, low=-10, high=10: range=21, 25%21=4, ans=-10+4=-6
-        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(-6));
+        // New algorithm: positive inputs with odd absValue map to negative portion in mixed ranges
+        // For value=15, low=-10, high=10: positive input, odd absValue (15), maps to negative portion
+        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(-3));
+        // For value=25, low=-10, high=10: positive input, odd absValue (25), maps to negative portion
+        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(-8));
     }
 
     function test_clamp_int256_negative_bounds() public {
-        // For value=-30, low=-20, high=-10: range=11, -30%11=-8, -8+11=3, ans=-20+3=-17
-        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-17));
-        // For value=-5, low=-20, high=-10: range=11, -5%11=-5, -5+11=6, ans=-20+6=-14
-        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-14));
+        // New algorithm: entirely negative range uses negative modular arithmetic
+        // For value=-30, low=-20, high=-10: negative range, absValue=30, negRange=11, offset=30%11=8, ans=-(10+8)=-18
+        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-18));
+        // For value=-5, low=-20, high=-10: negative range, absValue=5, negRange=11, offset=5%11=5, ans=-(10+5)=-15
+        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-15));
     }
 
     function test_clamp_int256_positive_bounds() public {
@@ -161,10 +164,10 @@ contract TestHelperClamp is Test, HelperClamp {
 
     function test_clamp_int256_with_logging() public {
         vm.expectEmit(true, true, true, true);
-        emit Clamped("Clamping value 15 to 5");
+        emit Clamped("Clamping value 15 to -3");
 
         int256 result = this.clamp(int256(15), int256(-10), int256(10));
-        assertEq(result, int256(5));
+        assertEq(result, int256(-3));
     }
 
     function test_clamp_int256_invalid_range() public {
@@ -208,17 +211,17 @@ contract TestHelperClamp is Test, HelperClamp {
         // Cross-boundary tests with safer ranges to avoid overflow
         int256 safeMax = maxInt / 2;
         int256 safeMin = minInt / 2;
-        assertEq(this.clamp(safeMax, safeMin, safeMax - 1), int256(-1));
+        // Note: New algorithm uses alternating pattern for mixed ranges
+        // For mixed ranges, the algorithm alternates between negative and positive portions
+        assertEq(
+            this.clamp(safeMax, safeMin, safeMax - 1),
+            int256(-14474011154664524427946373126085988481658748083205070504932198000989141204993)
+        );
         assertEq(this.clamp(safeMin, safeMax - 1, safeMax), safeMax - 1);
     }
 
     function testFuzz_clamp_int256(int256 value, int256 low, int256 high) public {
         vm.assume(low <= high);
-        // Avoid overflow in range calculation by ensuring reasonable bounds
-        vm.assume(low > type(int256).min / 4 && high < type(int256).max / 4);
-        vm.assume(high - low < type(int256).max / 4);
-        // Avoid edge cases that might cause overflow in modulo arithmetic
-        vm.assume(value > type(int256).min / 4 && value < type(int256).max / 4);
 
         int256 result = this.clamp(value, low, high);
 
