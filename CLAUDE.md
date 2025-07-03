@@ -94,6 +94,7 @@ import {ErrAllowTestHelper} from "../test/util/ErrAllowTestHelper.sol";
 - **Type safety**: Rely on Solidity's type system rather than manual type checking
 - **Performance focus**: Prioritize execution efficiency over defensive error handling
 - **Maintainability**: Write code that is easy to understand and modify without defensive complexity
+- **Custom errors**: Use custom errors instead of `require` statements for better gas efficiency and clearer error handling
 
 ## Error Handling
 
@@ -162,6 +163,66 @@ emit Clamped(
 - **Logging integration**: String utilities are essential for meaningful log messages
 - **Cross-platform compatibility**: String formatting works consistently across all supported platforms
 
+## Error Handling Implementation
+
+### Custom Errors vs Require Statements
+
+All new code should use custom errors instead of `require` statements for better gas efficiency and clearer error semantics:
+
+```solidity
+// ❌ Avoid: Traditional require statements
+require(low <= high, "HelperClamp: invalid range");
+require(b > 0, "HelperClamp: clampLt unsupported value");
+
+// ✅ Prefer: Custom errors
+error InvalidRange(uint256 low, uint256 high);
+error UnsupportedClampLtValue(uint256 value);
+
+if (low > high) revert InvalidRange(low, high);
+if (b == 0) revert UnsupportedClampLtValue(b);
+```
+
+### Custom Error Best Practices
+
+- **Descriptive names**: Use clear, specific error names that indicate the problem
+- **Include context**: Add relevant parameter values to help with debugging
+- **Consistent naming**: Follow `PascalCase` convention for error names
+- **Gas efficiency**: Custom errors use less gas than require strings
+- **Type safety**: Custom errors provide better tooling support and type checking
+- **Testing compatibility**: Custom errors work seamlessly with `errAllow` testing functions
+
+### Migration Guidelines
+
+When updating existing code:
+
+1. **Define custom errors** at the contract level near the top
+2. **Replace require statements** with `if (condition) revert CustomError(params);`
+3. **Update tests** to use the new custom error selectors with `errAllow`
+4. **Maintain backward compatibility** during the transition period
+
+### Example Migration
+
+```solidity
+// Before:
+contract HelperClamp {
+    function clamp(uint256 value, uint256 low, uint256 high) public returns (uint256) {
+        require(low <= high, "HelperClamp: invalid range");
+        // ... rest of function
+    }
+}
+
+// After:
+contract HelperClamp {
+    error InvalidRange(uint256 low, uint256 high);
+    error UnsupportedClampLtValue(uint256 value);
+    
+    function clamp(uint256 value, uint256 low, uint256 high) public returns (uint256) {
+        if (low > high) revert InvalidRange(low, high);
+        // ... rest of function
+    }
+}
+```
+
 ## Development Workflow
 
 ### Common Development Tasks
@@ -188,6 +249,8 @@ emit Clamped(
    - ✅ String utilities used for logging
    - ✅ Import patterns followed
    - ✅ Function overloads tested with selectors
+   - ✅ Custom errors used instead of require statements
+   - ✅ Error tests updated for custom error selectors
 
 ## Testing Guidelines
 
