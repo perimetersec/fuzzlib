@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../FuzzLibString.sol";
 import "./HelperAssert.sol";
+import "../FuzzSafeCast.sol";
 
 /**
  * @dev Value clamping and bounds checking utilities for fuzzing operations.
@@ -12,9 +13,7 @@ abstract contract HelperClamp is HelperAssert {
     error InvalidRange(uint256 low, uint256 high);
     error InvalidRangeInt128(int128 low, int128 high);
     error UnsupportedClampLtValue(uint256 value);
-    error UnsupportedClampLtValueInt128(int128 value);
     error UnsupportedClampGtValue(uint256 value);
-    error UnsupportedClampGtValueInt128(int128 value);
 
     event Clamped(string);
 
@@ -42,7 +41,7 @@ abstract contract HelperClamp is HelperAssert {
      * @param high The maximum bound (inclusive)
      * @return The clamped value
      */
-    function clamp(int128 value, int128 low, int128 high) public returns (int128) {
+    function clamp(int256 value, int256 low, int256 high) public returns (int128) {
         return clamp(value, low, high, true);
     }
 
@@ -56,7 +55,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value.
      */
-    function clampLt(int128 a, int128 b) public returns (int128) {
+    function clampLt(int256 a, int256 b) public returns (int128) {
         return clampLt(a, b, true);
     }
 
@@ -70,7 +69,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value.
      */
-    function clampLte(int128 a, int128 b) public returns (int128) {
+    function clampLte(int256 a, int256 b) public returns (int128) {
         return clampLte(a, b, true);
     }
 
@@ -84,7 +83,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value.
      */
-    function clampGt(int128 a, int128 b) public returns (int128) {
+    function clampGt(int256 a, int256 b) public returns (int128) {
         return clampGt(a, b, true);
     }
 
@@ -98,7 +97,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value.
      */
-    function clampGte(int128 a, int128 b) public returns (int128) {
+    function clampGte(int256 a, int256 b) public returns (int128) {
         return clampGte(a, b, true);
     }
 
@@ -175,13 +174,18 @@ abstract contract HelperClamp is HelperAssert {
      * - clamp(-50, 10, 20) → 15 (wraps around)
      * - clamp(100, 5, 5) → 5 (single-value range)
      *
-     * @param value The value to clamp
-     * @param low The minimum bound (inclusive)
-     * @param high The maximum bound (inclusive)
+     * @param _value The value to clamp
+     * @param _low The minimum bound (inclusive)
+     * @param _high The maximum bound (inclusive)
      * @param enableLogs Whether to emit Clamped events when value is adjusted
      * @return The clamped value, guaranteed to be in range [low, high]
      */
-    function clamp(int128 value, int128 low, int128 high, bool enableLogs) public returns (int128) {
+    function clamp(int256 _value, int256 _low, int256 _high, bool enableLogs) public returns (int128) {
+        // Cast all parameters to int128 using SafeCast for overflow protection
+        int128 value = FuzzSafeCast.toInt128(_value);
+        int128 low = FuzzSafeCast.toInt128(_low);
+        int128 high = FuzzSafeCast.toInt128(_high);
+
         // Input validation: Ensure low <= high to prevent overflow
         if (low > high) revert InvalidRangeInt128(low, high);
 
@@ -232,9 +236,9 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
-    function clampLt(int128 a, int128 b, bool enableLogs) public returns (int128) {
-        if (b == type(int128).min) revert UnsupportedClampLtValueInt128(b);
-        return clamp(a, type(int128).min, b - 1, enableLogs);
+    function clampLt(int256 a, int256 b, bool enableLogs) public returns (int128) {
+        if (b <= type(int128).min) revert UnsupportedClampLtValue(uint256(b));
+        return clamp(a, int256(type(int128).min), b - 1, enableLogs);
     }
 
     /**
@@ -247,7 +251,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value with optional logging.
      */
-    function clampLte(int128 a, int128 b, bool enableLogs) public returns (int128) {
+    function clampLte(int256 a, int256 b, bool enableLogs) public returns (int128) {
         return clamp(a, type(int128).min, b, enableLogs);
     }
 
@@ -262,9 +266,9 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
-    function clampGt(int128 a, int128 b, bool enableLogs) public returns (int128) {
-        if (b == type(int128).max) revert UnsupportedClampGtValueInt128(b);
-        return clamp(a, b + 1, type(int128).max, enableLogs);
+    function clampGt(int256 a, int256 b, bool enableLogs) public returns (int128) {
+        if (b >= type(int128).max) revert UnsupportedClampGtValue(uint256(b));
+        return clamp(a, b + 1, int256(type(int128).max), enableLogs);
     }
 
     /**
@@ -277,7 +281,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value with optional logging.
      */
-    function clampGte(int128 a, int128 b, bool enableLogs) public returns (int128) {
+    function clampGte(int256 a, int256 b, bool enableLogs) public returns (int128) {
         return clamp(a, b, type(int128).max, enableLogs);
     }
 

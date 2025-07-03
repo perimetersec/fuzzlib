@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
+import "../src/FuzzSafeCast.sol";
 
 import {HelperClamp} from "../src/helpers/HelperClamp.sol";
 
@@ -313,6 +314,52 @@ contract TestHelperClamp is Test, HelperClamp {
         this.clamp(int128(50), int128(100), int128(10));
     }
 
+    function test_clamp_int128_safecast_overflow() public {
+        // Test that SafeCast properly reverts when int256 value exceeds int128 range
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clamp(int256(type(int128).max) + 1, int256(0), int256(10));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).min) - 1
+            )
+        );
+        this.clamp(int256(type(int128).min) - 1, int256(0), int256(10));
+
+        // Test with very large positive values
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).max)
+        );
+        this.clamp(type(int256).max, int256(0), int256(10));
+
+        // Test with very large negative values
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).min)
+        );
+        this.clamp(type(int256).min, int256(0), int256(10));
+
+        // Test SafeCast overflow for low bound parameter
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clamp(int256(50), int256(type(int128).max) + 1, int256(10));
+
+        // Test SafeCast overflow for high bound parameter
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).min) - 1
+            )
+        );
+        this.clamp(int256(50), int256(0), int256(type(int128).min) - 1);
+    }
+
+
     function test_clamp_int128_cyclic_property() public {
         // Tests that clamp(value) == clamp(value + range) for signed integers
         // This verifies the modular arithmetic behaves cyclically
@@ -441,8 +488,34 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampLt_int128_overflow_cases() public {
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValueInt128.selector, type(int128).min));
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min))));
         this.clampLt(int128(100), type(int128).min);
+    }
+
+    function test_clampLt_int128_safecast_overflow() public {
+        // Test that SafeCast properly reverts when int256 value exceeds int128 range
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampLt(int256(type(int128).max) + 1, int256(10));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).max)
+        );
+        this.clampLt(type(int256).max, int256(10));
+
+        // Test bounds parameter validation (should not reach SafeCast with optimized approach)
+        // clampLt with bounds parameter <= type(int128).min should be rejected immediately
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min))));
+        this.clampLt(int256(50), type(int128).min);
+
+        // Test bounds parameter with value below int128.min
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min) - 1))
+        );
+        this.clampLt(int256(50), int256(type(int128).min) - 1);
     }
 
     /**
@@ -521,6 +594,29 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(this.clampLte(int128(-1), int128(0)), int128(-1));
         assertEq(this.clampLte(int128(0), int128(0)), int128(0));
         assertEq(this.clampLte(int128(1), int128(0)), this.clamp(int128(1), type(int128).min, int128(0)));
+    }
+
+    function test_clampLte_int128_safecast_overflow() public {
+        // Test that SafeCast properly reverts when int256 value exceeds int128 range
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampLte(int256(type(int128).max) + 1, int256(10));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).min)
+        );
+        this.clampLte(type(int256).min, int256(10));
+
+        // Test SafeCast overflow for bounds parameter
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampLte(int256(50), int256(type(int128).max) + 1);
     }
 
     /**
@@ -608,8 +704,34 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampGt_int128_overflow_cases() public {
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValueInt128.selector, type(int128).max));
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max))));
         this.clampGt(int128(100), type(int128).max);
+    }
+
+    function test_clampGt_int128_safecast_overflow() public {
+        // Test that SafeCast properly reverts when int256 value exceeds int128 range
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampGt(int256(type(int128).max) + 1, int256(10));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).min)
+        );
+        this.clampGt(type(int256).min, int256(10));
+
+        // Test bounds parameter validation (should not reach SafeCast with optimized approach)
+        // clampGt with bounds parameter >= type(int128).max should be rejected immediately
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max))));
+        this.clampGt(int256(50), type(int128).max);
+
+        // Test bounds parameter with value above int128.max
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max) + 1))
+        );
+        this.clampGt(int256(50), int256(type(int128).max) + 1);
     }
 
     /**
@@ -707,5 +829,28 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(this.clampGte(int128(-5), int128(-10)), int128(-5));
         assertEq(this.clampGte(int128(-10), int128(-10)), int128(-10));
         assertEq(this.clampGte(int128(-15), int128(-10)), this.clamp(int128(-15), int128(-10), type(int128).max));
+    }
+
+    function test_clampGte_int128_safecast_overflow() public {
+        // Test that SafeCast properly reverts when int256 value exceeds int128 range
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampGte(int256(type(int128).max) + 1, int256(10));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, type(int256).min)
+        );
+        this.clampGte(type(int256).min, int256(10));
+
+        // Test SafeCast overflow for bounds parameter
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                FuzzSafeCast.SafeCastOverflowedIntDowncast.selector, 128, int256(type(int128).max) + 1
+            )
+        );
+        this.clampGte(int256(50), int256(type(int128).max) + 1);
     }
 }
