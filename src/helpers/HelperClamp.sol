@@ -41,7 +41,7 @@ abstract contract HelperClamp is HelperAssert {
      * @param high The maximum bound (inclusive)
      * @return The clamped value
      */
-    function clamp(int256 value, int256 low, int256 high) public returns (int128) {
+    function clamp(int256 value, int256 low, int256 high) public returns (int256) {
         return clamp(value, low, high, true);
     }
 
@@ -55,7 +55,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value.
      */
-    function clampLt(int256 a, int256 b) public returns (int128) {
+    function clampLt(int256 a, int256 b) public returns (int256) {
         return clampLt(a, b, true);
     }
 
@@ -69,7 +69,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value.
      */
-    function clampLte(int256 a, int256 b) public returns (int128) {
+    function clampLte(int256 a, int256 b) public returns (int256) {
         return clampLte(a, b, true);
     }
 
@@ -83,7 +83,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value.
      */
-    function clampGt(int256 a, int256 b) public returns (int128) {
+    function clampGt(int256 a, int256 b) public returns (int256) {
         return clampGt(a, b, true);
     }
 
@@ -97,7 +97,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value.
      */
-    function clampGte(int256 a, int256 b) public returns (int128) {
+    function clampGte(int256 a, int256 b) public returns (int256) {
         return clampGte(a, b, true);
     }
 
@@ -180,7 +180,7 @@ abstract contract HelperClamp is HelperAssert {
      * @param enableLogs Whether to emit Clamped events when value is adjusted
      * @return The clamped value, guaranteed to be in range [low, high]
      */
-    function clamp(int256 _value, int256 _low, int256 _high, bool enableLogs) public returns (int128) {
+    function clamp(int256 _value, int256 _low, int256 _high, bool enableLogs) public returns (int256) {
         // Cast all parameters to int128 using SafeCast for overflow protection
         int128 value = FuzzSafeCast.toInt128(_value);
         int128 low = FuzzSafeCast.toInt128(_low);
@@ -191,7 +191,7 @@ abstract contract HelperClamp is HelperAssert {
 
         // Return values already in range without modification.
         if (value >= low && value <= high) {
-            return value;
+            return int256(value);
         }
 
         // Wrap out-of-range values using modular arithmetic. Use int256 internally to
@@ -222,7 +222,7 @@ abstract contract HelperClamp is HelperAssert {
             logClamp(int256(value), int256(ans));
         }
 
-        return ans;
+        return int256(ans);
     }
     /**
      * @dev Clamps unsigned integer to be less than specified value with optional logging.
@@ -236,7 +236,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
-    function clampLt(int256 a, int256 b, bool enableLogs) public returns (int128) {
+    function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (b <= type(int128).min) revert UnsupportedClampLtValue(uint256(b));
         return clamp(a, int256(type(int128).min), b - 1, enableLogs);
     }
@@ -251,7 +251,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be less than or equal to specified value with optional logging.
      */
-    function clampLte(int256 a, int256 b, bool enableLogs) public returns (int128) {
+    function clampLte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         return clamp(a, type(int128).min, b, enableLogs);
     }
 
@@ -266,7 +266,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
-    function clampGt(int256 a, int256 b, bool enableLogs) public returns (int128) {
+    function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (b >= type(int128).max) revert UnsupportedClampGtValue(uint256(b));
         return clamp(a, b + 1, type(int128).max, enableLogs);
     }
@@ -281,7 +281,7 @@ abstract contract HelperClamp is HelperAssert {
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value with optional logging.
      */
-    function clampGte(int256 a, int256 b, bool enableLogs) public returns (int128) {
+    function clampGte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         return clamp(a, b, type(int128).max, enableLogs);
     }
 

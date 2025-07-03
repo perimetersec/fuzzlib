@@ -185,69 +185,69 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clamp(int128, int128, int128)
+     * Tests for clamp(int256, int256, int256)
      */
     function test_clamp_int128_within_bounds() public {
-        assertEq(this.clamp(int128(5), int128(-10), int128(10)), int128(5));
-        assertEq(this.clamp(int128(-5), int128(-10), int128(10)), int128(-5));
-        assertEq(this.clamp(int128(0), int128(-10), int128(10)), int128(0));
-        assertEq(this.clamp(int128(-10), int128(-10), int128(10)), int128(-10));
-        assertEq(this.clamp(int128(10), int128(-10), int128(10)), int128(10));
+        assertEq(this.clamp(int256(5), int256(-10), int256(10)), int256(5));
+        assertEq(this.clamp(int256(-5), int256(-10), int256(10)), int256(-5));
+        assertEq(this.clamp(int256(0), int256(-10), int256(10)), int256(0));
+        assertEq(this.clamp(int256(-10), int256(-10), int256(10)), int256(-10));
+        assertEq(this.clamp(int256(10), int256(-10), int256(10)), int256(10));
     }
 
     function test_clamp_int128_below_range() public {
         // Test modular arithmetic with negative remainder handling
-        assertEq(this.clamp(int128(-15), int128(-10), int128(10)), int128(-4)); // range=21, -15%21=-15, -15+21=6, -10+6=-4
-        assertEq(this.clamp(int128(-25), int128(-10), int128(10)), int128(7)); // range=21, -25%21=-4, -4+21=17, -10+17=7
-        assertEq(this.clamp(int128(-100), int128(0), int128(20)), int128(5)); // range=21, -100%21=-16, -16+21=5, 0+5=5
-        assertEq(this.clamp(int128(-50), int128(-20), int128(0)), int128(-7)); // range=21, -50%21=-8, -8+21=13, -20+13=-7
+        assertEq(this.clamp(int256(-15), int256(-10), int256(10)), int256(-4)); // range=21, -15%21=-15, -15+21=6, -10+6=-4
+        assertEq(this.clamp(int256(-25), int256(-10), int256(10)), int256(7)); // range=21, -25%21=-4, -4+21=17, -10+17=7
+        assertEq(this.clamp(int256(-100), int256(0), int256(20)), int256(5)); // range=21, -100%21=-16, -16+21=5, 0+5=5
+        assertEq(this.clamp(int256(-50), int256(-20), int256(0)), int256(-7)); // range=21, -50%21=-8, -8+21=13, -20+13=-7
     }
 
     function test_clamp_int128_above_range() public {
         // Test modular arithmetic for positive values above range
-        assertEq(this.clamp(int128(15), int128(-10), int128(10)), int128(5)); // range=21, 15%21=15, -10+15=5
-        assertEq(this.clamp(int128(25), int128(-10), int128(10)), int128(-6)); // range=21, 25%21=4, -10+4=-6
-        assertEq(this.clamp(int128(100), int128(0), int128(20)), int128(16)); // range=21, 100%21=16, 0+16=16
-        assertEq(this.clamp(int128(50), int128(-20), int128(0)), int128(-12)); // range=21, 50%21=8, -20+8=-12
+        assertEq(this.clamp(int256(15), int256(-10), int256(10)), int256(5)); // range=21, 15%21=15, -10+15=5
+        assertEq(this.clamp(int256(25), int256(-10), int256(10)), int256(-6)); // range=21, 25%21=4, -10+4=-6
+        assertEq(this.clamp(int256(100), int256(0), int256(20)), int256(16)); // range=21, 100%21=16, 0+16=16
+        assertEq(this.clamp(int256(50), int256(-20), int256(0)), int256(-12)); // range=21, 50%21=8, -20+8=-12
     }
 
     function test_clamp_int128_negative_bounds() public {
         // Test ranges entirely in negative numbers
-        assertEq(this.clamp(int128(-30), int128(-20), int128(-10)), int128(-17)); // range=11, -30%11=-8, -8+11=3, -20+3=-17
-        assertEq(this.clamp(int128(-5), int128(-20), int128(-10)), int128(-14)); // range=11, -5%11=-5, -5+11=6, -20+6=-14
-        assertEq(this.clamp(int128(-50), int128(-100), int128(-90)), int128(-95)); // range=11, -50%11=-6, -6+11=5, -100+5=-95
-        assertEq(this.clamp(int128(0), int128(-50), int128(-40)), int128(-50)); // range=11, 0%11=0, -50+0=-50
+        assertEq(this.clamp(int256(-30), int256(-20), int256(-10)), int256(-17)); // range=11, -30%11=-8, -8+11=3, -20+3=-17
+        assertEq(this.clamp(int256(-5), int256(-20), int256(-10)), int256(-14)); // range=11, -5%11=-5, -5+11=6, -20+6=-14
+        assertEq(this.clamp(int256(-50), int256(-100), int256(-90)), int256(-95)); // range=11, -50%11=-6, -6+11=5, -100+5=-95
+        assertEq(this.clamp(int256(0), int256(-50), int256(-40)), int256(-50)); // range=11, 0%11=0, -50+0=-50
     }
 
     function test_clamp_int128_positive_bounds() public {
         // Test ranges entirely in positive numbers
-        assertEq(this.clamp(int128(25), int128(10), int128(20)), int128(13)); // range=11, 25%11=3, 10+3=13
-        assertEq(this.clamp(int128(5), int128(10), int128(20)), int128(15)); // range=11, 5%11=5, 10+5=15
-        assertEq(this.clamp(int128(100), int128(50), int128(60)), int128(51)); // range=11, 100%11=1, 50+1=51
-        assertEq(this.clamp(int128(-10), int128(20), int128(30)), int128(21)); // range=11, -10%11=-10, -10+11=1, 20+1=21
+        assertEq(this.clamp(int256(25), int256(10), int256(20)), int256(13)); // range=11, 25%11=3, 10+3=13
+        assertEq(this.clamp(int256(5), int256(10), int256(20)), int256(15)); // range=11, 5%11=5, 10+5=15
+        assertEq(this.clamp(int256(100), int256(50), int256(60)), int256(51)); // range=11, 100%11=1, 50+1=51
+        assertEq(this.clamp(int256(-10), int256(20), int256(30)), int256(21)); // range=11, -10%11=-10, -10+11=1, 20+1=21
     }
 
     function test_clamp_int128_zero_crossing() public {
         // Test ranges that cross zero
         // For clamp(-50, -5, 5): range = 5 - (-5) + 1 = 11, offset = -50 % 11 = -6, -6 + 11 = 5, ans = -5 + 5 = 0
-        assertEq(this.clamp(int128(-50), int128(-5), int128(5)), int128(0));
+        assertEq(this.clamp(int256(-50), int256(-5), int256(5)), int256(0));
         // For clamp(50, -5, 5): range = 11, offset = 50 % 11 = 6, ans = -5 + 6 = 1
-        assertEq(this.clamp(int128(50), int128(-5), int128(5)), int128(1));
-        assertEq(this.clamp(int128(100), int128(-10), int128(10)), int128(6)); // range=21, 100%21=16, -10+16=6
-        assertEq(this.clamp(int128(-100), int128(-10), int128(10)), int128(-5)); // range=21, -100%21=-16, -16+21=5, -10+5=-5
+        assertEq(this.clamp(int256(50), int256(-5), int256(5)), int256(1));
+        assertEq(this.clamp(int256(100), int256(-10), int256(10)), int256(6)); // range=21, 100%21=16, -10+16=6
+        assertEq(this.clamp(int256(-100), int256(-10), int256(10)), int256(-5)); // range=21, -100%21=-16, -16+21=5, -10+5=-5
     }
 
     function test_clamp_int128_single_value_range() public {
-        assertEq(this.clamp(int128(100), int128(5), int128(5)), int128(5));
-        assertEq(this.clamp(int128(-100), int128(-5), int128(-5)), int128(-5));
-        assertEq(this.clamp(int128(0), int128(0), int128(0)), int128(0));
-        assertEq(this.clamp(type(int128).max, int128(42), int128(42)), int128(42));
-        assertEq(this.clamp(type(int128).min, int128(-42), int128(-42)), int128(-42));
+        assertEq(this.clamp(int256(100), int256(5), int256(5)), int256(5));
+        assertEq(this.clamp(int256(-100), int256(-5), int256(-5)), int256(-5));
+        assertEq(this.clamp(int256(0), int256(0), int256(0)), int256(0));
+        assertEq(this.clamp(int256(type(int128).max), int256(42), int256(42)), int256(42));
+        assertEq(this.clamp(int256(type(int128).min), int256(-42), int256(-42)), int256(-42));
     }
 
     function test_clamp_int128_boundary_conditions() public {
-        int128 max = type(int128).max;
-        int128 min = type(int128).min;
+        int256 max = int256(type(int128).max);
+        int256 min = int256(type(int128).min);
 
         // Test around int128 max
         assertEq(this.clamp(max, max - 2, max), max);
@@ -261,57 +261,57 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(this.clamp(min + 2, min, min + 2), min + 2);
         assertEq(this.clamp(min + 3, min, min + 2), min + 1); // range=3, (min+3)%3=1, min+1=min+1
 
-        assertEq(this.clamp(int128(-1), int128(-1), int128(1)), int128(-1));
-        assertEq(this.clamp(int128(0), int128(-1), int128(1)), int128(0));
-        assertEq(this.clamp(int128(1), int128(-1), int128(1)), int128(1));
+        assertEq(this.clamp(int256(-1), int256(-1), int256(1)), int256(-1));
+        assertEq(this.clamp(int256(0), int256(-1), int256(1)), int256(0));
+        assertEq(this.clamp(int256(1), int256(-1), int256(1)), int256(1));
     }
 
     function test_clamp_int128_extreme_value_combinations() public {
-        int128 maxInt = type(int128).max;
-        int128 minInt = type(int128).min;
+        int256 maxInt = int256(type(int128).max);
+        int256 minInt = int256(type(int128).min);
 
         assertEq(this.clamp(maxInt, minInt, maxInt), maxInt);
         assertEq(this.clamp(minInt, minInt, maxInt), minInt);
 
         // Test extreme values in smaller ranges
-        assertEq(this.clamp(maxInt, int128(0), int128(100)), int128(39)); // range=101, maxInt%101=39, 0+39=39
-        assertEq(this.clamp(minInt, int128(0), int128(100)), int128(61)); // range=101, minInt%101=61, 0+61=61
+        assertEq(this.clamp(maxInt, int256(0), int256(100)), int256(39)); // range=101, maxInt%101=39, 0+39=39
+        assertEq(this.clamp(minInt, int256(0), int256(100)), int256(61)); // range=101, minInt%101=61, 0+61=61
 
         // Cross-boundary tests
-        assertEq(this.clamp(maxInt, int128(-50), int128(50)), int128(-11)); // range=101, maxInt%101=39, -50+39=-11
-        assertEq(this.clamp(minInt, int128(-50), int128(50)), int128(11)); // range=101, minInt%101=61, -50+61=11
+        assertEq(this.clamp(maxInt, int256(-50), int256(50)), int256(-11)); // range=101, maxInt%101=39, -50+39=-11
+        assertEq(this.clamp(minInt, int256(-50), int256(50)), int256(11)); // range=101, minInt%101=61, -50+61=11
     }
 
     function test_clamp_int128_large_ranges() public {
-        int128 low = -10000;
-        int128 high = 10000;
+        int256 low = -10000;
+        int256 high = 10000;
 
-        assertEq(this.clamp(int128(50000), low, high), int128(-2)); // range=20001, 50000%20001=9998, -10000+9998=-2
-        assertEq(this.clamp(int128(-50000), low, high), int128(3)); // range=20001, -50000%20001=10003, -10000+10003=3
-        assertEq(this.clamp(int128(0), low, high), int128(0)); // Already in range
+        assertEq(this.clamp(int256(50000), low, high), int256(-2)); // range=20001, 50000%20001=9998, -10000+9998=-2
+        assertEq(this.clamp(int256(-50000), low, high), int256(3)); // range=20001, -50000%20001=10003, -10000+10003=3
+        assertEq(this.clamp(int256(0), low, high), int256(0)); // Already in range
     }
 
     function test_clamp_int128_small_ranges() public {
         // Test ranges of size 2
-        assertEq(this.clamp(int128(10), int128(-1), int128(0)), int128(-1)); // range=2, 10%2=0, -1+0=-1
-        assertEq(this.clamp(int128(11), int128(-1), int128(0)), int128(0)); // range=2, 11%2=1, -1+1=0
+        assertEq(this.clamp(int256(10), int256(-1), int256(0)), int256(-1)); // range=2, 10%2=0, -1+0=-1
+        assertEq(this.clamp(int256(11), int256(-1), int256(0)), int256(0)); // range=2, 11%2=1, -1+1=0
 
         // Test ranges of size 3
-        assertEq(this.clamp(int128(15), int128(-1), int128(1)), int128(-1)); // range=3, 15%3=0, -1+0=-1
-        assertEq(this.clamp(int128(16), int128(-1), int128(1)), int128(0)); // range=3, 16%3=1, -1+1=0
-        assertEq(this.clamp(int128(17), int128(-1), int128(1)), int128(1)); // range=3, 17%3=2, -1+2=1
+        assertEq(this.clamp(int256(15), int256(-1), int256(1)), int256(-1)); // range=3, 15%3=0, -1+0=-1
+        assertEq(this.clamp(int256(16), int256(-1), int256(1)), int256(0)); // range=3, 16%3=1, -1+1=0
+        assertEq(this.clamp(int256(17), int256(-1), int256(1)), int256(1)); // range=3, 17%3=2, -1+2=1
     }
 
     function test_clamp_int128_with_logging() public {
         vm.expectEmit(true, true, true, true);
         emit Clamped("Clamping value 15 to 5");
-        int128 result = this.clamp(int128(15), int128(-10), int128(10));
-        assertEq(result, int128(5)); // range=21, 15%21=15, -10+15=5
+        int256 result = this.clamp(int256(15), int256(-10), int256(10));
+        assertEq(result, int256(5)); // range=21, 15%21=15, -10+15=5
     }
 
     function test_clamp_int128_invalid_range() public {
         vm.expectRevert(abi.encodeWithSelector(HelperClamp.InvalidRangeInt128.selector, int128(100), int128(10)));
-        this.clamp(int128(50), int128(100), int128(10));
+        this.clamp(int256(50), int256(100), int256(10));
     }
 
     function test_clamp_int128_safecast_overflow() public {
@@ -362,19 +362,18 @@ contract TestHelperClamp is Test, HelperClamp {
     function test_clamp_int128_cyclic_property() public {
         // Tests that clamp(value) == clamp(value + range) for signed integers
         // This verifies the modular arithmetic behaves cyclically
-        int128 value = 15;
-        int128 low = -10;
-        int128 high = 10;
-        int256 range = int256(high) - int256(low) + 1;
+        int256 value = 15;
+        int256 low = -10;
+        int256 high = 10;
+        int256 range = high - low + 1;
 
-        int128 result1 = this.clamp(value, low, high);
-        int128 result2 = this.clamp(int128(int256(value) + range), low, high);
+        int256 result1 = this.clamp(value, low, high);
+        int256 result2 = this.clamp(value + range, low, high);
 
         assertEq(result1, result2);
     }
 
     function testFuzz_clamp_int128(int128 value, int128 _low, int128 _high) public {
-        // vm.assume(low <= high);
         int128 low;
         int128 high;
         if (_low < _high) {
@@ -385,13 +384,13 @@ contract TestHelperClamp is Test, HelperClamp {
             high = _low;
         }
 
-        int128 result = this.clamp(value, low, high);
+        int256 result = this.clamp(int256(value), int256(low), int256(high));
 
-        assertTrue(result >= low);
-        assertTrue(result <= high);
+        assertTrue(result >= int256(low));
+        assertTrue(result <= int256(high));
 
         if (value >= low && value <= high) {
-            assertEq(result, value);
+            assertEq(result, int256(value));
         }
     }
 
@@ -450,47 +449,47 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clampLt(int128, int128)
+     * Tests for clampLt(int256, int256)
      */
     function test_clampLt_int128_basic_behavior() public {
-        assertEq(this.clampLt(int128(5), int128(10)), int128(5));
-        assertEq(this.clampLt(int128(-5), int128(10)), int128(-5));
-        assertEq(this.clampLt(int128(15), int128(10)), this.clamp(int128(15), type(int128).min, int128(9)));
+        assertEq(this.clampLt(int256(5), int256(10)), int256(5));
+        assertEq(this.clampLt(int256(-5), int256(10)), int256(-5));
+        assertEq(this.clampLt(int256(15), int256(10)), this.clamp(int256(15), int256(type(int128).min), int256(9)));
     }
 
     function test_clampLt_int128_boundary_values() public {
         // Test with max values
         assertEq(
-            this.clampLt(type(int128).max, type(int128).max),
-            this.clamp(type(int128).max, type(int128).min, type(int128).max - 1)
+            this.clampLt(int256(type(int128).max), int256(type(int128).max)),
+            this.clamp(int256(type(int128).max), int256(type(int128).min), int256(type(int128).max) - 1)
         );
-        assertEq(this.clampLt(type(int128).max - 1, type(int128).max), type(int128).max - 1);
+        assertEq(this.clampLt(int256(type(int128).max) - 1, int256(type(int128).max)), int256(type(int128).max) - 1);
 
         // Test near-max values
-        assertEq(this.clampLt(type(int128).max - 2, type(int128).max - 1), type(int128).max - 2);
+        assertEq(this.clampLt(int256(type(int128).max) - 2, int256(type(int128).max) - 1), int256(type(int128).max) - 2);
         assertEq(
-            this.clampLt(type(int128).max, type(int128).max - 1),
-            this.clamp(type(int128).max, type(int128).min, type(int128).max - 2)
+            this.clampLt(int256(type(int128).max), int256(type(int128).max) - 1),
+            this.clamp(int256(type(int128).max), int256(type(int128).min), int256(type(int128).max) - 2)
         );
 
         // Test with min+1 (smallest valid bound)
-        assertEq(this.clampLt(type(int128).min, type(int128).min + 1), type(int128).min);
+        assertEq(this.clampLt(int256(type(int128).min), int256(type(int128).min) + 1), int256(type(int128).min));
         assertEq(
-            this.clampLt(type(int128).min + 1, type(int128).min + 1),
-            this.clamp(type(int128).min + 1, type(int128).min, type(int128).min)
+            this.clampLt(int256(type(int128).min) + 1, int256(type(int128).min) + 1),
+            this.clamp(int256(type(int128).min) + 1, int256(type(int128).min), int256(type(int128).min))
         );
 
         // Test around zero
-        assertEq(this.clampLt(int128(-1), int128(0)), int128(-1));
-        assertEq(this.clampLt(int128(0), int128(0)), this.clamp(int128(0), type(int128).min, int128(-1)));
-        assertEq(this.clampLt(int128(1), int128(0)), this.clamp(int128(1), type(int128).min, int128(-1)));
+        assertEq(this.clampLt(int256(-1), int256(0)), int256(-1));
+        assertEq(this.clampLt(int256(0), int256(0)), this.clamp(int256(0), int256(type(int128).min), int256(-1)));
+        assertEq(this.clampLt(int256(1), int256(0)), this.clamp(int256(1), int256(type(int128).min), int256(-1)));
     }
 
     function test_clampLt_int128_overflow_cases() public {
         vm.expectRevert(
             abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min)))
         );
-        this.clampLt(int128(100), type(int128).min);
+        this.clampLt(int256(100), int256(type(int128).min));
     }
 
     function test_clampLt_int128_safecast_overflow() public {
@@ -512,7 +511,7 @@ contract TestHelperClamp is Test, HelperClamp {
         vm.expectRevert(
             abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min)))
         );
-        this.clampLt(int256(50), type(int128).min);
+        this.clampLt(int256(50), int256(type(int128).min));
 
         // Test bounds parameter with value below int128.min
         vm.expectRevert(
@@ -566,37 +565,39 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clampLte(int128, int128)
+     * Tests for clampLte(int256, int256)
      */
     function test_clampLte_int128_basic_behavior() public {
-        assertEq(this.clampLte(int128(5), int128(10)), int128(5));
-        assertEq(this.clampLte(int128(10), int128(10)), int128(10));
-        assertEq(this.clampLte(int128(-5), int128(10)), int128(-5));
+        assertEq(this.clampLte(int256(5), int256(10)), int256(5));
+        assertEq(this.clampLte(int256(10), int256(10)), int256(10));
+        assertEq(this.clampLte(int256(-5), int256(10)), int256(-5));
     }
 
     function test_clampLte_int128_boundary_values() public {
         // Test with max values
-        assertEq(this.clampLte(type(int128).max, type(int128).max), type(int128).max);
-        assertEq(this.clampLte(type(int128).max - 1, type(int128).max), type(int128).max - 1);
+        assertEq(this.clampLte(int256(type(int128).max), int256(type(int128).max)), int256(type(int128).max));
+        assertEq(this.clampLte(int256(type(int128).max) - 1, int256(type(int128).max)), int256(type(int128).max) - 1);
 
         // Test near-max values
-        assertEq(this.clampLte(type(int128).max - 2, type(int128).max - 1), type(int128).max - 2);
         assertEq(
-            this.clampLte(type(int128).max, type(int128).max - 1),
-            this.clamp(type(int128).max, type(int128).min, type(int128).max - 1)
+            this.clampLte(int256(type(int128).max) - 2, int256(type(int128).max) - 1), int256(type(int128).max) - 2
+        );
+        assertEq(
+            this.clampLte(int256(type(int128).max), int256(type(int128).max) - 1),
+            this.clamp(int256(type(int128).max), int256(type(int128).min), int256(type(int128).max) - 1)
         );
 
         // Test with min values
-        assertEq(this.clampLte(type(int128).min, type(int128).min), type(int128).min);
+        assertEq(this.clampLte(int256(type(int128).min), int256(type(int128).min)), int256(type(int128).min));
         assertEq(
-            this.clampLte(type(int128).min + 1, type(int128).min),
-            this.clamp(type(int128).min + 1, type(int128).min, type(int128).min)
+            this.clampLte(int256(type(int128).min) + 1, int256(type(int128).min)),
+            this.clamp(int256(type(int128).min) + 1, int256(type(int128).min), int256(type(int128).min))
         );
 
         // Test around zero
-        assertEq(this.clampLte(int128(-1), int128(0)), int128(-1));
-        assertEq(this.clampLte(int128(0), int128(0)), int128(0));
-        assertEq(this.clampLte(int128(1), int128(0)), this.clamp(int128(1), type(int128).min, int128(0)));
+        assertEq(this.clampLte(int256(-1), int256(0)), int256(-1));
+        assertEq(this.clampLte(int256(0), int256(0)), int256(0));
+        assertEq(this.clampLte(int256(1), int256(0)), this.clamp(int256(1), int256(type(int128).min), int256(0)));
     }
 
     function test_clampLte_int128_safecast_overflow() public {
@@ -673,44 +674,44 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clampGt(int128, int128)
+     * Tests for clampGt(int256, int256)
      */
     function test_clampGt_int128_basic_behavior() public {
-        assertEq(this.clampGt(int128(15), int128(10)), int128(15));
-        assertEq(this.clampGt(int128(5), int128(10)), this.clamp(int128(5), int128(11), type(int128).max));
-        assertEq(this.clampGt(int128(-5), int128(-10)), int128(-5));
+        assertEq(this.clampGt(int256(15), int256(10)), int256(15));
+        assertEq(this.clampGt(int256(5), int256(10)), this.clamp(int256(5), int256(11), int256(type(int128).max)));
+        assertEq(this.clampGt(int256(-5), int256(-10)), int256(-5));
     }
 
     function test_clampGt_int128_boundary_values() public {
         // Test near-max values (can't test max since it would overflow)
-        assertEq(this.clampGt(type(int128).max - 1, type(int128).max - 2), type(int128).max - 1);
+        assertEq(this.clampGt(int256(type(int128).max) - 1, int256(type(int128).max) - 2), int256(type(int128).max) - 1);
         assertEq(
-            this.clampGt(type(int128).max - 2, type(int128).max - 2),
-            this.clamp(type(int128).max - 2, type(int128).max - 1, type(int128).max)
+            this.clampGt(int256(type(int128).max) - 2, int256(type(int128).max) - 2),
+            this.clamp(int256(type(int128).max) - 2, int256(type(int128).max) - 1, int256(type(int128).max))
         );
 
         // Test with min values
-        assertEq(this.clampGt(type(int128).min + 1, type(int128).min), type(int128).min + 1);
+        assertEq(this.clampGt(int256(type(int128).min) + 1, int256(type(int128).min)), int256(type(int128).min) + 1);
         assertEq(
-            this.clampGt(type(int128).min, type(int128).min),
-            this.clamp(type(int128).min, type(int128).min + 1, type(int128).max)
+            this.clampGt(int256(type(int128).min), int256(type(int128).min)),
+            this.clamp(int256(type(int128).min), int256(type(int128).min) + 1, int256(type(int128).max))
         );
 
         // Test around zero
-        assertEq(this.clampGt(int128(1), int128(0)), int128(1));
-        assertEq(this.clampGt(int128(0), int128(0)), this.clamp(int128(0), int128(1), type(int128).max));
-        assertEq(this.clampGt(int128(-1), int128(0)), this.clamp(int128(-1), int128(1), type(int128).max));
+        assertEq(this.clampGt(int256(1), int256(0)), int256(1));
+        assertEq(this.clampGt(int256(0), int256(0)), this.clamp(int256(0), int256(1), int256(type(int128).max)));
+        assertEq(this.clampGt(int256(-1), int256(0)), this.clamp(int256(-1), int256(1), int256(type(int128).max)));
 
         // Test with negative bounds
-        assertEq(this.clampGt(int128(-5), int128(-10)), int128(-5));
-        assertEq(this.clampGt(int128(-10), int128(-10)), this.clamp(int128(-10), int128(-9), type(int128).max));
+        assertEq(this.clampGt(int256(-5), int256(-10)), int256(-5));
+        assertEq(this.clampGt(int256(-10), int256(-10)), this.clamp(int256(-10), int256(-9), int256(type(int128).max)));
     }
 
     function test_clampGt_int128_overflow_cases() public {
         vm.expectRevert(
             abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max)))
         );
-        this.clampGt(int128(100), type(int128).max);
+        this.clampGt(int256(100), int256(type(int128).max));
     }
 
     function test_clampGt_int128_safecast_overflow() public {
@@ -732,7 +733,7 @@ contract TestHelperClamp is Test, HelperClamp {
         vm.expectRevert(
             abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max)))
         );
-        this.clampGt(int256(50), type(int128).max);
+        this.clampGt(int256(50), int256(type(int128).max));
 
         // Test bounds parameter with value above int128.max
         vm.expectRevert(
@@ -799,43 +800,45 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     /**
-     * Tests for clampGte(int128, int128)
+     * Tests for clampGte(int256, int256)
      */
     function test_clampGte_int128_basic_behavior() public {
-        assertEq(this.clampGte(int128(15), int128(10)), int128(15));
-        assertEq(this.clampGte(int128(10), int128(10)), int128(10));
-        assertEq(this.clampGte(int128(5), int128(10)), this.clamp(int128(5), int128(10), type(int128).max));
-        assertEq(this.clampGte(int128(-5), int128(-10)), int128(-5));
+        assertEq(this.clampGte(int256(15), int256(10)), int256(15));
+        assertEq(this.clampGte(int256(10), int256(10)), int256(10));
+        assertEq(this.clampGte(int256(5), int256(10)), this.clamp(int256(5), int256(10), int256(type(int128).max)));
+        assertEq(this.clampGte(int256(-5), int256(-10)), int256(-5));
     }
 
     function test_clampGte_int128_boundary_values() public {
         // Test with max values
-        assertEq(this.clampGte(type(int128).max, type(int128).max), type(int128).max);
+        assertEq(this.clampGte(int256(type(int128).max), int256(type(int128).max)), int256(type(int128).max));
         assertEq(
-            this.clampGte(type(int128).max - 1, type(int128).max),
-            this.clamp(type(int128).max - 1, type(int128).max, type(int128).max)
+            this.clampGte(int256(type(int128).max) - 1, int256(type(int128).max)),
+            this.clamp(int256(type(int128).max) - 1, int256(type(int128).max), int256(type(int128).max))
         );
 
         // Test near-max values
         assertEq(
-            this.clampGte(type(int128).max - 2, type(int128).max - 1),
-            this.clamp(type(int128).max - 2, type(int128).max - 1, type(int128).max)
+            this.clampGte(int256(type(int128).max) - 2, int256(type(int128).max) - 1),
+            this.clamp(int256(type(int128).max) - 2, int256(type(int128).max) - 1, int256(type(int128).max))
         );
-        assertEq(this.clampGte(type(int128).max, type(int128).max - 1), type(int128).max);
+        assertEq(this.clampGte(int256(type(int128).max), int256(type(int128).max) - 1), int256(type(int128).max));
 
         // Test with min values
-        assertEq(this.clampGte(type(int128).min, type(int128).min), type(int128).min);
-        assertEq(this.clampGte(type(int128).min + 1, type(int128).min), type(int128).min + 1);
+        assertEq(this.clampGte(int256(type(int128).min), int256(type(int128).min)), int256(type(int128).min));
+        assertEq(this.clampGte(int256(type(int128).min) + 1, int256(type(int128).min)), int256(type(int128).min) + 1);
 
         // Test around zero
-        assertEq(this.clampGte(int128(1), int128(0)), int128(1));
-        assertEq(this.clampGte(int128(0), int128(0)), int128(0));
-        assertEq(this.clampGte(int128(-1), int128(0)), this.clamp(int128(-1), int128(0), type(int128).max));
+        assertEq(this.clampGte(int256(1), int256(0)), int256(1));
+        assertEq(this.clampGte(int256(0), int256(0)), int256(0));
+        assertEq(this.clampGte(int256(-1), int256(0)), this.clamp(int256(-1), int256(0), int256(type(int128).max)));
 
         // Test with negative bounds
-        assertEq(this.clampGte(int128(-5), int128(-10)), int128(-5));
-        assertEq(this.clampGte(int128(-10), int128(-10)), int128(-10));
-        assertEq(this.clampGte(int128(-15), int128(-10)), this.clamp(int128(-15), int128(-10), type(int128).max));
+        assertEq(this.clampGte(int256(-5), int256(-10)), int256(-5));
+        assertEq(this.clampGte(int256(-10), int256(-10)), int256(-10));
+        assertEq(
+            this.clampGte(int256(-15), int256(-10)), this.clamp(int256(-15), int256(-10), int256(type(int128).max))
+        );
     }
 
     function test_clampGte_int128_safecast_overflow() public {
