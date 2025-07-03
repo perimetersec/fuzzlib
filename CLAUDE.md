@@ -85,7 +85,6 @@ import {ErrAllowTestHelper} from "../test/util/ErrAllowTestHelper.sol";
 ### Defensive Programming Approach
 - **Fail-fast principle**: Let functions fail naturally rather than adding defensive checks that mask issues
 - **Minimize assumptions**: Remove unnecessary overflow checks and edge case handling in helper functions
-- **Trust the platform**: Rely on Solidity's built-in overflow detection rather than manual checks
 - **Clear error messages**: When errors occur, let them surface with meaningful context rather than defensive handling
 - **Simplicity over safety**: Prioritize code clarity and simplicity over defensive programming patterns
 
@@ -181,13 +180,7 @@ emit Clamped(
    - Use `errAllow` for error handling tests
    - Leverage utility contracts for complex scenarios
 
-3. **Debugging and error handling**:
-   - Use `errAllow` functions to test expected failures
-   - Implement fail-fast error handling
-   - Test error scenarios with utility contracts
-   - Ensure errors surface with meaningful context
-
-4. **Code review checklist**:
+3. **Code review checklist**:
    - ✅ Tests organized by function
    - ✅ No defensive programming patterns
    - ✅ Consistent documentation style
@@ -216,7 +209,7 @@ emit Clamped(
       abi.encodeWithSelector(uint256MaxSelector, a, b)
   );
   ```
-- **Type safety**: Explicitly cast literal values to avoid compiler ambiguity (e.g., `uint256(5)`, `int256(-1)`)
+- **Type safety**: Explicitly cast literal values to avoid compiler ambiguity (e.g., `uint256(5)`, `int256(-1)`). Do this only when absolutely necessary.
 - **Overflow handling**: Use `vm.assume()` sparingly to avoid problematic values (e.g., `type(int256).min` for abs operations)
 - **Fail-fast testing**: Avoid empty catch blocks or overly defensive error handling - tests should fail when unexpected behavior occurs
 - **Test expected behavior**: Assert that operations work as expected rather than defensively handling edge cases that shouldn't fail in test environments
@@ -312,11 +305,11 @@ Fuzzlib follows OpenZeppelin-inspired documentation standards for consistency an
 - **Inline comments for implementers**: Focus on how the code works, technical details, and implementation rationale
 
 ### Documentation Quality Guidelines
-- **Accuracy first**: Ensure all mathematical examples and descriptions are correct
 - **Conciseness**: Keep descriptions brief and technically precise - avoid verbose explanations
 - **Consistency**: Use consistent terminology and formatting across all documentation
 - **Outsider-friendly**: Write for developers unfamiliar with the codebase, avoiding internal jargon
 - **No redundant comments**: Avoid comments that simply restate what the code does
+- **Accuracy first**: Ensure all mathematical examples and descriptions are correct
 
 ### Example Documentation Pattern
 ```solidity
