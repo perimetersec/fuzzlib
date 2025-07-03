@@ -173,6 +173,10 @@ abstract contract HelperClamp is HelperAssert {
      * wraps out-of-range values cyclically through the target range. This provides uniform distribution
      * across the entire range when used with random input values.
      *
+     * Note: Uses int128 instead of int256 to avoid potential overflow issues in range calculations
+     * when computing (high - low + 1). The smaller type provides sufficient range for most fuzzing
+     * scenarios while maintaining safe arithmetic operations.
+     *
      * Examples:
      * - clamp(5, -10, 10) → 5 (already in range)
      * - clamp(-1234, -123, 123) → 122 (wraps around)
