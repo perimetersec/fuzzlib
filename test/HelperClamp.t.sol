@@ -188,7 +188,6 @@ contract TestHelperClamp is Test, HelperClamp {
 
     function test_clamp_int128_below_range() public {
         // Test modular arithmetic with negative remainder handling
-        // For negative values, we use: if (offset < 0) offset += range
         assertEq(this.clamp(int128(-15), int128(-10), int128(10)), int128(-4)); // range=21, -15%21=-15, -15+21=6, -10+6=-4
         assertEq(this.clamp(int128(-25), int128(-10), int128(10)), int128(7)); // range=21, -25%21=-4, -4+21=17, -10+17=7
         assertEq(this.clamp(int128(-100), int128(0), int128(20)), int128(5)); // range=21, -100%21=-16, -16+21=5, 0+5=5
@@ -241,6 +240,7 @@ contract TestHelperClamp is Test, HelperClamp {
         int128 max = type(int128).max;
         int128 min = type(int128).min;
 
+        // Test around int128 max
         assertEq(this.clamp(max, max - 2, max), max);
         assertEq(this.clamp(max - 1, max - 2, max), max - 1);
         assertEq(this.clamp(max - 2, max - 2, max), max - 2);
