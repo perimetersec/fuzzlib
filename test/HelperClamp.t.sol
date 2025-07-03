@@ -7,20 +7,15 @@ import "forge-std/console.sol";
 import {HelperClamp} from "../src/helpers/HelperClamp.sol";
 
 /**
- * @dev Comprehensive tests for HelperClamp functionality including value clamping,
- * bounds checking, logging, and edge cases. Tests both uint256 and int128 clamping
- * with thorough coverage of boundary conditions, modular arithmetic, and extreme values.
+ * @dev Tests for HelperClamp modular arithmetic clamping functions.
+ * Covers uint256 and int128 clamping with boundary conditions and extreme values.
  * @author Perimeter <info@perimetersec.io>
  */
 contract TestHelperClamp is Test, HelperClamp {
     /*
      **************************************************************************
-     * UINT256 CLAMP TESTS - Comprehensive Coverage
+     * UINT256 CLAMP TESTS
      **************************************************************************
-     */
-
-    /**
-     * Basic functionality tests for uint256 clamping
      */
     function test_clamp_uint256_within_bounds() public {
         assertEq(this.clamp(uint256(5), uint256(0), uint256(10)), uint256(5));
@@ -151,12 +146,8 @@ contract TestHelperClamp is Test, HelperClamp {
 
     /*
      **************************************************************************
-     * INT128 CLAMP TESTS - Comprehensive Coverage  
+     * INT128 CLAMP TESTS
      **************************************************************************
-     */
-
-    /**
-     * Basic functionality tests for int128 clamping
      */
     function test_clamp_int128_within_bounds() public {
         assertEq(this.clamp(int128(5), int128(-10), int128(10)), int128(5));
@@ -305,12 +296,8 @@ contract TestHelperClamp is Test, HelperClamp {
 
     /*
      **************************************************************************
-     * HELPER FUNCTION TESTS - Comprehensive Coverage
+     * HELPER FUNCTION TESTS
      **************************************************************************
-     */
-
-    /**
-     * Tests for clampLt functions
      */
     function test_clampLt_uint256_basic_behavior() public {
         assertEq(this.clampLt(uint256(5), uint256(10)), this.clamp(uint256(5), uint256(0), uint256(9)));
@@ -421,7 +408,7 @@ contract TestHelperClamp is Test, HelperClamp {
 
     /*
      **************************************************************************
-     * FUZZ TESTS - Comprehensive Property Testing (NO DEFENSIVE ASSUMPTIONS)
+     * FUZZ TESTS
      **************************************************************************
      */
 
