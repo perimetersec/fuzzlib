@@ -268,7 +268,7 @@ abstract contract HelperClamp is HelperAssert {
      */
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int128) {
         if (b >= type(int128).max) revert UnsupportedClampGtValue(uint256(b));
-        return clamp(a, b + 1, int256(type(int128).max), enableLogs);
+        return clamp(a, b + 1, type(int128).max, enableLogs);
     }
 
     /**
