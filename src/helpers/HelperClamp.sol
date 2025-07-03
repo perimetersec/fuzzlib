@@ -36,6 +36,9 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer value to be between low and high bounds (inclusive).
+     *
+     * All parameters must be within int128 range or the function will revert.
+     *
      * @param value The value to clamp
      * @param low The minimum bound (inclusive)
      * @param high The maximum bound (inclusive)
@@ -54,6 +57,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be less than specified value.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampLt(int256 a, int256 b) public returns (int256) {
         return clampLt(a, b, true);
@@ -68,6 +73,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be less than or equal to specified value.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampLte(int256 a, int256 b) public returns (int256) {
         return clampLte(a, b, true);
@@ -82,6 +89,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be greater than specified value.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampGt(int256 a, int256 b) public returns (int256) {
         return clampGt(a, b, true);
@@ -96,6 +105,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampGte(int256 a, int256 b) public returns (int256) {
         return clampGte(a, b, true);
@@ -157,9 +168,9 @@ abstract contract HelperClamp is HelperAssert {
      * wraps out-of-range values cyclically through the target range. This provides uniform distribution
      * across the entire range when used with random input values.
      *
-     * Note: Uses int128 instead of int256 to avoid potential overflow issues in range calculations
-     * when computing (high - low + 1). The smaller type provides sufficient range for most fuzzing
-     * scenarios while maintaining safe arithmetic operations.
+     * All parameters must be within int128 range or the function will revert.
+     * The smaller type provides sufficient range for most fuzzing scenarios while maintaining
+     * safe arithmetic operations.
      *
      * @param _value The value to clamp
      * @param _low The minimum bound (inclusive)
@@ -222,6 +233,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be less than specified value with optional logging.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (b <= type(int128).min) revert UnsupportedClampLtValue(uint256(b));
@@ -237,6 +250,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be less than or equal to specified value with optional logging.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampLte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         return clamp(a, type(int128).min, b, enableLogs);
@@ -252,6 +267,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be greater than specified value with optional logging.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
         if (b >= type(int128).max) revert UnsupportedClampGtValue(uint256(b));
@@ -267,6 +284,8 @@ abstract contract HelperClamp is HelperAssert {
 
     /**
      * @dev Clamps signed integer to be greater than or equal to specified value with optional logging.
+     *
+     * All parameters must be within int128 range or the function will revert.
      */
     function clampGte(int256 a, int256 b, bool enableLogs) public returns (int256) {
         return clamp(a, b, type(int128).max, enableLogs);
