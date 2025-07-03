@@ -139,24 +139,15 @@ abstract contract HelperClamp is HelperAssert {
             return value;
         }
 
-        // At this point: value is outside [low, high] and needs wrapping
-        uint256 ans;
-
-        if (low == high) {
-            // Edge case: Single-value range - everything maps to the same value
-            // Avoids potential division by zero in modulo calculation
-            ans = low;
-        } else {
-            // Main algorithm: Wrap out-of-range values using modular arithmetic
-            //
-            // The formula: ans = low + (value % range_size)
-            // Where range_size = (high - low + 1) = total valid values in range
-            //
-            // Example:
-            // clamp(17, 5, 9) with range [5,6,7,8,9] (size=5)
-            // → 17 % 5 = 2, so 5 + 2 = 7 ✓ (wraps to position 2 in range)
-            ans = low + (value % (high - low + 1));
-        }
+        // Wrap out-of-range values using modular arithmetic
+        //
+        // The formula: ans = low + (value % range_size)
+        // Where range_size = (high - low + 1) = total valid values in range
+        //
+        // Example:
+        // clamp(17, 5, 9) with range [5,6,7,8,9] (size=5)
+        // → 17 % 5 = 2, so 5 + 2 = 7 ✓ (wraps to position 2 in range)
+        uint256 ans = low + (value % (high - low + 1));
 
         // Optional logging: Record when values were actually clamped
         if (enableLogs) {
@@ -199,37 +190,28 @@ abstract contract HelperClamp is HelperAssert {
             return value;
         }
 
-        // At this point: value is outside [low, high] and needs wrapping
-        int128 ans;
-
-        if (low == high) {
-            // Single-value range: everything maps to the same value
-            // Avoids potential division by zero in modulo calculation
-            ans = low;
-        } else {
-            // Main algorithm: Wrap out-of-range values using modular arithmetic
-            // Use int256 internally to handle calculations safely
-            //
-            // The formula: ans = low + (offset % range_size)
-            // Where range_size = (high - low + 1) = total valid values in range
-            //
-            // Solidity's % can return negative values for signed integers, so we must
-            // convert negative offsets to positive equivalents because we're adding
-            // the offset to `low` and need the result to stay within [low, high].
-            //
-            // Examples:
-            // clamp(-50, 10, 20) with range [10,11,12,...,18,19,20] (size=11)
-            // → -50 % 11 = -6, then -6 + 11 = 5, so 10 + 5 = 15 ✓
-            //
-            // clamp(-25, -10, 5) with range [-10,-9,-8,...,3,4,5] (size=16)
-            // → -25 % 16 = -9, then -9 + 16 = 7, so -10 + 7 = -3 ✓
-            int256 range = int256(high) - int256(low) + 1;
-            int256 offset = int256(value) % range;
-            if (offset < 0) {
-                offset += range;
-            }
-            ans = int128(int256(low) + offset);
+        // Wrap out-of-range values using modular arithmetic. Use int256 internally to
+        // handle calculations safely.
+        //
+        // The formula: ans = low + (offset % range_size)
+        // Where range_size = (high - low + 1) = total valid values in range
+        //
+        // Solidity's % can return negative values for signed integers, so we must
+        // convert negative offsets to positive equivalents because we're adding
+        // the offset to `low` and need the result to stay within [low, high].
+        //
+        // Examples:
+        // clamp(-50, 10, 20) with range [10,11,12,...,18,19,20] (size=11)
+        // → -50 % 11 = -6, then -6 + 11 = 5, so 10 + 5 = 15 ✓
+        //
+        // clamp(-25, -10, 5) with range [-10,-9,-8,...,3,4,5] (size=16)
+        // → -25 % 16 = -9, then -9 + 16 = 7, so -10 + 7 = -3 ✓
+        int256 range = int256(high) - int256(low) + 1;
+        int256 offset = int256(value) % range;
+        if (offset < 0) {
+            offset += range;
         }
+        int128 ans = int128(int256(low) + offset);
 
         // Optional logging: Record when values were actually clamped
         if (enableLogs) {
