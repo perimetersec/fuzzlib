@@ -126,6 +126,8 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_uint256_cyclic_property() public {
+        // Tests that clamp(value) == clamp(value + range) == clamp(value + 2*range)
+        // This verifies the modular arithmetic behaves cyclically
         uint256 value = 25;
         uint256 low = 10;
         uint256 high = 20;
@@ -140,6 +142,8 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_uint256_distributive_property() public {
+        // Tests that the difference between clamped values equals the original difference (mod range)
+        // This verifies that relative relationships are preserved after clamping
         uint256 a = 5;
         uint256 b = 7;
         uint256 low = 10;
@@ -302,6 +306,8 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int128_cyclic_property() public {
+        // Tests that clamp(value) == clamp(value + range) for signed integers
+        // This verifies the modular arithmetic behaves cyclically
         int128 value = 15;
         int128 low = -10;
         int128 high = 10;
@@ -314,6 +320,8 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int128_sign_preservation_property() public {
+        // Tests that both positive and negative values clamp correctly to the target range
+        // This verifies basic range validation for signed integers
         int128 pos_val = 50;
         int128 neg_val = -50;
         int128 low = -10;
