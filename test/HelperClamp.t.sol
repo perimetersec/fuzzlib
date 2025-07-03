@@ -109,7 +109,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_uint256_invalid_range() public {
-        vm.expectRevert("HelperClamp: invalid range");
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.InvalidRange.selector, uint256(100), uint256(10)));
         this.clamp(uint256(50), uint256(100), uint256(10));
     }
 
@@ -335,7 +335,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int128_invalid_range() public {
-        vm.expectRevert("HelperClamp: invalid range");
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.InvalidRangeInt128.selector, int128(100), int128(10)));
         this.clamp(int128(50), int128(100), int128(10));
     }
 
@@ -416,7 +416,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampLt_uint256_overflow_cases() public {
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(0)));
         this.clampLt(uint256(100), uint256(0));
     }
 
@@ -443,7 +443,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampLt_int128_overflow_cases() public {
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValueInt128.selector, type(int128).min));
         this.clampLt(int128(100), type(int128).min);
     }
 
@@ -497,7 +497,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampGt_uint256_overflow_cases() public {
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, type(uint256).max));
         this.clampGt(uint256(100), type(uint256).max);
     }
 
@@ -523,7 +523,7 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampGt_int128_overflow_cases() public {
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValueInt128.selector, type(int128).max));
         this.clampGt(int128(100), type(int128).max);
     }
 

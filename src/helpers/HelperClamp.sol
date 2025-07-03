@@ -10,6 +10,14 @@ import "./HelperAssert.sol";
  * Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
  */
 abstract contract HelperClamp is HelperAssert {
+    // Custom errors
+    error InvalidRange(uint256 low, uint256 high);
+    error InvalidRangeInt128(int128 low, int128 high);
+    error UnsupportedClampLtValue(uint256 value);
+    error UnsupportedClampLtValueInt128(int128 value);
+    error UnsupportedClampGtValue(uint256 value);
+    error UnsupportedClampGtValueInt128(int128 value);
+
     event Clamped(string);
 
     /*
@@ -124,7 +132,7 @@ abstract contract HelperClamp is HelperAssert {
     function clamp(uint256 value, uint256 low, uint256 high, bool enableLogs) public returns (uint256) {
         // Input validation: Ensure low <= high to prevent overflow
         // Without this check, (high - low + 1) could wrap around if low > high
-        require(low <= high, "HelperClamp: invalid range");
+        if (low > high) revert InvalidRange(low, high);
 
         // Return values already in range without modification.
         // This optimization also handles the full uint256 range [0, type(uint256).max]
@@ -169,7 +177,7 @@ abstract contract HelperClamp is HelperAssert {
      *
      * Examples:
      * - clamp(5, -10, 10) → 5 (already in range)
-     * - clamp(-1234, -123, 123) → -121 (wraps around)
+     * - clamp(-1234, -123, 123) → 122 (wraps around)
      * - clamp(1000, -5, 5) → 5 (wraps around)
      * - clamp(-50, 10, 20) → 15 (wraps around)
      * - clamp(100, 5, 5) → 5 (single-value range)
@@ -182,7 +190,7 @@ abstract contract HelperClamp is HelperAssert {
      */
     function clamp(int128 value, int128 low, int128 high, bool enableLogs) public returns (int128) {
         // Input validation: Ensure low <= high to prevent overflow
-        require(low <= high, "HelperClamp: invalid range");
+        if (low > high) revert InvalidRangeInt128(low, high);
 
         // Return values already in range without modification.
         if (value >= low && value <= high) {
@@ -233,7 +241,7 @@ abstract contract HelperClamp is HelperAssert {
      */
 
     function clampLt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        require(b > 0, "HelperClamp: clampLt unsupported value");
+        if (b == 0) revert UnsupportedClampLtValue(b);
         return clamp(a, 0, b - 1, enableLogs);
     }
 
@@ -241,7 +249,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps signed integer to be less than specified value with optional logging.
      */
     function clampLt(int128 a, int128 b, bool enableLogs) public returns (int128) {
-        require(b > type(int128).min, "HelperClamp: clampLt unsupported value");
+        if (b == type(int128).min) revert UnsupportedClampLtValueInt128(b);
         return clamp(a, type(int128).min, b - 1, enableLogs);
     }
 
@@ -263,7 +271,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps unsigned integer to be greater than specified value with optional logging.
      */
     function clampGt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        require(b < type(uint256).max, "HelperClamp: clampGt unsupported value");
+        if (b == type(uint256).max) revert UnsupportedClampGtValue(b);
         return clamp(a, b + 1, type(uint256).max, enableLogs);
     }
 
@@ -271,7 +279,7 @@ abstract contract HelperClamp is HelperAssert {
      * @dev Clamps signed integer to be greater than specified value with optional logging.
      */
     function clampGt(int128 a, int128 b, bool enableLogs) public returns (int128) {
-        require(b < type(int128).max, "HelperClamp: clampGt unsupported value");
+        if (b == type(int128).max) revert UnsupportedClampGtValueInt128(b);
         return clamp(a, b + 1, type(int128).max, enableLogs);
     }
 
