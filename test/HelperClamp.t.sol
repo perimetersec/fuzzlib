@@ -319,20 +319,6 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(result1, result2);
     }
 
-    function test_clamp_int128_sign_preservation_property() public {
-        // Tests that both positive and negative values clamp correctly to the target range
-        // This verifies basic range validation for signed integers
-        int128 pos_val = 50;
-        int128 neg_val = -50;
-        int128 low = -10;
-        int128 high = 10;
-
-        int128 pos_result = this.clamp(pos_val, low, high);
-        int128 neg_result = this.clamp(neg_val, low, high);
-
-        assertTrue(pos_result >= low && pos_result <= high);
-        assertTrue(neg_result >= low && neg_result <= high);
-    }
 
 
     function testFuzz_clamp_int128(int128 value, int128 low, int128 high) public {
