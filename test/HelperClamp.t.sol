@@ -359,7 +359,6 @@ contract TestHelperClamp is Test, HelperClamp {
         this.clamp(int256(50), int256(0), int256(type(int128).min) - 1);
     }
 
-
     function test_clamp_int128_cyclic_property() public {
         // Tests that clamp(value) == clamp(value + range) for signed integers
         // This verifies the modular arithmetic behaves cyclically
@@ -488,7 +487,9 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampLt_int128_overflow_cases() public {
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min))));
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min)))
+        );
         this.clampLt(int128(100), type(int128).min);
     }
 
@@ -508,7 +509,9 @@ contract TestHelperClamp is Test, HelperClamp {
 
         // Test bounds parameter validation (should not reach SafeCast with optimized approach)
         // clampLt with bounds parameter <= type(int128).min should be rejected immediately
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min))));
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampLtValue.selector, uint256(int256(type(int128).min)))
+        );
         this.clampLt(int256(50), type(int128).min);
 
         // Test bounds parameter with value below int128.min
@@ -704,7 +707,9 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clampGt_int128_overflow_cases() public {
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max))));
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max)))
+        );
         this.clampGt(int128(100), type(int128).max);
     }
 
@@ -724,7 +729,9 @@ contract TestHelperClamp is Test, HelperClamp {
 
         // Test bounds parameter validation (should not reach SafeCast with optimized approach)
         // clampGt with bounds parameter >= type(int128).max should be rejected immediately
-        vm.expectRevert(abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max))));
+        vm.expectRevert(
+            abi.encodeWithSelector(HelperClamp.UnsupportedClampGtValue.selector, uint256(int256(type(int128).max)))
+        );
         this.clampGt(int256(50), type(int128).max);
 
         // Test bounds parameter with value above int128.max
