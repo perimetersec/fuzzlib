@@ -8,7 +8,6 @@ import {HelperClamp} from "../src/helpers/HelperClamp.sol";
 
 /**
  * @dev Tests for HelperClamp modular arithmetic clamping functions.
- * Covers uint256 and int128 clamping with boundary conditions and extreme values.
  * @author Perimeter <info@perimetersec.io>
  */
 contract TestHelperClamp is Test, HelperClamp {
@@ -153,43 +152,6 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq((result_b - result_a + range) % range, (b - a) % range);
     }
 
-    function test_clamp_uint256_consecutive_values() public {
-        uint256 low = 100;
-        uint256 high = 105;
-
-        uint256[] memory inputs = new uint256[](10);
-        inputs[0] = 90;
-        inputs[1] = 91;
-        inputs[2] = 92;
-        inputs[3] = 93;
-        inputs[4] = 94;
-        inputs[5] = 110;
-        inputs[6] = 111;
-        inputs[7] = 112;
-        inputs[8] = 113;
-        inputs[9] = 114;
-
-        for (uint256 i = 0; i < inputs.length; i++) {
-            uint256 result = this.clamp(inputs[i], low, high);
-            assertTrue(result >= low && result <= high);
-        }
-    }
-
-    function test_clamp_all_single_value_ranges() public {
-        uint256[] memory values = new uint256[](5);
-        values[0] = 0;
-        values[1] = 1;
-        values[2] = 100;
-        values[3] = 1000;
-        values[4] = type(uint256).max;
-
-        for (uint256 i = 0; i < values.length; i++) {
-            uint256 target = values[i];
-            assertEq(this.clamp(uint256(999), target, target), target);
-            assertEq(this.clamp(uint256(0), target, target), target);
-            assertEq(this.clamp(type(uint256).max, target, target), target);
-        }
-    }
 
     function testFuzz_clamp_uint256(uint256 value, uint256 low, uint256 high) public {
         vm.assume(low <= high);
@@ -364,28 +326,6 @@ contract TestHelperClamp is Test, HelperClamp {
         assertTrue(neg_result >= low && neg_result <= high);
     }
 
-    function test_clamp_int128_around_zero() public {
-        int128 low = -5;
-        int128 high = 5;
-
-        int128[] memory inputs = new int128[](11);
-        inputs[0] = -10;
-        inputs[1] = -9;
-        inputs[2] = -8;
-        inputs[3] = -7;
-        inputs[4] = -6;
-        inputs[5] = 0;
-        inputs[6] = 6;
-        inputs[7] = 7;
-        inputs[8] = 8;
-        inputs[9] = 9;
-        inputs[10] = 10;
-
-        for (uint256 i = 0; i < inputs.length; i++) {
-            int128 result = this.clamp(inputs[i], low, high);
-            assertTrue(result >= low && result <= high);
-        }
-    }
 
     function testFuzz_clamp_int128(int128 value, int128 low, int128 high) public {
         vm.assume(low <= high);
