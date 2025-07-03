@@ -9,6 +9,6 @@ Fuzzlib is an unopinionated Solidity library designed for both stateful and stat
 
 
 ## Known limitations
-- Clamping close to `type(uint256).max`, `type(int256).min`, and `type(int256).max` can cause overflow errors
+- Signed integer clamping is limited to int128 range to avoid overflow issues in range calculations
 
 
