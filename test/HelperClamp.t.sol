@@ -156,8 +156,17 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq((result_b - result_a + range) % range, (b - a) % range);
     }
 
-    function testFuzz_clamp_uint256(uint256 value, uint256 low, uint256 high) public {
-        vm.assume(low <= high);
+    function testFuzz_clamp_uint256(uint256 value, uint256 _low, uint256 _high) public {
+        // vm.assume(low <= high);
+        uint256 low;
+        uint256 high;
+        if (_low < _high) {
+            low = _low;
+            high = _high;
+        } else {
+            low = _high;
+            high = _low;
+        }
 
         uint256 result = this.clamp(value, low, high);
 
@@ -318,8 +327,17 @@ contract TestHelperClamp is Test, HelperClamp {
         assertEq(result1, result2);
     }
 
-    function testFuzz_clamp_int128(int128 value, int128 low, int128 high) public {
-        vm.assume(low <= high);
+    function testFuzz_clamp_int128(int128 value, int128 _low, int128 _high) public {
+        // vm.assume(low <= high);
+        int128 low;
+        int128 high;
+        if (_low < _high) {
+            low = _low;
+            high = _high;
+        } else {
+            low = _high;
+            high = _low;
+        }
 
         int128 result = this.clamp(value, low, high);
 
