@@ -9,7 +9,6 @@ import "./HelperAssert.sol";
  * @author Perimeter <info@perimetersec.io>
  */
 abstract contract HelperClamp is HelperAssert {
-    // Custom errors
     error InvalidRange(uint256 low, uint256 high);
     error InvalidRangeInt128(int128 low, int128 high);
     error UnsupportedClampLtValue(uint256 value);
@@ -137,7 +136,7 @@ abstract contract HelperClamp is HelperAssert {
         // This optimization also handles the full uint256 range [0, type(uint256).max]
         // where every possible value would pass this check
         if (value >= low && value <= high) {
-            return value; // Already in range - no clamping or logging needed
+            return value;
         }
 
         // At this point: value is outside [low, high] and needs wrapping
@@ -193,7 +192,7 @@ abstract contract HelperClamp is HelperAssert {
 
         // Return values already in range without modification.
         if (value >= low && value <= high) {
-            return value; // Already in range - no clamping or logging needed
+            return value;
         }
 
         // At this point: value is outside [low, high] and needs wrapping
@@ -210,12 +209,12 @@ abstract contract HelperClamp is HelperAssert {
             // The formula: ans = low + (offset % range_size)
             // Where range_size = (high - low + 1) = total valid values in range
             //
-            // Key difference: Solidity's % can return negative values for signed integers,
-            // so we must convert negative offsets to positive equivalents because we're
-            // adding the offset to `low` and need the result to stay within [low, high].
+            // Solidity's % can return negative values for signed integers, so we must
+            // convert negative offsets to positive equivalents because we're adding
+            // the offset to `low` and need the result to stay within [low, high].
             //
             // Examples:
-            // clamp(-50, 10, 20) with range [10,11,12,13,14,15,16,17,18,19,20] (size=11)
+            // clamp(-50, 10, 20) with range [10,11,12,...,18,19,20] (size=11)
             // → -50 % 11 = -6, then -6 + 11 = 5, so 10 + 5 = 15 ✓
             //
             // clamp(-25, -10, 5) with range [-10,-9,-8,...,3,4,5] (size=16)
@@ -223,7 +222,7 @@ abstract contract HelperClamp is HelperAssert {
             int256 range = int256(high) - int256(low) + 1;
             int256 offset = int256(value) % range;
             if (offset < 0) {
-                offset += range; // Convert negative remainder to positive equivalent
+                offset += range;
             }
             ans = int128(int256(low) + offset);
         }
