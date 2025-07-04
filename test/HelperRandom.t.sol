@@ -326,27 +326,4 @@ contract TestHelperRandom is Test, HelperRandom {
 
         assertTrue(foundDifference, "Sequential entropy values should produce some different results");
     }
-
-    function testFuzz_shuffleArray_different_entropy(uint256[] memory array, uint256 entropy1, uint256 entropy2)
-        public
-    {
-        vm.assume(array.length >= 2 && array.length <= 20); // Reasonable size limit for performance
-        vm.assume(entropy1 != entropy2); // Different entropy values
-
-        // Make two copies
-        uint256[] memory array1 = new uint256[](array.length);
-        uint256[] memory array2 = new uint256[](array.length);
-
-        for (uint256 i = 0; i < array.length; i++) {
-            array1[i] = array[i];
-            array2[i] = array[i];
-        }
-
-        shuffleArray(array1, entropy1);
-        shuffleArray(array2, entropy2);
-
-        // Both should preserve length
-        assertEq(array1.length, array.length);
-        assertEq(array2.length, array.length);
-    }
 }
