@@ -160,6 +160,12 @@ contract TestHelperLog is Test {
         callLogStringString("", "");
     }
 
+    function testFuzz_log_string_string(string memory message, string memory data) public {
+        vm.expectEmit(true, true, true, true);
+        emit LibLog.LogString(message, data);
+        callLogStringString(message, data);
+    }
+
     /**
      * Tests for log(string, bytes)
      */
@@ -175,6 +181,12 @@ contract TestHelperLog is Test {
         vm.expectEmit(true, true, true, true);
         emit LibLog.LogBytes("Empty bytes", data);
         callLogStringBytes("Empty bytes", data);
+    }
+
+    function testFuzz_log_string_bytes(string memory message, bytes memory data) public {
+        vm.expectEmit(true, true, true, true);
+        emit LibLog.LogBytes(message, data);
+        callLogStringBytes(message, data);
     }
 
     /**
