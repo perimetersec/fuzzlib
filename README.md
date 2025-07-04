@@ -6,3 +6,9 @@ Fuzzlib is an unopinionated Solidity library designed for both stateful and stat
 ## Branches
 * `main`: Latest `fl.` namespace
 * `v0_2`: Old namespace version for backwards compatibility
+
+
+## Known limitations
+- Signed integer clamping is limited to int128 range to avoid overflow issues in range calculations
+
+
