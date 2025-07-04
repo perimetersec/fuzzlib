@@ -196,11 +196,15 @@ contract FuzzLibStringTest is Test {
     function testFuzz_toHexString(bytes memory value) public {
         string memory result = FuzzLibString.toHexString(value);
 
+        // Result must always start with "0x"
         assertTrue(bytes(result).length >= 2);
         assertEq(bytes(result)[0], bytes1("0"));
         assertEq(bytes(result)[1], bytes1("x"));
+        
+        // Length should be 2 (for "0x") + 2 chars per input byte
         assertEq(bytes(result).length, 2 + 2 * value.length);
 
+        // All characters after "0x" must be valid hex digits (0-9, a-f)
         for (uint256 i = 2; i < bytes(result).length; i++) {
             assertTrue(
                 (bytes(result)[i] >= bytes1("0") && bytes(result)[i] <= bytes1("9"))
@@ -275,7 +279,7 @@ contract FuzzLibStringTest is Test {
         bytes4 panicSignature = bytes4(keccak256(bytes("Panic(uint256)")));
         bytes memory panicData = abi.encodePacked(panicSignature, uint256(17));
         assertTrue(FuzzLibString.isRevertReasonEqual(panicData, "Panic(17)"));
-        assertFalse(FuzzLibString.isRevertReasonEqual(panicData, "Different panic"));
+        assertFalse(FuzzLibString.isRevertReasonEqual(panicData, "Panic(16)"));
     }
 
     function test_isRevertReasonEqual_silent_revert() public {
@@ -289,6 +293,7 @@ contract FuzzLibStringTest is Test {
         assertTrue(FuzzLibString.isRevertReasonEqual(revertData, message));
 
         if (bytes(message).length > 0) {
+            vm.assume(keccak256(bytes(message)) != keccak256(bytes("Different message")));
             assertFalse(FuzzLibString.isRevertReasonEqual(revertData, "Different message"));
         }
     }
