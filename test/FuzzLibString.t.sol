@@ -96,6 +96,10 @@ contract FuzzLibStringTest is Test {
             FuzzLibString.toString(type(uint256).max),
             "115792089237316195423570985008687907853269984665640564039457584007913129639935"
         );
+        assertEq(
+            FuzzLibString.toString(type(uint256).max - 1),
+            "115792089237316195423570985008687907853269984665640564039457584007913129639934"
+        );
     }
 
     function test_toString_uint256_powers_of_ten() public {
@@ -103,14 +107,6 @@ contract FuzzLibStringTest is Test {
         assertEq(FuzzLibString.toString(uint256(100)), "100");
         assertEq(FuzzLibString.toString(uint256(1000)), "1000");
         assertEq(FuzzLibString.toString(uint256(10000)), "10000");
-    }
-
-    function test_toString_uint256_edge_cases() public {
-        assertEq(FuzzLibString.toString(uint256(1)), "1");
-        assertEq(
-            FuzzLibString.toString(type(uint256).max - 1),
-            "115792089237316195423570985008687907853269984665640564039457584007913129639934"
-        );
     }
 
     function testFuzz_toString_uint256(uint256 value) public {
@@ -174,11 +170,6 @@ contract FuzzLibStringTest is Test {
         assertEq(FuzzLibString.char(bytes1(uint8(15))), bytes1("f"));
     }
 
-    function test_char_edge_cases() public {
-        assertEq(FuzzLibString.char(bytes1(uint8(0))), bytes1("0"));
-        assertEq(FuzzLibString.char(bytes1(uint8(15))), bytes1("f"));
-    }
-
     function testFuzz_char(uint8 value) public {
         vm.assume(value < 16); // Only test valid hex digits (0-15)
         bytes1 result = FuzzLibString.char(bytes1(value));
@@ -220,10 +211,7 @@ contract FuzzLibStringTest is Test {
         assertEq(FuzzLibString.toHexString(bytes(hex"ffffff")), "0xffffff");
     }
 
-    function test_toHexString_edge_cases() public {
-        assertEq(FuzzLibString.toHexString(bytes(hex"00")), "0x00");
-        assertEq(FuzzLibString.toHexString(bytes(hex"ff")), "0xff");
-
+    function test_toHexString_max_bytes() public {
         bytes memory maxBytes = new bytes(32);
         for (uint256 i = 0; i < 32; i++) {
             maxBytes[i] = bytes1(uint8(255));
