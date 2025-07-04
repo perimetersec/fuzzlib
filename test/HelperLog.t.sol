@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 
 import {HelperLog} from "../src/helpers/HelperLog.sol";
 import {LibLog} from "../src/libraries/LibLog.sol";
+import {HelperLogImplementation} from "./util/HelperLogImplementation.sol";
 
 /**
  * @dev Tests for HelperLog logging functions.
@@ -442,7 +443,3 @@ contract TestHelperLog is Test {
     }
 }
 
-// Helper contract for testing HelperLog functionality
-contract HelperLogImplementation is HelperLog {
-// This contract simply inherits from HelperLog to provide concrete implementation for testing
-}
