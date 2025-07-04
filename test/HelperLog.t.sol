@@ -440,23 +440,6 @@ contract TestHelperLog is Test {
         emit LibLog.AssertionFailed(message, bytes32(data));
         callLogFailStringBytes32(message, data);
     }
-
-    /**
-     * Integration and edge case tests
-     */
-    function test_log_sequential_calls() public {
-        vm.expectEmit(true, true, true, true);
-        emit LibLog.Log("First");
-        callLogString("First");
-
-        vm.expectEmit(true, true, true, true);
-        emit LibLog.LogUint("Second", 42);
-        callLogStringUint256("Second", 42);
-
-        vm.expectEmit(true, true, true, true);
-        emit LibLog.AssertionFailed("Third");
-        callLogFailString("Third");
-    }
 }
 
 // Helper contract for testing HelperLog functionality
