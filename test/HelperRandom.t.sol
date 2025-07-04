@@ -108,7 +108,7 @@ contract TestHelperRandom is Test, HelperRandom {
     }
 
     function testFuzz_shuffleArray_preserves_length(uint256[] memory array, uint256 entropy) public {
-        vm.assume(array.length >= 1); // Skip empty arrays due to implementation issue
+        vm.assume(array.length >= 1); // Skip empty arrays as they revert
         vm.assume(array.length <= 20); // Reasonable size limit
 
         uint256 originalLength = array.length;
@@ -192,7 +192,7 @@ contract TestHelperRandom is Test, HelperRandom {
     }
 
     function testFuzz_shuffleArray_deterministic(uint256[] memory array, uint256 entropy) public {
-        vm.assume(array.length >= 1); // Skip empty arrays due to implementation issue
+        vm.assume(array.length >= 1); // Skip empty arrays as they revert
         vm.assume(array.length <= 20); // Reasonable size limit
 
         // Make two copies of the array
@@ -217,8 +217,12 @@ contract TestHelperRandom is Test, HelperRandom {
     /**
      * Edge Case Tests
      */
-    // Note: empty array test removed due to implementation bug causing arithmetic underflow
-    // The Fisher-Yates implementation doesn't handle length-0 arrays properly
+    function test_shuffleArray_empty_array() public {
+        uint256[] memory array = new uint256[](0);
+
+        vm.expectRevert(HelperRandom.EmptyArray.selector);
+        this.shuffleArray(array, 12345);
+    }
 
     function test_shuffleArray_single_element() public {
         uint256[] memory array = new uint256[](1);

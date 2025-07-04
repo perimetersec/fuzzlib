@@ -442,4 +442,3 @@ contract TestHelperLog is Test {
         callLogFailStringBytes32(message, data);
     }
 }
-
