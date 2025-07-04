@@ -41,18 +41,6 @@ contract TestHelperRandom is Test, HelperRandom {
         }
     }
 
-    function test_shuffleArray_preserves_length() public {
-        uint256[] memory array = new uint256[](10);
-        for (uint256 i = 0; i < array.length; i++) {
-            array[i] = i + 1;
-        }
-
-        uint256 originalLength = array.length;
-        shuffleArray(array, 54321);
-
-        assertEq(array.length, originalLength);
-    }
-
     function test_shuffleArray_preserves_sum() public {
         uint256[] memory array = new uint256[](6);
         array[0] = 10;
@@ -101,30 +89,6 @@ contract TestHelperRandom is Test, HelperRandom {
     /**
      * Deterministic Behavior Tests
      */
-    function test_shuffleArray_deterministic_same_entropy() public {
-        uint256[] memory array1 = new uint256[](4);
-        array1[0] = 100;
-        array1[1] = 200;
-        array1[2] = 300;
-        array1[3] = 400;
-
-        uint256[] memory array2 = new uint256[](4);
-        array2[0] = 100;
-        array2[1] = 200;
-        array2[2] = 300;
-        array2[3] = 400;
-
-        uint256 entropy = 42;
-
-        shuffleArray(array1, entropy);
-        shuffleArray(array2, entropy);
-
-        // Arrays should be identical after shuffle with same entropy
-        for (uint256 i = 0; i < array1.length; i++) {
-            assertEq(array1[i], array2[i]);
-        }
-    }
-
     function test_shuffleArray_different_entropy_different_results() public {
         uint256[] memory array1 = new uint256[](5);
         array1[0] = 1;
@@ -154,22 +118,6 @@ contract TestHelperRandom is Test, HelperRandom {
 
         // Note: This could theoretically fail due to random chance, but very unlikely
         assertTrue(different, "Different entropy should usually produce different results");
-    }
-
-    function test_shuffleArray_zero_entropy() public {
-        uint256[] memory array = new uint256[](3);
-        array[0] = 10;
-        array[1] = 20;
-        array[2] = 30;
-
-        shuffleArray(array, 0);
-
-        // With entropy 0, result should be deterministic and predictable
-        // The algorithm should still work without reverting
-        assertEq(array.length, 3);
-
-        // Check that sum is preserved
-        assertEq(array[0] + array[1] + array[2], 60);
     }
 
     function testFuzz_shuffleArray_deterministic(uint256[] memory array, uint256 entropy) public {
@@ -254,18 +202,25 @@ contract TestHelperRandom is Test, HelperRandom {
         assertEq(count15, 1);
     }
 
-    function test_shuffleArray_all_identical_elements() public {
-        uint256[] memory array = new uint256[](5);
-        for (uint256 i = 0; i < array.length; i++) {
-            array[i] = 88;
+    function test_shuffleArray_identical_elements() public {
+        // Test both zero values and non-zero identical values
+        uint256[] memory zeroArray = new uint256[](4);
+        shuffleArray(zeroArray, 2222);
+
+        assertEq(zeroArray.length, 4);
+        for (uint256 i = 0; i < zeroArray.length; i++) {
+            assertEq(zeroArray[i], 0);
         }
 
-        shuffleArray(array, 999);
+        uint256[] memory valueArray = new uint256[](5);
+        for (uint256 i = 0; i < valueArray.length; i++) {
+            valueArray[i] = 88;
+        }
+        shuffleArray(valueArray, 999);
 
-        assertEq(array.length, 5);
-        // All elements should still be 88
-        for (uint256 i = 0; i < array.length; i++) {
-            assertEq(array[i], 88);
+        assertEq(valueArray.length, 5);
+        for (uint256 i = 0; i < valueArray.length; i++) {
+            assertEq(valueArray[i], 88);
         }
     }
 
@@ -298,19 +253,6 @@ contract TestHelperRandom is Test, HelperRandom {
         assertTrue(foundMaxMinus2);
     }
 
-    function test_shuffleArray_zero_values() public {
-        // Array is initialized with zeros by default
-        uint256[] memory array = new uint256[](4);
-
-        shuffleArray(array, 2222);
-
-        assertEq(array.length, 4);
-        // All values should still be zero
-        for (uint256 i = 0; i < array.length; i++) {
-            assertEq(array[i], 0);
-        }
-    }
-
     function test_shuffleArray_mixed_extreme_values() public {
         uint256[] memory array = new uint256[](4);
         array[0] = 0;
@@ -338,19 +280,7 @@ contract TestHelperRandom is Test, HelperRandom {
     /**
      * Entropy Distribution Tests
      */
-    function test_shuffleArray_entropy_zero() public {
-        uint256[] memory array = new uint256[](3);
-        array[0] = 1;
-        array[1] = 2;
-        array[2] = 3;
-
-        shuffleArray(array, 0);
-
-        assertEq(array.length, 3);
-        assertEq(array[0] + array[1] + array[2], 6);
-    }
-
-    function test_shuffleArray_entropy_max() public {
+    function test_shuffleArray_extreme_entropy() public {
         uint256[] memory array = new uint256[](3);
         array[0] = 10;
         array[1] = 20;
