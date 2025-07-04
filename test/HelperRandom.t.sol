@@ -212,7 +212,7 @@ contract TestHelperRandom is Test, HelperRandom {
         shuffleArray(array, 98765);
 
         assertEq(array.length, 1);
-        assertEq(array[0], 42); // Single element should remain unchanged
+        assertEq(array[0], 42);
     }
 
     function test_shuffleArray_two_elements() public {
@@ -299,8 +299,8 @@ contract TestHelperRandom is Test, HelperRandom {
     }
 
     function test_shuffleArray_zero_values() public {
-        uint256[] memory array = new uint256[](4);
         // Array is initialized with zeros by default
+        uint256[] memory array = new uint256[](4);
 
         shuffleArray(array, 2222);
 
