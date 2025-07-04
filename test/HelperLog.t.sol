@@ -414,17 +414,19 @@ contract TestHelperLog is Test {
     }
 
     /**
-     * Tests for logFail(string, bytes32) - Documents implementation bug
+     * Tests for logFail(string, bytes32)
      */
-    function test_logFail_string_bytes32_bug() public {
+    function test_logFail_string_bytes32_basic() public {
         bytes32 data = 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef;
-
-        // This test documents the current buggy behavior
-        // The implementation incorrectly emits LogBytes32 instead of AssertionFailed
-        // and there is no AssertionFailed event with bytes32 parameter defined
-        vm.expectEmit(true, true, true, true);
-        emit LibLog.LogBytes32("Bytes32 failure", data);
+        vm.expectEmit(true, true, true, true, address(helperLog));
+        emit LibLog.AssertionFailed("Bytes32 failure", bytes32(data));
         callLogFailStringBytes32("Bytes32 failure", data);
+    }
+
+    function testFuzz_logFail_string_bytes32(string memory message, bytes32 data) public {
+        vm.expectEmit(true, true, true, true, address(helperLog));
+        emit LibLog.AssertionFailed(message, bytes32(data));
+        callLogFailStringBytes32(message, data);
     }
 
     /**

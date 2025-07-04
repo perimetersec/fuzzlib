@@ -23,6 +23,7 @@ library LibLog {
     event AssertionFailed(string message, int256 data);
     event AssertionFailed(string message, address data);
     event AssertionFailed(string message, bool data);
+    event AssertionFailed(string message, bytes32 data);
 
     /**
      * @dev Emits a log event with a message.
@@ -136,7 +137,10 @@ library LibLog {
         emit AssertionFailed(message, data);
     }
 
+    /**
+     * @dev Emits an assertion failure event with a message and bytes32 data.
+     */
     function logFail(string memory message, bytes32 data) internal {
-        emit LogBytes32(message, data);
+        emit AssertionFailed(message, data);
     }
 }

@@ -124,6 +124,6 @@ abstract contract HelperLog {
      * @dev Logs a failure event with a message and bytes32 data.
      */
     function logFail(string memory message, bytes32 data) public {
-        LibLog.log(message, data);
+        LibLog.logFail(message, data);
     }
 }
