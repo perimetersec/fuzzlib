@@ -67,8 +67,7 @@ def validate_test_expectations(test_results):
 
 def print_results(test_results, failed_tests, stats):
     """Display concise summary of test results and validation."""
-    print("\n=== Test Summary ===")
-    
+
     # Validate test expectations
     validation_errors, correct_behaviors = validate_test_expectations(test_results)
     
@@ -110,7 +109,6 @@ def main():
         
         # Capture output while displaying it in real-time
         output_lines = []
-        print("\n=== Echidna Real-time Output ===")
         
         for line in iter(process.stdout.readline, ''):
             print(line.rstrip())  # Display real-time output
@@ -125,12 +123,7 @@ def main():
         test_results, failed_tests, stats = parse_text_output(full_output)
         all_tests_behaved_correctly = print_results(test_results, failed_tests, stats)
             
-        if all_tests_behaved_correctly:
-            print("\n✓ Echidna E2E tests PASSED! All tests behaved as expected.")
-            sys.exit(0)
-        else:
-            print("\n✗ Echidna E2E tests FAILED! Some tests did not behave as expected.")
-            sys.exit(1)
+        sys.exit(0 if all_tests_behaved_correctly else 1)
     except Exception as e:
         print(f"✗ Echidna E2E tests FAILED! Error: {e}")
         sys.exit(1)
