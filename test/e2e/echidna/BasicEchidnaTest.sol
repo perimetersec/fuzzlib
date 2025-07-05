@@ -21,16 +21,16 @@ contract BasicEchidnaTest is FuzzBase {
     function testMathOperations(uint256 a, uint256 b) public {
         // Test max operation
         uint256 maxResult = fl.max(a, b);
-        assert(maxResult >= a);
-        assert(maxResult >= b);
-        assert(maxResult == a || maxResult == b);
+        fl.gte(maxResult, a, "Max result should be >= a");
+        fl.gte(maxResult, b, "Max result should be >= b");
+        fl.t(maxResult == a || maxResult == b, "Max result should equal either a or b");
         lastMaxResult = maxResult;
         
         // Test min operation
         uint256 minResult = fl.min(a, b);
-        assert(minResult <= a);
-        assert(minResult <= b);
-        assert(minResult == a || minResult == b);
+        fl.lte(minResult, a, "Min result should be <= a");
+        fl.lte(minResult, b, "Min result should be <= b");
+        fl.t(minResult == a || minResult == b, "Min result should equal either a or b");
         lastMinResult = minResult;
         
         fl.log("Math operations completed");
@@ -47,9 +47,9 @@ contract BasicEchidnaTest is FuzzBase {
         uint256 absResult = fl.abs(x);
         
         if (x >= 0) {
-            assert(absResult == uint256(x));
+            fl.eq(absResult, uint256(x), "Abs of positive number should equal the number");
         } else {
-            assert(absResult == uint256(-x));
+            fl.eq(absResult, uint256(-x), "Abs of negative number should equal its negation");
         }
         
         lastAbsResult = absResult;
@@ -68,17 +68,17 @@ contract BasicEchidnaTest is FuzzBase {
         uint256 clampedValue = fl.clamp(inputValue, low, high);
         
         // Verify clamped value is within bounds - this should always be true
-        assert(clampedValue >= low);
-        assert(clampedValue <= high);
+        fl.gte(clampedValue, low, "Clamped value should be >= low bound");
+        fl.lte(clampedValue, high, "Clamped value should be <= high bound");
         
         // For modular arithmetic clamping, if value is already in range, it stays unchanged
         if (inputValue >= low && inputValue <= high) {
-            assert(clampedValue == inputValue);
+            fl.eq(clampedValue, inputValue, "Value in range should remain unchanged");
         } else {
             // For out-of-range values, result should be: low + (inputValue % (high - low + 1))
             uint256 range = high - low + 1;
             uint256 expected = low + (inputValue % range);
-            assert(clampedValue == expected);
+            fl.eq(clampedValue, expected, "Out-of-range value should use modular arithmetic");
         }
         
         value = clampedValue;
@@ -121,7 +121,7 @@ contract BasicEchidnaTest is FuzzBase {
         fl.log("Testing simple message");
         
         // State should be unchanged after logging
-        assert(value == stateBefore);
+        fl.eq(value, stateBefore, "Logging should not change contract state");
         
         // Update state and verify logging still works
         value = num % 1000; // Keep value reasonable
@@ -135,19 +135,19 @@ contract BasicEchidnaTest is FuzzBase {
     function testDiffOperations(uint256 a, uint256 b) public {
         uint256 difference = fl.diff(a, b);
         
-        // Verify difference is always positive
-        assert(difference >= 0);
+        // Verify difference is always positive (uint256 is always >= 0)
+        fl.gte(difference, 0, "Difference should always be non-negative");
         
         // Verify difference calculation
         if (a >= b) {
-            assert(difference == a - b);
+            fl.eq(difference, a - b, "Difference should equal a - b when a >= b");
         } else {
-            assert(difference == b - a);
+            fl.eq(difference, b - a, "Difference should equal b - a when b > a");
         }
         
         // Verify difference properties
-        assert(fl.diff(a, a) == 0);
-        assert(fl.diff(a, b) == fl.diff(b, a));
+        fl.eq(fl.diff(a, a), 0, "Difference of identical values should be zero");
+        fl.eq(fl.diff(a, b), fl.diff(b, a), "Difference should be commutative");
         
         fl.log("Difference calculated:", difference);
     }
@@ -158,15 +158,37 @@ contract BasicEchidnaTest is FuzzBase {
      */
     function testBoundaryValues() public {
         // Test with zero values using explicit types
-        assert(fl.max(uint256(0), uint256(0)) == 0);
-        assert(fl.min(uint256(0), uint256(0)) == 0);
-        assert(fl.clamp(uint256(100), uint256(0), uint256(0)) == 0);
+        fl.eq(fl.max(uint256(0), uint256(0)), 0, "Max of two zeros should be zero");
+        fl.eq(fl.min(uint256(0), uint256(0)), 0, "Min of two zeros should be zero");
+        fl.eq(fl.clamp(uint256(100), uint256(0), uint256(0)), 0, "Clamp to zero range should be zero");
         
         // Test with larger values (be careful with overflow)
         uint256 large = type(uint256).max / 2; // Use half max to avoid overflow
-        assert(fl.max(large, uint256(0)) == large);
-        assert(fl.min(large, uint256(0)) == 0);
+        fl.eq(fl.max(large, uint256(0)), large, "Max of large and zero should be large");
+        fl.eq(fl.min(large, uint256(0)), 0, "Min of large and zero should be zero");
         
         fl.log("Boundary value tests completed");
+    }
+
+    /**
+     * @dev Test that should always fail - used to verify test detection works.
+     * This test intentionally contains a false assertion.
+     */
+    function testAlwaysFails_ShouldFail() public {
+        // This assertion should always fail
+        fl.eq(uint256(1), uint256(2), "This should always fail: 1 != 2");
+        
+        fl.log("This should never be reached");
+    }
+
+    /**
+     * @dev Test mathematical properties that should fail.
+     * This tests that our validation can detect expected failures.
+     */
+    function testMathPropertyViolation_ShouldFail(uint256 x) public {
+        // This should fail when x > 100, demonstrating property violation
+        fl.lte(x, 100, "Value should be <= 100");
+        
+        fl.log("Value was within range:", x);
     }
 }

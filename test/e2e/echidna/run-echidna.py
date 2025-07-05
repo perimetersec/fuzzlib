@@ -18,13 +18,18 @@ def parse_text_output(output):
     lines = output.strip().split('\n')
     
     test_results = []
+    failed_tests = []
     stats = {}
     
     # Parse test results
     for line in lines:
         if ': passing' in line:
             test_name = line.split(':')[0].strip()
-            test_results.append(test_name)
+            test_results.append((test_name, 'passing'))
+        elif ': falsified' in line or ': failed' in line:
+            test_name = line.split(':')[0].strip()
+            test_results.append((test_name, 'failed'))
+            failed_tests.append(test_name)
     
     # Parse statistics from the end
     for line in reversed(lines):
@@ -39,31 +44,75 @@ def parse_text_output(output):
         elif 'Total calls:' in line:
             stats['calls'] = int(line.split(':')[1].strip())
     
-    return test_results, stats
+    return test_results, failed_tests, stats
 
-def print_results(test_results, stats):
-    """Display parsed Echidna results in a readable format."""
+def validate_test_expectations(test_results):
+    """Validate that test results match expectations based on naming conventions."""
+    validation_errors = []
+    correct_behaviors = []
+    
+    for test_name, status in test_results:
+        should_fail = '_ShouldFail' in test_name
+        
+        if should_fail and status == 'passing':
+            validation_errors.append(f"{test_name}: Expected to fail but passed")
+        elif should_fail and status == 'failed':
+            correct_behaviors.append(f"{test_name}: Correctly failed as expected")
+        elif not should_fail and status == 'passing':
+            correct_behaviors.append(f"{test_name}: Correctly passed")
+        elif not should_fail and status == 'failed':
+            validation_errors.append(f"{test_name}: Expected to pass but failed")
+    
+    return validation_errors, correct_behaviors
+
+def print_results(test_results, failed_tests, stats):
+    """Display parsed Echidna results with test expectation validation."""
     print("\n=== Echidna Fuzzing Results ===")
+    
+    # Validate test expectations
+    validation_errors, correct_behaviors = validate_test_expectations(test_results)
     
     # Display test results
     if test_results:
-        print(f"Tests: {len(test_results)} passed")
-        for test in test_results:
-            print(f"  {test}: PASS")
+        passing_count = sum(1 for _, status in test_results if status == 'passing')
+        failing_count = sum(1 for _, status in test_results if status == 'failed')
+        print(f"Tests: {passing_count} passed, {failing_count} failed")
+        
+        for test_name, status in test_results:
+            status_symbol = "PASS" if status == 'passing' else "FAIL"
+            print(f"  {test_name}: {status_symbol}")
     else:
         print("Tests: No test results found")
     
+    # Display validation results
+    if validation_errors or correct_behaviors:
+        print("\n=== Test Expectation Validation ===")
+        
+        if correct_behaviors:
+            print("✓ Correct behaviors:")
+            for behavior in correct_behaviors:
+                print(f"  {behavior}")
+        
+        if validation_errors:
+            print("✗ Validation errors:")
+            for error in validation_errors:
+                print(f"  {error}")
+    
     # Display statistics
-    if 'instructions' in stats:
-        print(f"Coverage: {stats['instructions']} unique instructions")
-    if 'contracts' in stats:
-        print(f"Contracts: {stats['contracts']} analyzed")
-    if 'corpus' in stats:
-        print(f"Corpus: {stats['corpus']} sequences")
-    if 'calls' in stats:
-        print(f"Total calls: {stats['calls']}")
-    if 'seed' in stats:
-        print(f"Seed: {stats['seed']}")
+    if stats:
+        print("\n=== Campaign Statistics ===")
+        if 'instructions' in stats:
+            print(f"Coverage: {stats['instructions']} unique instructions")
+        if 'contracts' in stats:
+            print(f"Contracts: {stats['contracts']} analyzed")
+        if 'corpus' in stats:
+            print(f"Corpus: {stats['corpus']} sequences")
+        if 'calls' in stats:
+            print(f"Total calls: {stats['calls']}")
+        if 'seed' in stats:
+            print(f"Seed: {stats['seed']}")
+    
+    return len(validation_errors) == 0
 
 
 def main():
@@ -87,14 +136,18 @@ def main():
     print(f"Running: {' '.join(echidna_command)}")
 
     try:
-        result = subprocess.run(echidna_command, capture_output=True, text=True, check=True)
+        result = subprocess.run(echidna_command, capture_output=True, text=True, check=False)
         
         # Parse text output for test results and statistics
-        test_results, stats = parse_text_output(result.stdout)
-        print_results(test_results, stats)
+        test_results, failed_tests, stats = parse_text_output(result.stdout)
+        all_tests_behaved_correctly = print_results(test_results, failed_tests, stats)
             
-        print("✓ Echidna E2E tests PASSED!")
-        sys.exit(0)
+        if all_tests_behaved_correctly:
+            print("\n✓ Echidna E2E tests PASSED! All tests behaved as expected.")
+            sys.exit(0)
+        else:
+            print("\n✗ Echidna E2E tests FAILED! Some tests did not behave as expected.")
+            sys.exit(1)
     except subprocess.CalledProcessError as e:
         print("✗ Echidna E2E tests FAILED!")
         if e.stdout:
