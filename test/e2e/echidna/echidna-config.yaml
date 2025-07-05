@@ -1,30 +1,19 @@
-# Basic Echidna configuration for fuzzlib E2E testing
-# This configuration provides balanced testing parameters for validating
-# fuzzlib functionality under Echidna fuzzing campaigns.
+seqLen: 50
+testLimit: 100000
+shrinkLimit: 1000
 
-# Test execution parameters
-seqLen: 50                     # Moderate sequence length - generates 50 transactions per test sequence
-testLimit: 5000               # Quick but thorough testing - run 5000 test sequences
-shrinkLimit: 1000             # Basic shrinking - attempt to minimize failing sequences up to 1000 times
+testMode: assertion
+coverage: true
 
-# Testing modes
-testMode: assertion           # Enable assertion testing - check Solidity assert() statements
-coverage: true                # Enable coverage tracking - monitor code coverage during fuzzing
+deployer: "0x10000"
+sender: ["0x20000"]
 
-# Deployment configuration
-deployer: "0x10000"           # Simple test address for contract deployment
-sender: ["0x20000"]           # Single sender address for transaction generation
+cryticArgs: ["--foundry-compile-all"]
+disableSlither: true
 
-# Compilation configuration
-cryticArgs: ["--foundry-compile-all"]  # Compile all contracts with Foundry
-disableSlither: true                   # Disable Slither static analysis
+format: text
+quiet: false
 
-# Output configuration
-format: text                  # Use text format for readable output
-quiet: false                  # Show detailed output during execution
+balanceAddr: 0xffffffffffffffff
 
-# Gas configuration - use reasonable limits for testing
-balanceAddr: 0xffffffffffffffff    # Large balance for test accounts
-
-# Timeout configuration
-timeout: 300                  # 5 minute timeout for the entire campaign
+timeout: 300
