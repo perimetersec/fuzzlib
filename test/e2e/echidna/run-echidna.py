@@ -136,10 +136,25 @@ def main():
     print(f"Running: {' '.join(echidna_command)}")
 
     try:
-        result = subprocess.run(echidna_command, capture_output=True, text=True, check=False)
+        # Run Echidna with real-time output
+        process = subprocess.Popen(echidna_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
+                                 text=True, bufsize=1, universal_newlines=True)
+        
+        # Capture output while displaying it in real-time
+        output_lines = []
+        print("\n=== Echidna Real-time Output ===")
+        
+        for line in iter(process.stdout.readline, ''):
+            print(line.rstrip())  # Display real-time output
+            output_lines.append(line.rstrip())
+        
+        process.wait()  # Wait for process to complete
+        
+        # Combine all output for parsing
+        full_output = '\n'.join(output_lines)
         
         # Parse text output for test results and statistics
-        test_results, failed_tests, stats = parse_text_output(result.stdout)
+        test_results, failed_tests, stats = parse_text_output(full_output)
         all_tests_behaved_correctly = print_results(test_results, failed_tests, stats)
             
         if all_tests_behaved_correctly:
@@ -148,12 +163,8 @@ def main():
         else:
             print("\n✗ Echidna E2E tests FAILED! Some tests did not behave as expected.")
             sys.exit(1)
-    except subprocess.CalledProcessError as e:
-        print("✗ Echidna E2E tests FAILED!")
-        if e.stdout:
-            print(e.stdout)
-        if e.stderr:
-            print(e.stderr)
+    except Exception as e:
+        print(f"✗ Echidna E2E tests FAILED! Error: {e}")
         sys.exit(1)
 
 
