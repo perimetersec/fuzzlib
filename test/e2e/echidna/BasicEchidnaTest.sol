@@ -18,7 +18,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test mathematical operations with assertions.
      * Verifies max, min, and abs functions work correctly under fuzzing.
      */
-    function testMathOperations(uint256 a, uint256 b) public {
+    function test_math_operations(uint256 a, uint256 b) public {
         // Test max operation
         uint256 maxResult = fl.max(a, b);
         fl.gte(maxResult, a, "Max result should be >= a");
@@ -40,7 +40,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test absolute value operations with signed integers.
      * Verifies abs function works correctly with positive and negative values.
      */
-    function testAbsOperations(int256 x) public {
+    function test_abs_operations(int256 x) public {
         // Avoid testing type(int256).min to prevent overflow
         if (x == type(int256).min) return;
         
@@ -61,7 +61,7 @@ contract BasicEchidnaTest is FuzzBase {
      * Verifies clamp results always stay within specified bounds.
      * Note: fuzzlib clamp uses modular arithmetic, not traditional min/max clamping.
      */
-    function testClampOperations(uint256 inputValue, uint256 low, uint256 high) public {
+    function test_clamp_operations(uint256 inputValue, uint256 low, uint256 high) public {
         // Ensure valid range (low <= high)
         if (low > high) return;
         
@@ -89,7 +89,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test basic assertion helpers.
      * Verifies comparison functions work correctly.
      */
-    function testBasicAssertions(uint256 a, uint256 b) public {
+    function test_basic_assertions(uint256 a, uint256 b) public {
         // Test equality when values are the same
         if (a == b) {
             fl.eq(a, b, "Values should be equal");
@@ -112,7 +112,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test logging functionality doesn't break contract state.
      * Verifies various logging functions work without side effects.
      */
-    function testLoggingOperations(uint256 num, string memory message) public {
+    function test_logging_operations(uint256 num, string memory message) public {
         uint256 stateBefore = value;
         
         // Test different logging functions
@@ -132,7 +132,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test mathematical difference operations.
      * Verifies diff function calculates absolute difference correctly.
      */
-    function testDiffOperations(uint256 a, uint256 b) public {
+    function test_diff_operations(uint256 a, uint256 b) public {
         uint256 difference = fl.diff(a, b);
         
         // Verify difference is always positive (uint256 is always >= 0)
@@ -156,7 +156,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test edge cases with boundary values.
      * Verifies helpers work correctly with extreme values.
      */
-    function testBoundaryValues() public {
+    function test_boundary_values() public {
         // Test with zero values using explicit types
         fl.eq(fl.max(uint256(0), uint256(0)), 0, "Max of two zeros should be zero");
         fl.eq(fl.min(uint256(0), uint256(0)), 0, "Min of two zeros should be zero");
@@ -174,7 +174,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test that should always fail - used to verify test detection works.
      * This test intentionally contains a false assertion.
      */
-    function testAlwaysFails_ShouldFail() public {
+    function test_always_fails_should_fail() public {
         // This assertion should always fail
         fl.eq(uint256(1), uint256(2), "This should always fail: 1 != 2");
         
@@ -185,7 +185,7 @@ contract BasicEchidnaTest is FuzzBase {
      * @dev Test mathematical properties that should fail.
      * This tests that our validation can detect expected failures.
      */
-    function testMathPropertyViolation_ShouldFail(uint256 x) public {
+    function test_math_property_violation_should_fail(uint256 x) public {
         // This should fail when x > 100, demonstrating property violation
         fl.lte(x, 100, "Value should be <= 100");
         

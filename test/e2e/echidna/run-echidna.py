@@ -52,7 +52,7 @@ def validate_test_expectations(test_results):
     correct_behaviors = []
     
     for test_name, status in test_results:
-        should_fail = '_ShouldFail' in test_name
+        should_fail = '_should_fail' in test_name
         
         if should_fail and status == 'passing':
             validation_errors.append(f"{test_name}: Expected to fail but passed")
