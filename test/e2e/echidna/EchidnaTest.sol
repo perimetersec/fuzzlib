@@ -4,11 +4,11 @@ pragma solidity ^0.8.0;
 import "../../../src/FuzzBase.sol";
 
 /**
- * @dev Basic Echidna E2E test for fuzzlib functionality.
+ * @dev Echidna E2E test for fuzzlib functionality.
  * Tests core helpers using assertion-based fuzzing.
  * @author Perimeter <info@perimetersec.io>
  */
-contract BasicEchidnaTest is FuzzBase {
+contract EchidnaTest is FuzzBase {
     uint256 public value;
     uint256 public lastMaxResult;
     uint256 public lastMinResult;

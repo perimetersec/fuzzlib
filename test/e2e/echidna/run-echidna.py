@@ -2,7 +2,7 @@
 
 """
 Echidna E2E Test Runner for Fuzzlib
-Runs Echidna fuzzing tests on the BasicEchidnaTest contract
+Runs Echidna fuzzing tests on the EchidnaTest contract
 to validate fuzzlib functionality under actual fuzzing conditions.
 """
 
@@ -118,7 +118,7 @@ def print_results(test_results, failed_tests, stats):
 def main():
     # Configuration
     config_file = "test/e2e/echidna/echidna-config.yaml"
-    contract_name = "BasicEchidnaTest"
+    contract_name = "EchidnaTest"
     echidna_binary = "echidna"
     echidna_command = [echidna_binary, ".", "--contract", contract_name, "--config", config_file]
 
