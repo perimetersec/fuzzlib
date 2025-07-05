@@ -17,6 +17,7 @@ sender: ["0x20000"]           # Single sender address for transaction generation
 
 # Compilation configuration
 cryticArgs: ["--foundry-compile-all"]  # Compile all contracts with Foundry
+disableSlither: true                   # Disable Slither static analysis
 
 # Output configuration
 format: text                  # Use text format for readable output
