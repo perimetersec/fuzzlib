@@ -8,5 +8,5 @@ import {HelperLog} from "../../src/helpers/HelperLog.sol";
  * @author Perimeter <info@perimetersec.io>
  */
 contract HelperLogImplementation is HelperLog {
-    // This contract simply inherits from HelperLog to provide concrete implementation for testing
+// This contract simply inherits from HelperLog to provide concrete implementation for testing
 }
