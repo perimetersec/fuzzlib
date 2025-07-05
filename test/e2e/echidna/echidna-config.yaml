@@ -1,0 +1,19 @@
+seqLen: 50
+testLimit: 100000
+shrinkLimit: 1000
+
+testMode: assertion
+coverage: true
+
+deployer: "0x10000"
+sender: ["0x20000"]
+
+cryticArgs: ["--foundry-compile-all"]
+disableSlither: true
+
+format: text
+quiet: false
+
+balanceAddr: 0xffffffffffffffff
+
+timeout: 300
