@@ -66,51 +66,19 @@ def validate_test_expectations(test_results):
     return validation_errors, correct_behaviors
 
 def print_results(test_results, failed_tests, stats):
-    """Display parsed Echidna results with test expectation validation."""
-    print("\n=== Echidna Fuzzing Results ===")
+    """Display concise summary of test results and validation."""
+    print("\n=== Test Summary ===")
     
     # Validate test expectations
     validation_errors, correct_behaviors = validate_test_expectations(test_results)
     
-    # Display test results
-    if test_results:
-        passing_count = sum(1 for _, status in test_results if status == 'passing')
-        failing_count = sum(1 for _, status in test_results if status == 'failed')
-        print(f"Tests: {passing_count} passed, {failing_count} failed")
-        
-        for test_name, status in test_results:
-            status_symbol = "PASS" if status == 'passing' else "FAIL"
-            print(f"  {test_name}: {status_symbol}")
+    # Display test suite status
+    if validation_errors:
+        print("❌ Test suite FAILED - unexpected behavior detected:")
+        for error in validation_errors:
+            print(f"  ✗ {error}")
     else:
-        print("Tests: No test results found")
-    
-    # Display validation results
-    if validation_errors or correct_behaviors:
-        print("\n=== Test Expectation Validation ===")
-        
-        if correct_behaviors:
-            print("✓ Correct behaviors:")
-            for behavior in correct_behaviors:
-                print(f"  {behavior}")
-        
-        if validation_errors:
-            print("✗ Validation errors:")
-            for error in validation_errors:
-                print(f"  {error}")
-    
-    # Display statistics
-    if stats:
-        print("\n=== Campaign Statistics ===")
-        if 'instructions' in stats:
-            print(f"Coverage: {stats['instructions']} unique instructions")
-        if 'contracts' in stats:
-            print(f"Contracts: {stats['contracts']} analyzed")
-        if 'corpus' in stats:
-            print(f"Corpus: {stats['corpus']} sequences")
-        if 'calls' in stats:
-            print(f"Total calls: {stats['calls']}")
-        if 'seed' in stats:
-            print(f"Seed: {stats['seed']}")
+        print("✅ Test suite PASSED - all tests behaved as expected")
     
     return len(validation_errors) == 0
 
