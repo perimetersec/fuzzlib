@@ -2,6 +2,9 @@
 cache/
 out/
 
+# Echidna output
+crytic-export/
+
 # OS file
 .DS_Store
 
