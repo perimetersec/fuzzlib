@@ -90,10 +90,8 @@ contract EchidnaTest is FuzzBase {
      * Verifies comparison functions work correctly.
      */
     function test_basic_assertions(uint256 a, uint256 b) public {
-        // Test equality when values are the same
-        if (a == b) {
-            fl.eq(a, b, "Values should be equal");
-        }
+        // Test equality with known equal values
+        fl.eq(uint256(42), uint256(42), "Equal constants should be equal");
         
         // Test greater than or equal
         uint256 maxVal = fl.max(a, b);
@@ -104,6 +102,10 @@ contract EchidnaTest is FuzzBase {
         uint256 minVal = fl.min(a, b);
         fl.lte(minVal, a, "Min should be <= a");
         fl.lte(minVal, b, "Min should be <= b");
+        
+        // Test with known inequalities
+        fl.gte(uint256(100), uint256(50), "100 should be >= 50");
+        fl.lte(uint256(25), uint256(75), "25 should be <= 75");
         
         fl.log("Assertion tests completed");
     }
