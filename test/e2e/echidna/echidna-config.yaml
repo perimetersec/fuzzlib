@@ -4,13 +4,12 @@ shrinkLimit: 1000
 
 testMode: assertion
 coverage: true
-corpusDir: echidna-corpus
 
 deployer: "0x10000"
 sender: ["0x20000"]
 
 cryticArgs: ["--foundry-compile-all"]
-# disableSlither: true
+disableSlither: true
 
 format: text
 quiet: false
