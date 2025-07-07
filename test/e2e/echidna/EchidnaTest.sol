@@ -36,10 +36,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test mathematical operations with assertions.
+     * @dev Handler for mathematical operations with assertions.
      * Verifies max, min, and abs functions work correctly under fuzzing.
      */
-    function test_math_operations(uint256 a, uint256 b) public {
+    function handler_math_operations(uint256 a, uint256 b) public {
         // Test max operation
         uint256 maxResult = fl.max(a, b);
         fl.gte(maxResult, a, "Max result should be >= a");
@@ -58,7 +58,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_math_operations(uint256 a, uint256 b) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_math_operations.selector, a, b
+            this.handler_math_operations.selector, a, b
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -67,10 +67,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test absolute value operations with signed integers.
+     * @dev Handler for absolute value operations with signed integers.
      * Verifies abs function works correctly with positive and negative values.
      */
-    function test_abs_operations(int256 x) public {
+    function handler_abs_operations(int256 x) public {
         // Avoid testing type(int256).min to prevent overflow
         if (x == type(int256).min) return;
 
@@ -87,7 +87,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_abs_operations(int256 x) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_abs_operations.selector, x
+            this.handler_abs_operations.selector, x
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -96,10 +96,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test value clamping behavior.
+     * @dev Handler for value clamping behavior.
      * Verifies clamp results always stay within specified bounds.
      */
-    function test_clamp_operations(uint256 inputValue, uint256 _low, uint256 _high) public {
+    function handler_clamp_operations(uint256 inputValue, uint256 _low, uint256 _high) public {
         uint256 low;
         uint256 high;
         if (_low < _high) {
@@ -127,7 +127,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_clamp_operations(uint256 inputValue, uint256 _low, uint256 _high) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_clamp_operations.selector, inputValue, _low, _high
+            this.handler_clamp_operations.selector, inputValue, _low, _high
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -136,10 +136,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test basic assertion helpers.
+     * @dev Handler for basic assertion helpers.
      * Verifies comparison functions work correctly.
      */
-    function test_basic_assertions(uint256 a, uint256 b) public {
+    function handler_basic_assertions(uint256 a, uint256 b) public {
         // Test equality with known equal values
         fl.eq(uint256(42), uint256(42), "Equal constants should be equal");
 
@@ -163,7 +163,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_basic_assertions(uint256 a, uint256 b) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_basic_assertions.selector, a, b
+            this.handler_basic_assertions.selector, a, b
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -172,10 +172,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test logging functionality doesn't break contract state.
+     * @dev Handler for logging functionality doesn't break contract state.
      * Verifies various logging functions work without unwanted reverts.
      */
-    function test_logging_operations(uint256 num, string memory message) public {
+    function handler_logging_operations(uint256 num, string memory message) public {
         fl.log("Testing logging with number:", num);
         fl.log("Testing logging with message:", message);
         fl.log("Testing simple message");
@@ -186,7 +186,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_logging_operations(uint256 num, string memory message) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_logging_operations.selector, num, message
+            this.handler_logging_operations.selector, num, message
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -195,10 +195,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test mathematical difference operations.
+     * @dev Handler for mathematical difference operations.
      * Verifies diff function calculates absolute difference correctly.
      */
-    function test_diff_operations(uint256 a, uint256 b) public {
+    function handler_diff_operations(uint256 a, uint256 b) public {
         uint256 difference = fl.diff(a, b);
 
         // Verify difference is always positive (uint256 is always >= 0)
@@ -221,7 +221,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_diff_operations(uint256 a, uint256 b) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_diff_operations.selector, a, b
+            this.handler_diff_operations.selector, a, b
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -230,10 +230,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test HelperRandom shuffleArray functionality.
+     * @dev Handler for HelperRandom shuffleArray functionality.
      * Verifies array shuffling preserves elements and behaves deterministically.
      */
-    function test_shuffle_array_operations(uint256 entropy) public {
+    function handler_shuffle_array_operations(uint256 entropy) public {
         // Test with a fixed small array
         uint256[] memory testArray = new uint256[](5);
         testArray[0] = 10;
@@ -267,7 +267,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_shuffle_array_operations(uint256 entropy) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_shuffle_array_operations.selector, entropy
+            this.handler_shuffle_array_operations.selector, entropy
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -276,10 +276,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test HelperCall function call functionality using DummyTarget.
+     * @dev Handler for HelperCall function call functionality using DummyTarget.
      * Verifies function calls work correctly with the target contract.
      */
-    function test_function_call_basic(uint256 testValue) public {
+    function handler_function_call_basic(uint256 testValue) public {
         // Test setting and getting value from target contract
         bytes memory setCallData = abi.encodeWithSignature("setValue(uint256)", testValue);
         (bool setSuccess,) = fl.doFunctionCall(address(target), setCallData);
@@ -301,7 +301,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_function_call_basic(uint256 testValue) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_function_call_basic.selector, testValue
+            this.handler_function_call_basic.selector, testValue
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -310,10 +310,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test HelperCall with actor specification using DummyTarget.
+     * @dev Handler for HelperCall with actor specification using DummyTarget.
      * Verifies calls can be made with different actor addresses.
      */
-    function test_function_call_with_actor(address actor, uint256 value) public {
+    function handler_function_call_with_actor(address actor, uint256 value) public {
         // Use target contract with specified actor
         bytes memory callData = abi.encodeWithSignature("setValue(uint256)", value);
         (bool success,) = fl.doFunctionCall(address(target), callData, actor);
@@ -334,7 +334,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_function_call_with_actor(address actor, uint256 value) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_function_call_with_actor.selector, actor, value
+            this.handler_function_call_with_actor.selector, actor, value
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -343,10 +343,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test HelperCall with multiple return values using DummyTarget.
+     * @dev Handler for HelperCall with multiple return values using DummyTarget.
      * Verifies handling of complex return data and actor functionality.
      */
-    function test_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor) public {
+    function handler_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor) public {
         // Set up target contract with multiple values using specified actor
         bytes memory setCallData = abi.encodeWithSignature("setMultipleValues(uint256,string,bool)", value, testString, flag);
         (bool setSuccess,) = fl.doFunctionCall(address(target), setCallData, actor);
@@ -375,7 +375,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_function_call_multiple_returns.selector, value, testString, flag, actor
+            this.handler_function_call_multiple_returns.selector, value, testString, flag, actor
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -384,10 +384,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test that should always fail - used to verify test detection works.
-     * This test intentionally contains a false assertion.
+     * @dev Handler that should always fail - used to verify test detection works.
+     * This handler intentionally contains a false assertion.
      */
-    function test_always_fails_should_fail() public {
+    function handler_always_fails_should_fail() public {
         fl.eq(uint256(1), uint256(2), "This should always fail: 1 != 2");
     }
 
@@ -396,7 +396,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_always_fails_should_fail() public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_always_fails_should_fail.selector
+            this.handler_always_fails_should_fail.selector
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
@@ -405,10 +405,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test mathematical properties that should fail.
-     * This tests that our validation can detect expected failures.
+     * @dev Handler for mathematical properties that should fail.
+     * This handler tests that our validation can detect expected failures.
      */
-    function test_math_property_violation_should_fail(uint256 x) public {
+    function handler_math_property_violation_should_fail(uint256 x) public {
         fl.lte(x, 100, "Value should be <= 100");
     }
 
@@ -417,7 +417,7 @@ contract EchidnaTest is FuzzBase {
      */
     function fuzz_math_property_violation_should_fail(uint256 x) public {
         bytes memory callData = abi.encodeWithSelector(
-            this.test_math_property_violation_should_fail.selector, x
+            this.handler_math_property_violation_should_fail.selector, x
         );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
