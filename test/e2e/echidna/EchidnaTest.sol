@@ -169,9 +169,6 @@ contract EchidnaTest is FuzzBase {
      * Verifies function calls work correctly with the target contract.
      */
     function test_function_call_basic(uint256 testValue) public {
-        // Limit test value to avoid gas issues
-        testValue = testValue % 1000000;
-        
         // Test setting and getting value from target contract
         bytes memory setCallData = abi.encodeWithSignature("setValue(uint256)", testValue);
         (bool setSuccess,) = fl.doFunctionCall(address(target), setCallData);
@@ -193,9 +190,6 @@ contract EchidnaTest is FuzzBase {
      * Verifies calls can be made with different actor addresses.
      */
     function test_function_call_with_actor(address actor, uint256 value) public {
-        // Limit value to avoid gas issues
-        value = value % 1000000;
-        
         // Use target contract with specified actor
         bytes memory callData = abi.encodeWithSignature("setValue(uint256)", value);
         (bool success,) = fl.doFunctionCall(address(target), callData, actor);
@@ -213,7 +207,6 @@ contract EchidnaTest is FuzzBase {
      */
     function test_function_call_multiple_returns(uint256 value, string memory testString, bool flag) public {
         // Set up target contract with multiple values
-        value = value % 1000000;
         target.setMultipleValues(value, testString, flag);
         
         // Call function that returns multiple values
