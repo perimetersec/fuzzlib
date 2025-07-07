@@ -211,10 +211,10 @@ contract EchidnaTest is FuzzBase {
      * @dev Test HelperCall with multiple return values using DummyTarget.
      * Verifies handling of complex return data.
      */
-    function test_function_call_multiple_returns(uint256 value, bool flag) public {
+    function test_function_call_multiple_returns(uint256 value, string memory testString, bool flag) public {
         // Set up target contract with multiple values
         value = value % 1000000;
-        target.setMultipleValues(value, "test", flag);
+        target.setMultipleValues(value, testString, flag);
         
         // Call function that returns multiple values
         bytes memory callData = abi.encodeWithSignature("getMultipleValues()");
