@@ -75,7 +75,7 @@ def print_results(test_results, failed_tests, stats):
     if validation_errors:
         print("❌ Test suite FAILED - unexpected behavior detected:")
         for error in validation_errors:
-            print(f"  ✗ {error}")
+            print(f"  {error}")
     else:
         print("✅ Test suite PASSED - all tests behaved as expected")
     
@@ -96,7 +96,7 @@ def main():
         subprocess.run([echidna_binary, "--version"], capture_output=True, check=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
         print(f"Error: {echidna_binary} not found!")
-        print("Install from: https://github.com/crytic/echidna/releases")
+        print("Install from: https://github.com/crytic/echidna")
         sys.exit(1)
 
     # Run Echidna
