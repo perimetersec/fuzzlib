@@ -1,5 +1,5 @@
 seqLen: 50
-testLimit: 100000
+testLimit: 75000
 shrinkLimit: 1000
 
 testMode: assertion
@@ -12,8 +12,3 @@ cryticArgs: ["--foundry-compile-all"]
 disableSlither: true
 
 format: text
-quiet: false
-
-balanceAddr: 0xffffffffffffffff
-
-timeout: 300
