@@ -5,7 +5,8 @@ import "../../../src/FuzzBase.sol";
 import "./DummyTarget.sol";
 
 /**
- * @dev Echidna E2E integration test for fuzzlib functionality.
+ * @dev Base E2E test contract for fuzzlib functionality.
+ * Contains core handler functions and test infrastructure.
  * @author Perimeter <info@perimetersec.io>
  */
 contract EchidnaTest is FuzzBase {
@@ -15,25 +16,6 @@ contract EchidnaTest is FuzzBase {
         target = new DummyTarget();
     }
 
-    /**
-     * @dev Executes a delegatecall to this contract with the given callData.
-     * Used to test function integrity and detect unwanted reverts during fuzzing.
-     * @param callData The data to be used in the delegatecall
-     * @return success Whether the delegatecall succeeded
-     * @return errorSelector The error selector if the call failed
-     */
-    function _testSelf(bytes memory callData) internal returns (bool success, bytes4 errorSelector) {
-        bytes memory returnData;
-        (success, returnData) = address(this).delegatecall(callData);
-        
-        if (!success && returnData.length >= 4) {
-            assembly {
-                errorSelector := mload(add(returnData, 0x20))
-            }
-        }
-        
-        return (success, errorSelector);
-    }
 
     /**
      * @dev Handler for mathematical operations with assertions.
@@ -54,19 +36,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for mathematical operations integrity testing.
-     */
-    function fuzz_math_operations(uint256 a, uint256 b) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_math_operations.selector, a, b
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "MATH-01: Unexpected math operation failure");
-        }
-    }
-
-    /**
      * @dev Handler for absolute value operations with signed integers.
      * Verifies abs function works correctly with positive and negative values.
      */
@@ -79,19 +48,6 @@ contract EchidnaTest is FuzzBase {
             fl.eq(absResult, uint256(x), "Abs of positive number should equal the number");
         } else {
             fl.eq(absResult, uint256(-x), "Abs of negative number should equal its negation");
-        }
-    }
-
-    /**
-     * @dev Fuzz wrapper for absolute value operations integrity testing.
-     */
-    function fuzz_abs_operations(int256 x) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_abs_operations.selector, x
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "ABS-01: Unexpected abs operation failure");
         }
     }
 
@@ -123,19 +79,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for clamp operations integrity testing.
-     */
-    function fuzz_clamp_operations(uint256 inputValue, uint256 _low, uint256 _high) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_clamp_operations.selector, inputValue, _low, _high
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "CLAMP-01: Unexpected clamp operation failure");
-        }
-    }
-
-    /**
      * @dev Handler for basic assertion helpers.
      * Verifies comparison functions work correctly.
      */
@@ -159,19 +102,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for basic assertions integrity testing.
-     */
-    function fuzz_basic_assertions(uint256 a, uint256 b) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_basic_assertions.selector, a, b
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "ASSERT-01: Unexpected assertion failure");
-        }
-    }
-
-    /**
      * @dev Handler for logging functionality doesn't break contract state.
      * Verifies various logging functions work without unwanted reverts.
      */
@@ -179,19 +109,6 @@ contract EchidnaTest is FuzzBase {
         fl.log("Testing logging with number:", num);
         fl.log("Testing logging with message:", message);
         fl.log("Testing simple message");
-    }
-
-    /**
-     * @dev Fuzz wrapper for logging operations integrity testing.
-     */
-    function fuzz_logging_operations(uint256 num, string memory message) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_logging_operations.selector, num, message
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "LOG-01: Unexpected logging failure");
-        }
     }
 
     /**
@@ -214,19 +131,6 @@ contract EchidnaTest is FuzzBase {
         // Verify difference properties
         fl.eq(fl.diff(a, a), 0, "Difference of identical values should be zero");
         fl.eq(fl.diff(a, b), fl.diff(b, a), "Difference should be commutative");
-    }
-
-    /**
-     * @dev Fuzz wrapper for diff operations integrity testing.
-     */
-    function fuzz_diff_operations(uint256 a, uint256 b) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_diff_operations.selector, a, b
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "DIFF-01: Unexpected diff operation failure");
-        }
     }
 
     /**
@@ -263,19 +167,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for shuffle array operations integrity testing.
-     */
-    function fuzz_shuffle_array_operations(uint256 entropy) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_shuffle_array_operations.selector, entropy
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "SHUFFLE-01: Unexpected shuffle operation failure");
-        }
-    }
-
-    /**
      * @dev Handler for HelperCall function call functionality using DummyTarget.
      * Verifies function calls work correctly with the target contract.
      */
@@ -297,19 +188,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for basic function call integrity testing.
-     */
-    function fuzz_function_call_basic(uint256 testValue) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_function_call_basic.selector, testValue
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "CALL-01: Unexpected function call failure");
-        }
-    }
-
-    /**
      * @dev Handler for HelperCall with actor specification using DummyTarget.
      * Verifies calls can be made with different actor addresses.
      */
@@ -327,19 +205,6 @@ contract EchidnaTest is FuzzBase {
         // Verify the actor was actually used as msg.sender
         address lastSender = target.getLastMsgSender();
         fl.eq(lastSender, actor, "Last msg.sender should be the specified actor");
-    }
-
-    /**
-     * @dev Fuzz wrapper for function call with actor integrity testing.
-     */
-    function fuzz_function_call_with_actor(address actor, uint256 value) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_function_call_with_actor.selector, actor, value
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "CALL-02: Unexpected function call with actor failure");
-        }
     }
 
     /**
@@ -371,19 +236,6 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for function call with multiple returns integrity testing.
-     */
-    function fuzz_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_function_call_multiple_returns.selector, value, testString, flag, actor
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "CALL-03: Unexpected function call multiple returns failure");
-        }
-    }
-
-    /**
      * @dev Handler that should always fail - used to verify test detection works.
      * This handler intentionally contains a false assertion.
      */
@@ -392,36 +244,10 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Fuzz wrapper for always-failing test (should fail).
-     */
-    function fuzz_always_fails_should_fail() public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_always_fails_should_fail.selector
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "FAIL-01: Unexpected always-fail test failure");
-        }
-    }
-
-    /**
      * @dev Handler for mathematical properties that should fail.
      * This handler tests that our validation can detect expected failures.
      */
     function handler_math_property_violation_should_fail(uint256 x) public {
         fl.lte(x, 100, "Value should be <= 100");
-    }
-
-    /**
-     * @dev Fuzz wrapper for math property violation test (should fail).
-     */
-    function fuzz_math_property_violation_should_fail(uint256 x) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_math_property_violation_should_fail.selector, x
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "FAIL-02: Unexpected math property violation failure");
-        }
     }
 }
