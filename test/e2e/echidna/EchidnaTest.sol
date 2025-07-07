@@ -2,16 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "../../../src/FuzzBase.sol";
+import "./DummyTarget.sol";
 
 /**
  * @dev Echidna E2E integration test for fuzzlib functionality.
  * @author Perimeter <info@perimetersec.io>
  */
 contract EchidnaTest is FuzzBase {
-    uint256 public value;
-    uint256 public lastMaxResult;
-    uint256 public lastMinResult;
-    uint256 public lastAbsResult;
+    DummyTarget public target;
+
+    constructor() {
+        target = new DummyTarget();
+    }
 
     /**
      * @dev Test mathematical operations with assertions.
@@ -23,14 +25,12 @@ contract EchidnaTest is FuzzBase {
         fl.gte(maxResult, a, "Max result should be >= a");
         fl.gte(maxResult, b, "Max result should be >= b");
         fl.t(maxResult == a || maxResult == b, "Max result should equal either a or b");
-        lastMaxResult = maxResult;
 
         // Test min operation
         uint256 minResult = fl.min(a, b);
         fl.lte(minResult, a, "Min result should be <= a");
         fl.lte(minResult, b, "Min result should be <= b");
         fl.t(minResult == a || minResult == b, "Min result should equal either a or b");
-        lastMinResult = minResult;
     }
 
     /**
@@ -47,7 +47,6 @@ contract EchidnaTest is FuzzBase {
         } else {
             fl.eq(absResult, uint256(-x), "Abs of negative number should equal its negation");
         }
-        lastAbsResult = absResult;
     }
 
     /**
@@ -75,8 +74,6 @@ contract EchidnaTest is FuzzBase {
         if (inputValue >= low && inputValue <= high) {
             fl.eq(clampedValue, inputValue, "Value in range should remain unchanged");
         }
-
-        value = clampedValue;
     }
 
     /**
@@ -168,38 +165,69 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
-     * @dev Test HelperCall function call functionality.
+     * @dev Test HelperCall function call functionality using DummyTarget.
+     * Verifies function calls work correctly with the target contract.
      */
-    function test_function_call() public {
-        // Test call to a view function on this contract
-        bytes memory callData = abi.encodeWithSignature("value()");
-        (bool success, bytes memory returnData) = fl.doFunctionCall(address(this), callData);
-
-        fl.t(success, "Function call should succeed");
+    function test_function_call_basic(uint256 testValue) public {
+        // Limit test value to avoid gas issues
+        testValue = testValue % 1000000;
+        
+        // Test setting and getting value from target contract
+        bytes memory setCallData = abi.encodeWithSignature("setValue(uint256)", testValue);
+        (bool setSuccess,) = fl.doFunctionCall(address(target), setCallData);
+        fl.t(setSuccess, "setValue call should succeed");
+        
+        // Test getting the value back
+        bytes memory getCallData = abi.encodeWithSignature("getValue()");
+        (bool getSuccess, bytes memory returnData) = fl.doFunctionCall(address(target), getCallData);
+        
+        fl.t(getSuccess, "getValue call should succeed");
         fl.t(returnData.length > 0, "Should return data");
-
-        // Decode returned value
+        
         uint256 returnedValue = abi.decode(returnData, (uint256));
-        fl.eq(returnedValue, value, "Returned value should match contract state");
+        fl.eq(returnedValue, testValue, "Returned value should match set value");
     }
 
     /**
-     * @dev Test HelperCall with actor specification.
+     * @dev Test HelperCall with actor specification using DummyTarget.
      * Verifies calls can be made with different actor addresses.
      */
-    function test_function_call_with_actor(address actor) public {
-        // Use a simple view function call with specified actor
-        bytes memory callData = abi.encodeWithSignature("value()");
-        (bool success, bytes memory returnData) = fl.doFunctionCall(address(this), callData, actor);
-
+    function test_function_call_with_actor(address actor, uint256 value) public {
+        // Limit value to avoid gas issues
+        value = value % 1000000;
+        
+        // Use target contract with specified actor
+        bytes memory callData = abi.encodeWithSignature("setValue(uint256)", value);
+        (bool success,) = fl.doFunctionCall(address(target), callData, actor);
+        
         fl.t(success, "Function call with actor should succeed");
+        
+        // Verify the value was set correctly
+        uint256 storedValue = target.getValue();
+        fl.eq(storedValue, value, "Value should be set correctly regardless of actor");
+    }
+
+    /**
+     * @dev Test HelperCall with multiple return values using DummyTarget.
+     * Verifies handling of complex return data.
+     */
+    function test_function_call_multiple_returns(uint256 value, bool flag) public {
+        // Set up target contract with multiple values
+        value = value % 1000000;
+        target.setMultipleValues(value, "test", flag);
+        
+        // Call function that returns multiple values
+        bytes memory callData = abi.encodeWithSignature("getMultipleValues()");
+        (bool success, bytes memory returnData) = fl.doFunctionCall(address(target), callData);
+        
+        fl.t(success, "Multiple return call should succeed");
         fl.t(returnData.length > 0, "Should return data");
-
-        // Decode and verify
-        uint256 returnedValue = abi.decode(returnData, (uint256));
-        fl.eq(returnedValue, value, "Returned value should match regardless of actor");
-
-        fl.log("Function call with actor completed");
+        
+        (uint256 retValue, string memory retString, bool retFlag) = 
+            abi.decode(returnData, (uint256, string, bool));
+            
+        fl.eq(retValue, value, "Returned value should match");
+        fl.eq(retFlag, flag, "Returned flag should match");
     }
 
     /**
@@ -218,4 +246,3 @@ contract EchidnaTest is FuzzBase {
         fl.lte(x, 100, "Value should be <= 100");
     }
 }
-
