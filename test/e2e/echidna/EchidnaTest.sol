@@ -199,19 +199,29 @@ contract EchidnaTest is FuzzBase {
         // Verify the value was set correctly
         uint256 storedValue = target.getValue();
         fl.eq(storedValue, value, "Value should be set correctly regardless of actor");
+        
+        // Verify the actor was actually used as msg.sender
+        address lastSender = target.getLastMsgSender();
+        fl.eq(lastSender, actor, "Last msg.sender should be the specified actor");
     }
 
     /**
      * @dev Test HelperCall with multiple return values using DummyTarget.
-     * Verifies handling of complex return data.
+     * Verifies handling of complex return data and actor functionality.
      */
-    function test_function_call_multiple_returns(uint256 value, string memory testString, bool flag) public {
-        // Set up target contract with multiple values
-        target.setMultipleValues(value, testString, flag);
+    function test_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor) public {
+        // Set up target contract with multiple values using specified actor
+        bytes memory setCallData = abi.encodeWithSignature("setMultipleValues(uint256,string,bool)", value, testString, flag);
+        (bool setSuccess,) = fl.doFunctionCall(address(target), setCallData, actor);
+        fl.t(setSuccess, "setMultipleValues call should succeed");
+        
+        // Verify the actor was used as msg.sender
+        address lastSender = target.getLastMsgSender();
+        fl.eq(lastSender, actor, "Last msg.sender should be the specified actor");
         
         // Call function that returns multiple values
-        bytes memory callData = abi.encodeWithSignature("getMultipleValues()");
-        (bool success, bytes memory returnData) = fl.doFunctionCall(address(target), callData);
+        bytes memory getCallData = abi.encodeWithSignature("getMultipleValues()");
+        (bool success, bytes memory returnData) = fl.doFunctionCall(address(target), getCallData);
         
         fl.t(success, "Multiple return call should succeed");
         fl.t(returnData.length > 0, "Should return data");

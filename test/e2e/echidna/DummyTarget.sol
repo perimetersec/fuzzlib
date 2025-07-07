@@ -10,6 +10,7 @@ contract DummyTarget {
     uint256 internal storedValue;
     string internal storedString;
     bool internal storedBool;
+    address internal lastMsgSender;
 
     /**
      * @dev Simple getter function that returns stored value.
@@ -23,6 +24,7 @@ contract DummyTarget {
      */
     function setValue(uint256 newValue) public {
         storedValue = newValue;
+        lastMsgSender = msg.sender;
     }
 
     /**
@@ -39,5 +41,13 @@ contract DummyTarget {
         storedValue = _value;
         storedString = _str;
         storedBool = _flag;
+        lastMsgSender = msg.sender;
+    }
+
+    /**
+     * @dev Returns the last message sender.
+     */
+    function getLastMsgSender() public view returns (address) {
+        return lastMsgSender;
     }
 }
