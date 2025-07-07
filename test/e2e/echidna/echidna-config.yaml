@@ -12,3 +12,20 @@ cryticArgs: ["--foundry-compile-all"]
 disableSlither: true
 
 format: text
+
+filterBlacklist: true
+filterFunctions:
+  [
+    "EchidnaEntry.handler_math_operations(uint256,uint256)",
+    "EchidnaEntry.handler_abs_operations(int256)",
+    "EchidnaEntry.handler_clamp_operations(uint256,uint256,uint256)",
+    "EchidnaEntry.handler_basic_assertions(uint256,uint256)",
+    "EchidnaEntry.handler_logging_operations(uint256,string)",
+    "EchidnaEntry.handler_diff_operations(uint256,uint256)",
+    "EchidnaEntry.handler_shuffle_array_operations(uint256)",
+    "EchidnaEntry.handler_function_call_basic(uint256)",
+    "EchidnaEntry.handler_function_call_with_actor(address,uint256)",
+    "EchidnaEntry.handler_function_call_multiple_returns(uint256,string,bool,address)",
+    "EchidnaEntry.handler_always_fails_should_fail()",
+    "EchidnaEntry.handler_math_property_violation_should_fail(uint256)"
+  ]
