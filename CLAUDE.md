@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Build**: Foundry automatically compiles contracts when running tests
 - **Format**: `forge fmt` - Formats code using Foundry's built-in formatter (run after making changes)
 - **Extended Fuzz Testing**: `forge test --fuzz-runs 10000` - Run comprehensive fuzz testing after large edits (resource intensive, use sparingly)
+- **Echidna E2E Testing**: `python3 test/e2e/echidna/run-echidna.py` - Run end-to-end Echidna fuzzing tests for comprehensive library validation
 
 ## Architecture Overview
 
@@ -389,3 +390,159 @@ abstract contract HelperMath {
     }
 }
 ```
+
+## Echidna E2E Testing System
+
+Fuzzlib includes a comprehensive end-to-end testing system using Echidna for real-world fuzzing validation. This system ensures that all fuzzlib functionality works correctly under actual fuzzing conditions with unwanted revert detection.
+
+### E2E Testing Architecture
+
+The Echidna E2E testing system uses a three-contract inheritance architecture with delegatecall-based integrity testing:
+
+#### Contract Structure
+
+1. **EchidnaTest** (`test/e2e/echidna/EchidnaTest.sol`)
+   - Base contract extending `FuzzBase`
+   - Contains all `handler_*` functions with core test logic
+   - Includes `DummyTarget` setup for testing `HelperCall` functionality
+   - Provides comprehensive coverage of all fuzzlib helpers
+
+2. **EchidnaTestIntegrity** (`test/e2e/echidna/EchidnaTestIntegrity.sol`)
+   - Integrity testing layer inheriting from `EchidnaTest`
+   - Contains `_testSelf()` helper for delegatecall-based unwanted revert detection
+   - Implements `fuzz_*` wrapper functions that call corresponding handlers via delegatecall
+   - Detects and reports unexpected reverts during fuzzing
+
+3. **EchidnaEntry** (`test/e2e/echidna/EchidnaEntry.sol`)
+   - Entry point contract inheriting from `EchidnaTestIntegrity`
+   - Target contract for Echidna fuzzing
+   - Provides access to all functionality through inheritance chain
+
+#### Delegatecall Integrity Pattern
+
+The core innovation is the `_testSelf()` helper that uses delegatecall to detect unwanted reverts:
+
+```solidity
+function _testSelf(bytes memory callData) internal returns (bool success, bytes4 errorSelector) {
+    bytes memory returnData;
+    (success, returnData) = address(this).delegatecall(callData);
+    
+    if (!success && returnData.length >= 4) {
+        assembly {
+            errorSelector := mload(add(returnData, 0x20))
+        }
+    }
+    
+    return (success, errorSelector);
+}
+```
+
+Each `fuzz_*` function wraps a corresponding `handler_*` function:
+
+```solidity
+function fuzz_math_operations(uint256 a, uint256 b) public {
+    bytes memory callData = abi.encodeWithSelector(
+        this.handler_math_operations.selector, a, b
+    );
+    (bool success, bytes4 errorSelector) = _testSelf(callData);
+    if (!success) {
+        fl.t(false, "MATH-01: Unexpected math operation failure");
+    }
+}
+```
+
+### Function Naming Conventions
+
+- **`handler_*` functions**: Core test logic implementing specific functionality tests
+- **`fuzz_*` functions**: Delegatecall wrappers for integrity testing and unwanted revert detection
+- **`*_should_fail` suffix**: Tests expected to fail, used to validate that the fuzzing system correctly detects failures
+
+### Test Coverage Areas
+
+The E2E system comprehensively tests all fuzzlib functionality:
+
+1. **Mathematical Operations**: `max`, `min`, `abs`, `diff` functions with property verification
+2. **Value Clamping**: Boundary testing and range validation for `clamp` operations
+3. **Assertion Helpers**: Testing `eq`, `gte`, `lte`, `t` assertion functions
+4. **Logging Operations**: Verification that logging doesn't cause unwanted side effects
+5. **Random Operations**: Array shuffling with element preservation verification
+6. **Function Calls**: Testing `doFunctionCall` with basic calls, actor specification, and multiple return values
+7. **Expected Failures**: Testing that intentionally failing tests are properly detected
+
+### Configuration and Execution
+
+#### Echidna Configuration (`test/e2e/echidna/echidna-config.yaml`)
+
+```yaml
+seqLen: 50
+testLimit: 75000
+shrinkLimit: 1000
+
+testMode: assertion
+coverage: true
+
+filterBlacklist: true
+filterFunctions:
+  [
+    "EchidnaEntry.handler_math_operations(uint256,uint256)",
+    "EchidnaEntry.handler_abs_operations(int256)",
+    # ... all handler functions blacklisted
+  ]
+```
+
+Key configuration features:
+- **Handler blacklisting**: All `handler_*` functions are blacklisted, forcing Echidna to only call `fuzz_*` wrappers
+- **Assertion mode**: Uses assertion-based testing for property verification
+- **Coverage tracking**: Monitors code coverage during fuzzing
+- **Foundry integration**: Uses `--foundry-compile-all` for complete compilation
+
+#### Test Runner (`test/e2e/echidna/run-echidna.py`)
+
+The Python test runner provides:
+- **Automated execution**: Runs Echidna with proper configuration
+- **Real-time output**: Displays Echidna output as it runs
+- **Result validation**: Parses test results and validates expected behavior
+- **Failure detection**: Uses `_should_fail` naming convention to validate that expected failures occur
+- **Statistics reporting**: Reports coverage statistics and test execution metrics
+
+```bash
+# Run E2E tests
+python3 test/e2e/echidna/run-echidna.py
+```
+
+### Expected Test Behavior
+
+The system validates that:
+- **Legitimate tests pass**: All `fuzz_*` functions without `_should_fail` suffix should pass
+- **Expected failures fail**: Tests with `_should_fail` suffix should fail as intended
+- **No unwanted reverts**: Handler functions should not revert unexpectedly during fuzzing
+- **Comprehensive coverage**: All major fuzzlib functionality is exercised under real fuzzing conditions
+
+### Integration with Development Workflow
+
+#### When to Run E2E Tests
+
+- **After major changes**: Run after modifying core helper functionality
+- **Before releases**: Validate that all functionality works under fuzzing conditions
+- **Integration validation**: Ensure that new features work correctly with Echidna
+- **Platform verification**: Confirm that platform-specific behavior works as expected
+
+#### Adding New E2E Tests
+
+When adding new fuzzlib functionality:
+
+1. **Add handler function**: Create `handler_new_feature()` in `EchidnaTest`
+2. **Add fuzz wrapper**: Create `fuzz_new_feature()` in `EchidnaTestIntegrity`
+3. **Update configuration**: Add handler to blacklist in `echidna-config.yaml`
+4. **Test expected behavior**: Verify both success and failure scenarios
+
+### E2E Testing Best Practices
+
+- **Comprehensive coverage**: Test all code paths and edge cases in handler functions
+- **Property-based testing**: Focus on mathematical properties and invariants
+- **Realistic scenarios**: Use `DummyTarget` for realistic external contract interactions
+- **Error boundary testing**: Include tests that should fail to validate detection mechanisms
+- **Performance awareness**: E2E tests are resource-intensive; use appropriately sized test limits
+- **Platform compatibility**: Ensure tests work correctly across different fuzzing platforms
+
+The Echidna E2E testing system provides confidence that fuzzlib functions correctly under real-world fuzzing conditions, catching issues that might not surface in traditional unit testing.
