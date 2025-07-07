@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Table of Contents
+
+1. [Development Commands](#development-commands)
+2. [Architecture Overview](#architecture-overview)
+3. [Code Quality Guidelines](#code-quality-guidelines)
+4. [Error Handling](#error-handling)
+5. [String Utilities](#string-utilities)
+6. [Error Handling Implementation](#error-handling-implementation)
+7. [Development Workflow](#development-workflow)
+8. [Testing Guidelines](#testing-guidelines)
+9. [Documentation Standards](#documentation-standards)
+10. [Echidna E2E Testing System](#echidna-e2e-testing-system)
+
 ## Development Commands
 
 - **Test**: `forge test` - Runs the test suite using Foundry
@@ -171,16 +184,12 @@ emit Clamped(
 All new code should use custom errors instead of `require` statements for better gas efficiency and clearer error semantics:
 
 ```solidity
-// ❌ Avoid: Traditional require statements
+// ❌ Avoid: require statements
 require(low <= high, "HelperClamp: invalid range");
-require(b > 0, "HelperClamp: clampLt unsupported value");
 
 // ✅ Prefer: Custom errors
 error InvalidRange(uint256 low, uint256 high);
-error UnsupportedClampLtValue(uint256 value);
-
 if (low > high) revert InvalidRange(low, high);
-if (b == 0) revert UnsupportedClampLtValue(b);
 ```
 
 ### Custom Error Best Practices
@@ -204,24 +213,12 @@ When updating existing code:
 ### Example Migration
 
 ```solidity
-// Before:
-contract HelperClamp {
-    function clamp(uint256 value, uint256 low, uint256 high) public returns (uint256) {
-        require(low <= high, "HelperClamp: invalid range");
-        // ... rest of function
-    }
-}
+// Before: require statements
+require(low <= high, "HelperClamp: invalid range");
 
-// After:
-contract HelperClamp {
-    error InvalidRange(uint256 low, uint256 high);
-    error UnsupportedClampLtValue(uint256 value);
-    
-    function clamp(uint256 value, uint256 low, uint256 high) public returns (uint256) {
-        if (low > high) revert InvalidRange(low, high);
-        // ... rest of function
-    }
-}
+// After: custom errors
+error InvalidRange(uint256 low, uint256 high);
+if (low > high) revert InvalidRange(low, high);
 ```
 
 ## Development Workflow
@@ -311,34 +308,14 @@ function testFuzz_anotherFunction(type param) public { ... }
 
 Leverage specialized utility contracts for comprehensive testing:
 
-```solidity
-// Use DummyContract for controlled error scenarios
-contract MyTest is Test, HelperAssert {
-    DummyContract dummy;
-    
-    function setUp() public {
-        dummy = new DummyContract();
-    }
-    
-    function test_error_handling() public {
-        errAllow(["Dummy error"]);
-        dummy.failWithMessage("Dummy error");
-    }
-}
+- **DummyContract**: Provides controlled error scenarios for testing
+- **ErrAllowTestHelper**: Specialized utilities for testing error handling  
+- **CallTarget**: Test function calls that may fail with various error types
 
-// Use CallTarget for function call testing
-contract CallTest is Test, HelperCall {
-    CallTarget target;
-    
-    function test_function_calls() public {
-        target = new CallTarget();
-        bytes memory result = doFunctionCall(
-            address(target),
-            abi.encodeWithSignature("getValue()"),
-            0
-        );
-    }
-}
+```solidity
+// Example: Using DummyContract for error testing
+errAllow(["Dummy error"]);
+dummy.failWithMessage("Dummy error");
 ```
 
 ### Advanced Edge Case Testing
@@ -394,6 +371,13 @@ abstract contract HelperMath {
 ## Echidna E2E Testing System
 
 Fuzzlib includes a comprehensive end-to-end testing system using Echidna for real-world fuzzing validation. This system ensures that all fuzzlib functionality works correctly under actual fuzzing conditions with unwanted revert detection.
+
+### Quick Overview
+
+- **Three-contract architecture**: EchidnaTest → EchidnaTestIntegrity → EchidnaEntry
+- **Delegatecall integrity testing**: Detects unexpected reverts during fuzzing
+- **Handler blacklisting**: Forces Echidna to only call `fuzz_*` wrapper functions
+- **Expected failure validation**: Tests with `_should_fail` suffix should fail as intended
 
 ### E2E Testing Architecture
 
@@ -471,39 +455,14 @@ The E2E system comprehensively tests all fuzzlib functionality:
 
 ### Configuration and Execution
 
-#### Echidna Configuration (`test/e2e/echidna/echidna-config.yaml`)
-
-```yaml
-seqLen: 50
-testLimit: 75000
-shrinkLimit: 1000
-
-testMode: assertion
-coverage: true
-
-filterBlacklist: true
-filterFunctions:
-  [
-    "EchidnaEntry.handler_math_operations(uint256,uint256)",
-    "EchidnaEntry.handler_abs_operations(int256)",
-    # ... all handler functions blacklisted
-  ]
-```
-
-Key configuration features:
-- **Handler blacklisting**: All `handler_*` functions are blacklisted, forcing Echidna to only call `fuzz_*` wrappers
+#### Key Configuration Features
+- **Handler blacklisting**: All `handler_*` functions are blacklisted in `echidna-config.yaml`
 - **Assertion mode**: Uses assertion-based testing for property verification
 - **Coverage tracking**: Monitors code coverage during fuzzing
 - **Foundry integration**: Uses `--foundry-compile-all` for complete compilation
 
-#### Test Runner (`test/e2e/echidna/run-echidna.py`)
-
-The Python test runner provides:
-- **Automated execution**: Runs Echidna with proper configuration
-- **Real-time output**: Displays Echidna output as it runs
-- **Result validation**: Parses test results and validates expected behavior
-- **Failure detection**: Uses `_should_fail` naming convention to validate that expected failures occur
-- **Statistics reporting**: Reports coverage statistics and test execution metrics
+#### Test Runner
+The Python test runner (`test/e2e/echidna/run-echidna.py`) provides automated execution, real-time output, result validation, and statistics reporting.
 
 ```bash
 # Run E2E tests
@@ -521,28 +480,21 @@ The system validates that:
 ### Integration with Development Workflow
 
 #### When to Run E2E Tests
-
-- **After major changes**: Run after modifying core helper functionality
-- **Before releases**: Validate that all functionality works under fuzzing conditions
-- **Integration validation**: Ensure that new features work correctly with Echidna
-- **Platform verification**: Confirm that platform-specific behavior works as expected
+- After major changes to core helper functionality
+- Before releases to validate all functionality under fuzzing conditions
+- When adding new features to ensure Echidna compatibility
 
 #### Adding New E2E Tests
-
-When adding new fuzzlib functionality:
-
-1. **Add handler function**: Create `handler_new_feature()` in `EchidnaTest`
-2. **Add fuzz wrapper**: Create `fuzz_new_feature()` in `EchidnaTestIntegrity`
-3. **Update configuration**: Add handler to blacklist in `echidna-config.yaml`
-4. **Test expected behavior**: Verify both success and failure scenarios
+1. Add `handler_new_feature()` function in `EchidnaTest`
+2. Add `fuzz_new_feature()` wrapper in `EchidnaTestIntegrity`
+3. Update `echidna-config.yaml` to blacklist the new handler
+4. Test both success and failure scenarios
 
 ### E2E Testing Best Practices
-
-- **Comprehensive coverage**: Test all code paths and edge cases in handler functions
-- **Property-based testing**: Focus on mathematical properties and invariants
-- **Realistic scenarios**: Use `DummyTarget` for realistic external contract interactions
-- **Error boundary testing**: Include tests that should fail to validate detection mechanisms
-- **Performance awareness**: E2E tests are resource-intensive; use appropriately sized test limits
-- **Platform compatibility**: Ensure tests work correctly across different fuzzing platforms
+- Test all code paths and edge cases in handler functions
+- Focus on mathematical properties and invariants
+- Use `DummyTarget` for realistic external contract interactions
+- Include tests that should fail to validate detection mechanisms
+- Be aware that E2E tests are resource-intensive
 
 The Echidna E2E testing system provides confidence that fuzzlib functions correctly under real-world fuzzing conditions, catching issues that might not surface in traditional unit testing.
