@@ -12,6 +12,9 @@ contract DummyTarget {
     bool internal storedBool;
     address internal lastMsgSender;
 
+    // Custom error for errAllow testing
+    error InvalidOperation();
+
     /**
      * @dev Simple getter function that returns stored value.
      */
@@ -49,5 +52,19 @@ contract DummyTarget {
      */
     function getLastMsgSender() public view returns (address) {
         return lastMsgSender;
+    }
+
+    /**
+     * @dev Function that fails with a require message.
+     */
+    function failWithRequire(string memory message) public pure {
+        require(false, message);
+    }
+
+    /**
+     * @dev Function that fails with InvalidOperation error.
+     */
+    function failWithInvalidOperation() public pure {
+        revert InvalidOperation();
     }
 }

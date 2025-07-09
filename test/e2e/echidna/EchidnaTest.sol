@@ -250,4 +250,50 @@ contract EchidnaTest is FuzzBase {
     function handler_math_property_violation_should_fail(uint256 x) public {
         fl.lte(x, 100, "Value should be <= 100");
     }
+
+    /**
+     * @dev Handler for errAllow functionality testing.
+     * Verifies errAllow works correctly with require and custom errors.
+     */
+    function handler_errallow(string memory errorMessage) public {
+        // Test require error handling
+        bytes memory callData = abi.encodeWithSignature("failWithRequire(string)", errorMessage);
+        (bool success, bytes memory errorData) = address(target).call(callData);
+        
+        fl.t(!success, "Call should have failed");
+        fl.t(errorData.length > 0, "Should have error data");
+        
+        string[] memory allowedMessages = new string[](1);
+        allowedMessages[0] = errorMessage;
+        fl.errAllow(errorData, allowedMessages, "require message should be allowed");
+        
+        // Test custom error handling
+        bytes memory customCallData = abi.encodeWithSignature("failWithInvalidOperation()");
+        (bool customSuccess, bytes memory customErrorData) = address(target).call(customCallData);
+        
+        fl.t(!customSuccess, "Custom error call should have failed");
+        fl.t(customErrorData.length > 0, "Should have custom error data");
+        
+        bytes4[] memory allowedSelectors = new bytes4[](1);
+        allowedSelectors[0] = DummyTarget.InvalidOperation.selector;
+        fl.errAllow(bytes4(customErrorData), allowedSelectors, "InvalidOperation should be allowed");
+    }
+
+    /**
+     * @dev Handler for errAllow that should fail - tests error handling validation.
+     * This handler tests that errAllow correctly rejects unallowed errors.
+     */
+    function handler_errallow_should_fail(string memory errorMessage) public {
+        // Make a call that will fail and capture the error data
+        bytes memory callData = abi.encodeWithSignature("failWithRequire(string)", errorMessage);
+        (bool success, bytes memory errorData) = address(target).call(callData);
+        
+        fl.t(!success, "Call should have failed");
+        fl.t(errorData.length > 0, "Should have error data");
+        
+        // Test errAllow with WRONG allowed messages (should fail)
+        string[] memory wrongMessages = new string[](1);
+        wrongMessages[0] = "Different error message";
+        fl.errAllow(errorData, wrongMessages, "This should fail - wrong message allowed");
+    }
 }

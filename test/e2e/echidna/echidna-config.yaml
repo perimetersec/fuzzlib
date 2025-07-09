@@ -27,5 +27,7 @@ filterFunctions:
     "EchidnaEntry.handler_function_call_with_actor(address,uint256)",
     "EchidnaEntry.handler_function_call_multiple_returns(uint256,string,bool,address)",
     "EchidnaEntry.handler_always_fails_should_fail()",
-    "EchidnaEntry.handler_math_property_violation_should_fail(uint256)"
+    "EchidnaEntry.handler_math_property_violation_should_fail(uint256)",
+    "EchidnaEntry.handler_errallow(string)",
+    "EchidnaEntry.handler_errallow_should_fail(string)"
   ]

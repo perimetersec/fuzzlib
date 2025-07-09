@@ -185,4 +185,30 @@ contract EchidnaTestIntegrity is EchidnaTest {
             fl.t(false, "FAIL-02: Unexpected math property violation failure");
         }
     }
+
+    /**
+     * @dev Fuzz wrapper for errAllow functionality testing.
+     */
+    function fuzz_errallow(string memory errorMessage) public {
+        bytes memory callData = abi.encodeWithSelector(
+            this.handler_errallow.selector, errorMessage
+        );
+        (bool success, bytes4 errorSelector) = _testSelf(callData);
+        if (!success) {
+            fl.t(false, "ERRALLOW-01: Unexpected errAllow functionality failure");
+        }
+    }
+
+    /**
+     * @dev Fuzz wrapper for errAllow that should fail.
+     */
+    function fuzz_errallow_should_fail(string memory errorMessage) public {
+        bytes memory callData = abi.encodeWithSelector(
+            this.handler_errallow_should_fail.selector, errorMessage
+        );
+        (bool success, bytes4 errorSelector) = _testSelf(callData);
+        if (!success) {
+            fl.t(false, "ERRALLOW-02: Unexpected errAllow should fail test failure");
+        }
+    }
 }
