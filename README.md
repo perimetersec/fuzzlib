@@ -2,10 +2,6 @@
 
 A comprehensive Solidity library designed for smart contract fuzzing with **Foundry**. Fuzzlib provides essential utilities for both stateful and stateless fuzzing, making it easier to write robust fuzzing harnesses and discover edge cases in your smart contracts.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh/)
-[![Version](https://img.shields.io/badge/Version-0.3.2-blue.svg)](https://github.com/perimetersec/fuzzlib/releases)
-
 ## Overview
 
 Fuzzlib is an unopinionated Solidity library that streamlines fuzzing harness development. It provides a collection of essential utilities including mathematical operations, assertion helpers, logging capabilities, and sophisticated error handling—all accessible through a simple `fl` namespace.
