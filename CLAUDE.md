@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Build**: Foundry automatically compiles contracts when running tests
 - **Format**: `forge fmt` - Formats code using Foundry's built-in formatter (run after making changes)
 - **Extended Fuzz Testing**: `forge test --fuzz-runs 10000` - Run comprehensive fuzz testing after large edits (resource intensive, use sparingly)
-- **Echidna E2E Testing**: `python3 test/e2e/echidna/run-echidna.py` - Run end-to-end Echidna fuzzing tests for comprehensive library validation
+- **Echidna E2E Testing**: `python3 test/e2e/echidna/run-echidna.py` - Run end-to-end Echidna fuzzing tests for comprehensive library validation (takes 60+ seconds, use minimum 60s timeout)
 
 ## Architecture Overview
 
@@ -468,6 +468,8 @@ The Python test runner (`test/e2e/echidna/run-echidna.py`) provides automated ex
 # Run E2E tests
 python3 test/e2e/echidna/run-echidna.py
 ```
+
+**Important**: The run-echidna script takes significant time to execute (60+ seconds). When running this command programmatically, ensure you use a timeout of at least 60 seconds to avoid premature termination.
 
 ### Expected Test Behavior
 
