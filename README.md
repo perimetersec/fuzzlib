@@ -1,25 +1,22 @@
 # Fuzzlib
 
-A comprehensive Solidity library designed for smart contract fuzzing with **Echidna**, **Medusa**, and **Foundry**. Fuzzlib provides a unified API for both stateful and stateless fuzzing, making it easier to write robust fuzzing harnesses and discover edge cases in your smart contracts.
+A comprehensive Solidity library designed for smart contract fuzzing with **Foundry**. Fuzzlib provides essential utilities for both stateful and stateless fuzzing, making it easier to write robust fuzzing harnesses and discover edge cases in your smart contracts.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh/)
 [![Version](https://img.shields.io/badge/Version-0.3.2-blue.svg)](https://github.com/perimetersec/fuzzlib/releases)
 
-> **⚠️ Alpha Status**: Fuzzlib is currently in alpha and under active development. Breaking changes may occur in future releases.
-
 ## Overview
 
-Fuzzlib is an unopinionated Solidity library that streamlines fuzzing harness development across multiple fuzzing platforms. It provides a collection of essential utilities including mathematical operations, assertion helpers, logging capabilities, and sophisticated error handling—all accessible through a simple `fl` namespace.
+Fuzzlib is an unopinionated Solidity library that streamlines fuzzing harness development. It provides a collection of essential utilities including mathematical operations, assertion helpers, logging capabilities, and sophisticated error handling—all accessible through a simple `fl` namespace.
 
-The library uses a modular architecture with platform abstraction, allowing you to write fuzzing harnesses once and run them across different fuzzing tools without modification.
+The library uses a modular architecture that makes it easy to write comprehensive fuzzing harnesses for your smart contracts.
 
 ## Key Features
 
-- 🔧 **Multi-Platform Support**: Works seamlessly with Echidna, Medusa, and Foundry
 - 📊 **Mathematical Utilities**: Min/max operations, absolute values, difference calculations, and value clamping
 - 🎯 **Advanced Assertions**: Comprehensive assertion helpers with sophisticated error handling via `errAllow`
-- 📝 **Cross-Platform Logging**: Unified logging that works across all supported platforms
+- 📝 **Logging Utilities**: Unified logging for debugging and tracing fuzzing scenarios
 - 🎲 **Random Utilities**: Random number generation and Fisher-Yates array shuffling
 - 📞 **Function Call Helpers**: Utilities for making function calls with actor pranking and error handling
 - 🔍 **String Utilities**: Integer-to-string conversion for logging and assertions
@@ -160,21 +157,9 @@ bytes memory result = fl.doFunctionCall(
 );
 ```
 
-## Platform-Specific Usage
+## Usage with Foundry
 
-### Echidna
-
-```bash
-echidna . --contract MyTokenFuzzer --config echidna.yaml
-```
-
-### Medusa
-
-```bash
-medusa fuzz --target MyTokenFuzzer --deployment-order MyTokenFuzzer
-```
-
-### Foundry
+Run your fuzzing harnesses with Foundry:
 
 ```bash
 forge test --match-contract MyTokenFuzzer
@@ -205,9 +190,9 @@ function testRiskyOperation(uint256 amount) public {
 }
 ```
 
-### Cross-Platform Logging
+### Logging Utilities
 
-Logging works consistently across all platforms:
+Use logging to debug and trace your fuzzing scenarios:
 
 ```solidity
 function testComplexScenario(uint256 a, uint256 b) public {
@@ -275,16 +260,6 @@ libs = ["lib"]
 fuzz = { runs = 10000 }
 ```
 
-### Echidna Configuration
-
-Example `echidna.yaml`:
-
-```yaml
-testMode: assertion
-seqLen: 50
-testLimit: 10000
-coverage: true
-```
 
 ## Development
 
@@ -398,7 +373,6 @@ contract DEXFuzzer is FuzzBase {
 ## Known Limitations
 
 - **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
-- **Platform Differences**: Some logging formats may vary between platforms
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
 
 ## Branches
@@ -422,7 +396,6 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## Roadmap
 
-- [ ] Support for additional fuzzing platforms
 - [ ] Enhanced string manipulation utilities
 - [ ] Advanced statistical analysis tools
 - [ ] Gas optimization improvements
