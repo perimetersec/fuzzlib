@@ -36,6 +36,14 @@ contract EchidnaTest is FuzzBase {
     }
 
     /**
+     * @dev Handler for mathematical properties that should fail.
+     * This handler tests that our validation can detect expected failures.
+     */
+    function handler_math_property_violation_should_fail(uint256 x) public {
+        fl.lte(x, 100, "Value should be <= 100");
+    }
+
+    /**
      * @dev Handler for absolute value operations with signed integers.
      * Verifies abs function works correctly with positive and negative values.
      */
@@ -241,14 +249,6 @@ contract EchidnaTest is FuzzBase {
      */
     function handler_always_fails_should_fail() public {
         fl.eq(uint256(1), uint256(2), "This should always fail: 1 != 2");
-    }
-
-    /**
-     * @dev Handler for mathematical properties that should fail.
-     * This handler tests that our validation can detect expected failures.
-     */
-    function handler_math_property_violation_should_fail(uint256 x) public {
-        fl.lte(x, 100, "Value should be <= 100");
     }
 
     /**

@@ -44,6 +44,19 @@ contract EchidnaTestIntegrity is EchidnaTest {
     }
 
     /**
+     * @dev Fuzz wrapper for math property violation test (should fail).
+     */
+    function fuzz_math_property_violation_should_fail(uint256 x) public {
+        bytes memory callData = abi.encodeWithSelector(
+            this.handler_math_property_violation_should_fail.selector, x
+        );
+        (bool success, bytes4 errorSelector) = _testSelf(callData);
+        if (!success) {
+            fl.t(false, "FAIL-02: Unexpected math property violation failure");
+        }
+    }
+
+    /**
      * @dev Fuzz wrapper for absolute value operations integrity testing.
      */
     function fuzz_abs_operations(int256 x) public {
@@ -170,19 +183,6 @@ contract EchidnaTestIntegrity is EchidnaTest {
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
             fl.t(false, "FAIL-01: Unexpected always-fail test failure");
-        }
-    }
-
-    /**
-     * @dev Fuzz wrapper for math property violation test (should fail).
-     */
-    function fuzz_math_property_violation_should_fail(uint256 x) public {
-        bytes memory callData = abi.encodeWithSelector(
-            this.handler_math_property_violation_should_fail.selector, x
-        );
-        (bool success, bytes4 errorSelector) = _testSelf(callData);
-        if (!success) {
-            fl.t(false, "FAIL-02: Unexpected math property violation failure");
         }
     }
 
