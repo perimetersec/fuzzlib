@@ -153,16 +153,6 @@ bytes memory result = fl.doFunctionCall(
 );
 ```
 
-## Usage with Foundry
-
-Run your fuzzing harnesses with Foundry:
-
-```bash
-forge test --match-contract MyTokenFuzzer
-```
-
-## Advanced Features
-
 ### Error Handling with errAllow
 
 Fuzzlib provides sophisticated error handling that allows you to specify which errors are acceptable:
@@ -240,29 +230,12 @@ function testComplexScenario(uint256 a, uint256 b) public {
 | `randomAddress(seed)` | Generate random address | `fl.randomAddress(seed)` |
 | `shuffleArray(array, entropy)` | Shuffle array in-place | `fl.shuffleArray(myArray, entropy)` |
 
-## Configuration
-
-### Foundry Configuration
-
-Add to your `foundry.toml`:
-
-```toml
-[profile.default]
-src = "src"
-out = "out"
-libs = ["lib"]
-
-[profile.fuzz]
-fuzz = { runs = 10000 }
-```
-
 
 ## Development
 
 ### Prerequisites
 
 - [Foundry](https://getfoundry.sh/)
-- [Node.js](https://nodejs.org/) (for npm packages)
 
 ### Setup
 
@@ -285,96 +258,10 @@ forge test --fuzz-runs 10000
 forge test --match-path test/HelperMath.t.sol
 ```
 
-### Code Formatting
-
-```bash
-# Format all code
-forge fmt
-
-# Check formatting
-forge fmt --check
-```
-
-## Examples
-
-### Token Fuzzing
-
-```solidity
-import {FuzzBase} from "fuzzlib/FuzzBase.sol";
-
-contract ERC20Fuzzer is FuzzBase {
-    MyToken token;
-    
-    constructor() {
-        token = new MyToken();
-    }
-    
-    function testTransferInvariants(address to, uint256 amount) public {
-        fl.log("Testing transfer invariants");
-        
-        uint256 totalSupplyBefore = token.totalSupply();
-        uint256 balanceBefore = token.balanceOf(address(this));
-        
-        // Clamp amount to available balance
-        uint256 clampedAmount = fl.clamp(amount, 0, balanceBefore);
-        
-        if (to != address(0) && to != address(this)) {
-            token.transfer(to, clampedAmount);
-            
-            // Verify total supply unchanged
-            fl.eq(
-                token.totalSupply(),
-                totalSupplyBefore,
-                "Total supply should remain constant"
-            );
-        }
-    }
-}
-```
-
-### DeFi Protocol Fuzzing
-
-```solidity
-import {FuzzBase} from "fuzzlib/FuzzBase.sol";
-
-contract DEXFuzzer is FuzzBase {
-    DEX dex;
-    
-    function testSwapInvariants(uint256 amountIn, address tokenIn, address tokenOut) public {
-        fl.log("Testing swap with amount", amountIn);
-        
-        // Get initial reserves
-        uint256 reserveInBefore = dex.getReserve(tokenIn);
-        uint256 reserveOutBefore = dex.getReserve(tokenOut);
-        
-        // Clamp input to reasonable range
-        uint256 clampedAmount = fl.clamp(amountIn, 1, reserveInBefore / 10);
-        
-        // Allow expected swap errors
-        fl.errAllow(["Insufficient liquidity", "Slippage too high"]);
-        
-        // Perform swap
-        dex.swap(tokenIn, tokenOut, clampedAmount);
-        
-        // Verify reserves changed appropriately
-        uint256 reserveInAfter = dex.getReserve(tokenIn);
-        uint256 reserveOutAfter = dex.getReserve(tokenOut);
-        
-        fl.gte(reserveInAfter, reserveInBefore, "Reserve in should increase");
-        fl.lte(reserveOutAfter, reserveOutBefore, "Reserve out should decrease");
-    }
-}
-```
-
 ## Known Limitations
 
 - **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
-
-## Branches
-
-- **`main`**: Latest version with `fl.` namespace (recommended)
-- **`v0_2`**: Legacy version for backwards compatibility
 
 ## Contributing
 
@@ -385,30 +272,17 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add comprehensive tests
+4. Add tests
 5. Ensure all tests pass: `forge test`
 6. Format code: `forge fmt`
 7. Submit a pull request
 
 ## Roadmap
 
-- [ ] Enhanced string manipulation utilities
-- [ ] Advanced statistical analysis tools
-- [ ] Gas optimization improvements
-- [ ] Integration with formal verification tools
-- [ ] Extended mathematical operations
-- [ ] Custom assertion frameworks
+- [ ] Support for more platforms
+- [ ] Add more helper functions
+- [ ] Performance optimizations
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- 📧 Email: [info@perimetersec.io](mailto:info@perimetersec.io)
-- 🐛 Issues: [GitHub Issues](https://github.com/perimetersec/fuzzlib/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/perimetersec/fuzzlib/discussions)
-
----
-
-**Built with ❤️ by [Perimeter](https://perimetersec.io)**
