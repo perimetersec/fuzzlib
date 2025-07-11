@@ -82,7 +82,7 @@ contract MyTokenFuzzer is FuzzBase {
 }
 ```
 
-## Core Components
+## Function Reference
 
 ### Basic Assertions
 
@@ -201,6 +201,11 @@ bytes memory result = fl.doFunctionCall(
 
 
 
+## Known Limitations
+
+- **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
+- **Gas Optimization**: Library prioritizes functionality over gas optimization
+
 ## Development
 
 ### Prerequisites
@@ -224,14 +229,9 @@ forge test
 # Run tests with increased fuzz runs
 forge test --fuzz-runs 10000
 
-# Run specific test file
-forge test --match-path test/HelperMath.t.sol
+# Run Echidna E2E tests
+python3 test/e2e/echidna/run-echidna.py
 ```
-
-## Known Limitations
-
-- **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
-- **Gas Optimization**: Library prioritizes functionality over gas optimization
 
 ## Contributing
 
