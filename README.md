@@ -10,9 +10,10 @@ The library uses a modular architecture that makes it easy to write comprehensiv
 
 ## Key Features
 
-- 📊 **Mathematical Utilities**: Min/max operations, absolute values, difference calculations, and value clamping
 - 🎯 **Advanced Assertions**: Comprehensive assertion helpers with sophisticated error handling via `errAllow`
+- 🔧 **Value Clamping**: Clamp values to ranges with uniform distribution for better fuzzing
 - 📝 **Logging Utilities**: Unified logging for debugging and tracing fuzzing scenarios
+- 📊 **Mathematical Utilities**: Min/max operations, absolute values, and difference calculations
 - 🎲 **Random Utilities**: Random number generation and Fisher-Yates array shuffling
 - 📞 **Function Call Helpers**: Utilities for making function calls with actor pranking and error handling
 - 🧪 **Comprehensive Testing**: Extensive test suite with both unit and fuzz tests
@@ -82,21 +83,6 @@ contract MyTokenFuzzer is FuzzBase {
 
 ## Core Components
 
-### Mathematical Operations
-
-```solidity
-// Min/max operations
-uint256 maximum = fl.max(a, b);
-int256 minimum = fl.min(x, y);
-
-// Absolute value and difference
-uint256 absolute = fl.abs(-42);
-uint256 difference = fl.diff(a, b);
-
-// Value clamping with uniform distribution
-uint256 clamped = fl.clamp(value, 0, 100);
-```
-
 ### Assertion Helpers
 
 ```solidity
@@ -127,6 +113,25 @@ fl.errAllow(errorSelector, allowedErrors, "Error should be allowed");
 fl.errAllow(errorData, allowedMessages, allowedErrors, "Either should be allowed");
 ```
 
+### Value Clamping
+
+```solidity
+// Value clamping with uniform distribution
+uint256 clamped = fl.clamp(value, 0, 100);
+
+// Clamp to greater than value
+uint256 clampedGt = fl.clampGt(value, 50);
+
+// Clamp to greater than or equal
+uint256 clampedGte = fl.clampGte(value, 50);
+
+// Clamp to less than value
+uint256 clampedLt = fl.clampLt(value, 100);
+
+// Clamp to less than or equal
+uint256 clampedLte = fl.clampLte(value, 100);
+```
+
 ### Logging Utilities
 
 ```solidity
@@ -140,6 +145,18 @@ fl.log("Transfer from", sender, "to", recipient, "amount", amount);
 // Failure logging
 fl.logFail("This test failed");
 fl.logFail("Failed with value:", errorValue);
+```
+
+### Mathematical Operations
+
+```solidity
+// Min/max operations
+uint256 maximum = fl.max(a, b);
+int256 minimum = fl.min(x, y);
+
+// Absolute value and difference
+uint256 absolute = fl.abs(-42);
+uint256 difference = fl.diff(a, b);
 ```
 
 ### Random Utilities
