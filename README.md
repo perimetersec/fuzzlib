@@ -15,7 +15,6 @@ The library uses a modular architecture that makes it easy to write comprehensiv
 - 📝 **Logging Utilities**: Unified logging for debugging and tracing fuzzing scenarios
 - 🎲 **Random Utilities**: Random number generation and Fisher-Yates array shuffling
 - 📞 **Function Call Helpers**: Utilities for making function calls with actor pranking and error handling
-- 🔍 **String Utilities**: Integer-to-string conversion for logging and assertions
 - 🧪 **Comprehensive Testing**: Extensive test suite with both unit and fuzz tests
 - 📚 **Well-Documented**: Comprehensive documentation following OpenZeppelin standards
 
