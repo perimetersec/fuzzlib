@@ -106,10 +106,26 @@ fl.t(condition, "Should be true");
 fl.eq(a, b, "Values should be equal");
 fl.gte(a, b, "A should be >= B");
 fl.lte(a, b, "A should be <= B");
+fl.neq(a, b, "Values should not be equal");
+fl.gt(a, b, "A should be > B");
+fl.lt(a, b, "A should be < B");
+```
 
-// Advanced error handling
-fl.errAllow(["Insufficient balance", "Transfer failed"]);
-token.transfer(recipient, amount); // Will pass if these errors occur
+### Error Handling
+
+```solidity
+// Allow specific require messages
+string[] memory allowedMessages = new string[](1);
+allowedMessages[0] = "Insufficient balance";
+fl.errAllow(errorData, allowedMessages, "Message should be allowed");
+
+// Allow specific custom errors
+bytes4[] memory allowedErrors = new bytes4[](1);
+allowedErrors[0] = CustomError.selector;
+fl.errAllow(errorSelector, allowedErrors, "Error should be allowed");
+
+// Combined error handling
+fl.errAllow(errorData, allowedMessages, allowedErrors, "Either should be allowed");
 ```
 
 ### Logging Utilities
@@ -121,6 +137,10 @@ fl.log("Testing scenario");
 // Logging with values
 fl.log("Balance:", balance);
 fl.log("Transfer from", sender, "to", recipient, "amount", amount);
+
+// Failure logging
+fl.logFail("This test failed");
+fl.logFail("Failed with value:", errorValue);
 ```
 
 ### Random Utilities
@@ -145,6 +165,12 @@ bytes memory result = fl.doFunctionCall(
     msg.sender  // actor
 );
 
+// Static calls (view functions)
+(bool success, bytes memory data) = fl.doFunctionStaticCall(
+    address(target),
+    callData
+);
+
 // Calls with automatic pranking
 (bool success, bytes memory data) = fl.doFunctionCall(
     address(target),
@@ -153,82 +179,21 @@ bytes memory result = fl.doFunctionCall(
 );
 ```
 
-### Error Handling with errAllow
-
-Fuzzlib provides sophisticated error handling that allows you to specify which errors are acceptable:
+### String Utilities
 
 ```solidity
-function testRiskyOperation(uint256 amount) public {
-    // Allow specific require messages
-    string[] memory allowedMessages = new string[](2);
-    allowedMessages[0] = "Insufficient balance";
-    allowedMessages[1] = "Transfer failed";
-    
-    // Allow specific custom errors
-    bytes4[] memory allowedErrors = new bytes4[](1);
-    allowedErrors[0] = InsufficientBalance.selector;
-    
-    // Set up error handling
-    fl.errAllow(allowedMessages, allowedErrors);
-    
-    // This call may fail with allowed errors
-    token.transfer(recipient, amount);
-}
+// Convert integers to strings
+string memory uintStr = FuzzLibString.toString(uint256(42));
+string memory intStr = FuzzLibString.toString(int256(-42));
+string memory addrStr = FuzzLibString.toString(someAddress);
+
+// Convert bytes to hex string
+string memory hexStr = FuzzLibString.toHexString(someBytes);
+
+// Check revert reasons
+bool isEqual = FuzzLibString.isRevertReasonEqual(errorData, "Expected error");
 ```
 
-### Logging Utilities
-
-Use logging to debug and trace your fuzzing scenarios:
-
-```solidity
-function testComplexScenario(uint256 a, uint256 b) public {
-    fl.log("Starting test with values", a, b);
-    
-    uint256 result = fl.max(a, b);
-    fl.log("Maximum value:", result);
-    
-    if (result > 1000) {
-        fl.log("Large value detected");
-    }
-}
-```
-
-## API Reference
-
-### Mathematical Operations
-
-| Function | Description | Example |
-|----------|-------------|---------|
-| `max(a, b)` | Returns the larger of two values | `fl.max(10, 20)` |
-| `min(a, b)` | Returns the smaller of two values | `fl.min(10, 20)` |
-| `abs(x)` | Returns the absolute value | `fl.abs(-42)` |
-| `diff(a, b)` | Returns the absolute difference | `fl.diff(10, 20)` |
-| `clamp(value, low, high)` | Clamps value to range | `fl.clamp(150, 0, 100)` |
-
-### Assertion Helpers
-
-| Function | Description | Example |
-|----------|-------------|---------|
-| `t(condition, message)` | Assert condition is true | `fl.t(x > 0, "X must be positive")` |
-| `eq(a, b, message)` | Assert values are equal | `fl.eq(balance, 100, "Balance should be 100")` |
-| `gte(a, b, message)` | Assert a >= b | `fl.gte(balance, 0, "Balance should be non-negative")` |
-| `lte(a, b, message)` | Assert a <= b | `fl.lte(amount, limit, "Amount should not exceed limit")` |
-
-### Logging Functions
-
-| Function | Description | Example |
-|----------|-------------|---------|
-| `log(message)` | Log a simple message | `fl.log("Test completed")` |
-| `log(message, value)` | Log message with value | `fl.log("Balance:", balance)` |
-| `log(msg, val1, msg2, val2)` | Log multiple values | `fl.log("From", sender, "to", recipient)` |
-
-### Random Utilities
-
-| Function | Description | Example |
-|----------|-------------|---------|
-| `randomUint(seed, min, max)` | Generate random uint in range | `fl.randomUint(block.timestamp, 0, 100)` |
-| `randomAddress(seed)` | Generate random address | `fl.randomAddress(seed)` |
-| `shuffleArray(array, entropy)` | Shuffle array in-place | `fl.shuffleArray(myArray, entropy)` |
 
 
 ## Development
