@@ -1,12 +1,14 @@
 # Fuzzlib
 
-A comprehensive Solidity library designed for smart contract fuzzing with **Foundry**. Fuzzlib provides essential utilities for both stateful and stateless fuzzing, making it easier to write robust fuzzing harnesses and discover edge cases in your smart contracts.
+**Stop writing repetitive fuzzing code.** Fuzzlib is a battle-tested Solidity library that eliminates the tedious setup work in smart contract fuzzing. Instead of manually implementing assertions, value clamping, and error handling in every test, you get a complete toolkit through a simple `fl` namespace.
 
-## Overview
+**Why Fuzzlib?**
+- **Write less code**: Replace dozens of lines of boilerplate with single function calls
+- **Find more bugs**: Advanced clamping and assertions help explore edge cases effectively  
+- **Debug faster**: Built-in logging and error handling make failures easier to understand
+- **Focus on logic**: Spend time on test scenarios, not infrastructure
 
-Fuzzlib is an unopinionated Solidity library that streamlines fuzzing harness development. It provides a collection of essential utilities including mathematical operations, assertion helpers, logging capabilities, and sophisticated error handling—all accessible through a simple `fl` namespace.
-
-The library uses a modular architecture that makes it easy to write comprehensive fuzzing harnesses for your smart contracts.
+Built for Foundry and used in production by security teams to find critical vulnerabilities.
 
 ## Key Features
 
@@ -41,43 +43,23 @@ fuzzlib/=lib/fuzzlib/src/
 
 ## Quick Start
 
-Create a fuzzing harness by extending `FuzzBase`:
+Create a simple fuzzing test by extending `FuzzBase`:
 
 ```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
 import {FuzzBase} from "fuzzlib/FuzzBase.sol";
 
-contract MyTokenFuzzer is FuzzBase {
-    MyToken token;
-    
-    constructor() {
-        token = new MyToken();
-    }
-    
-    function testTransfer(address to, uint256 amount) public {
-        // Log the test scenario
-        fl.log("Testing transfer to", to, "amount", amount);
+contract MyFuzzer is FuzzBase {
+    function testMath(uint256 a, uint256 b) public {
+        // Clamp inputs to reasonable ranges
+        uint256 x = fl.clamp(a, 0, 1000);
+        uint256 y = fl.clamp(b, 0, 1000);
         
-        // Clamp amount to reasonable range
-        uint256 clampedAmount = fl.clamp(amount, 0, token.totalSupply());
+        // Test mathematical properties
+        fl.gte(fl.max(x, y), x, "Max should be >= x");
+        fl.gte(fl.max(x, y), y, "Max should be >= y");
         
-        // Get initial balances
-        uint256 initialBalance = token.balanceOf(address(this));
-        
-        // Only proceed if we have enough balance
-        if (initialBalance >= clampedAmount) {
-            // Make the transfer
-            token.transfer(to, clampedAmount);
-            
-            // Verify the transfer worked correctly
-            fl.eq(
-                token.balanceOf(address(this)),
-                initialBalance - clampedAmount,
-                "Sender balance should decrease"
-            );
-        }
+        // Log for debugging
+        fl.log("Testing with", x, "and", y);
     }
 }
 ```
