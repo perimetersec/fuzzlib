@@ -10,7 +10,8 @@ The library uses a modular architecture that makes it easy to write comprehensiv
 
 ## Key Features
 
-- 🎯 **Advanced Assertions**: Comprehensive assertion helpers with sophisticated error handling via `errAllow`
+- 🎯 **Basic Assertions**: Fundamental assertion helpers for testing conditions and equality
+- 🔬 **Advanced Assertions**: Sophisticated error handling via `errAllow` for expected failures
 - 🔧 **Value Clamping**: Clamp values to ranges with uniform distribution for better fuzzing
 - 📝 **Logging Utilities**: Unified logging for debugging and tracing fuzzing scenarios
 - 📊 **Mathematical Utilities**: Min/max operations, absolute values, and difference calculations
@@ -83,20 +84,22 @@ contract MyTokenFuzzer is FuzzBase {
 
 ## Core Components
 
-### Assertion Helpers
+### Basic Assertions
 
 ```solidity
-// Basic assertions
+// Fundamental assertions
 fl.t(condition, "Should be true");
 fl.eq(a, b, "Values should be equal");
-fl.gte(a, b, "A should be >= B");
-fl.lte(a, b, "A should be <= B");
 fl.neq(a, b, "Values should not be equal");
+
+// Comparison assertions
 fl.gt(a, b, "A should be > B");
+fl.gte(a, b, "A should be >= B");
 fl.lt(a, b, "A should be < B");
+fl.lte(a, b, "A should be <= B");
 ```
 
-### Error Handling
+### Advanced Assertions (Error Handling)
 
 ```solidity
 // Allow specific require messages
