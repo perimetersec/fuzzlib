@@ -179,20 +179,6 @@ bytes memory result = fl.doFunctionCall(
 );
 ```
 
-### String Utilities
-
-```solidity
-// Convert integers to strings
-string memory uintStr = FuzzLibString.toString(uint256(42));
-string memory intStr = FuzzLibString.toString(int256(-42));
-string memory addrStr = FuzzLibString.toString(someAddress);
-
-// Convert bytes to hex string
-string memory hexStr = FuzzLibString.toHexString(someBytes);
-
-// Check revert reasons
-bool isEqual = FuzzLibString.isRevertReasonEqual(errorData, "Expected error");
-```
 
 
 
