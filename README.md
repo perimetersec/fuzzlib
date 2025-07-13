@@ -55,13 +55,14 @@ contract MyFuzzer is FuzzBase {
         // Clamp inputs to reasonable ranges
         uint256 x = fl.clamp(a, 0, 1000);
         uint256 y = fl.clamp(b, 0, 1000);
-        
+         
+        // Log for debugging
+        fl.log("Testing max function. x =", x);
+        fl.log("Testing max function. y =", y);
+       
         // Test mathematical properties
         fl.gte(fl.max(x, y), x, "Max should be >= x");
         fl.gte(fl.max(x, y), y, "Max should be >= y");
-        
-        // Log for debugging
-        fl.log("Testing max function");
     }
 }
 ```
