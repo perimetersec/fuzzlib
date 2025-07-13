@@ -4,14 +4,11 @@
 
 The `fl` namespace offers utilities that reduce repetitive setup in fuzz tests, such as value clamping, error handling, and logging.
 
-## Why Fuzzlib
-
-Fuzzing suites often require a lot of boilerplate code to handle things like input clamping, expected failures, and logging. This setup can get in the way of writing clear and focused tests.
-
-Fuzzlib was created to reduce that overhead. It provides a lightweight set of helpers to build and maintain effective fuzzing suites without duplicating the same logic across every test.
-
 Fuzzlib is used in production by smart contract security teams and is actively maintained.
 
+## Why Fuzzlib
+
+Fuzzing suites often require a lot of boilerplate code to handle things like input clamping, assertions, and logging. Fuzzlib was created to reduce that overhead. It provides a lightweight set of helpers to build and maintain effective fuzzing suites without duplicating the same logic across every test.
 
 ## Key Features
 
