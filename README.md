@@ -77,15 +77,15 @@ This software is provided as-is without warranty. The main branch contains new a
 
 ```solidity
 // Fundamental assertions
-fl.t(balance > 0, "Balance should be positive");
+fl.t(exists, "Property X exists");
 fl.eq(result, 100, "Result should equal 100");
 fl.neq(userA, userB, "Users should be different");
 
 // Comparison assertions
-fl.gt(balance, 1000, "Balance should be > 1000");
-fl.gte(amount, 50, "Amount should be >= 50");
-fl.lt(fee, 100, "Fee should be < 100");
-fl.lte(price, 500, "Price should be <= 500");
+fl.gt(balance, 1000, "Balance should be greater than 1000");
+fl.gte(amount, 50, "Amount should be greater than or equal to 50");
+fl.lt(fee, 100, "Fee should be less than 100");
+fl.lte(price, 500, "Price should be less than or equal to 500");
 ```
 
 ### Advanced Assertions (Error Handling)
@@ -94,12 +94,12 @@ fl.lte(price, 500, "Price should be <= 500");
 // Allow specific require messages
 string[] memory allowedMessages = new string[](1);
 allowedMessages[0] = "Insufficient balance";
-fl.errAllow(errorData, allowedMessages, "Message should be allowed");
+fl.errAllow(errorData, allowedMessages, "Message X should be allowed");
 
 // Allow specific custom errors
 bytes4[] memory allowedErrors = new bytes4[](1);
 allowedErrors[0] = CustomError.selector;
-fl.errAllow(errorSelector, allowedErrors, "Error should be allowed");
+fl.errAllow(errorSelector, allowedErrors, "Error X should be allowed");
 
 // Combined error handling
 fl.errAllow(errorData, allowedMessages, allowedErrors, "Either should be allowed");
@@ -154,10 +154,6 @@ uint256 difference = fl.diff(100, 75);
 ### Random Utilities
 
 ```solidity
-// Generate random numbers
-uint256 random = fl.randomUint(seed, 0, 100);
-address randomAddr = fl.randomAddress(seed);
-
 // Shuffle arrays
 uint256[] memory array = new uint256[](10);
 fl.shuffleArray(array, entropy);
@@ -166,24 +162,24 @@ fl.shuffleArray(array, entropy);
 ### Function Call Helpers
 
 ```solidity
-// Make function calls with error handling
+// Make function calls
 bytes memory result = fl.doFunctionCall(
     address(target),
     abi.encodeWithSignature("getValue()"),
     msg.sender  // actor
 );
 
-// Static calls (view functions)
-(bool success, bytes memory data) = fl.doFunctionStaticCall(
-    address(target),
-    abi.encodeWithSignature("balanceOf(address)", user)
-);
-
 // Calls with automatic pranking
 (bool success, bytes memory data) = fl.doFunctionCall(
     address(target),
     abi.encodeWithSignature("transfer(address,uint256)", recipient, amount),
-    actor
+    sender
+);
+
+// Static calls (view functions)
+(bool success, bytes memory data) = fl.doFunctionStaticCall(
+    address(target),
+    abi.encodeWithSignature("balanceOf(address)", user)
 );
 ```
 
