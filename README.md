@@ -14,15 +14,15 @@ Fuzzlib was created to reduce that overhead. It provides a lightweight set of he
 
 ## Key Features
 
-- 🎯 **Basic Assertions**: Helpers for common test conditions and equality checks 
-- 🔬 **Advanced Assertions**: Utilities like error handling via `errAllow` for expected failures
-- 🔧 **Value Clamping**: Clamp values to ranges with uniform distribution for better fuzzing
-- 📝 **Logging Utilities**: Unified logging for debugging and tracing
-- 📊 **Math Utilities**: Operations like min, max, absolute value, and difference calculations
-- 🎲 **Random Utilities**: Fisher-Yates array shuffling
-- 📞 **Function Call Helpers**: Utilities for making function calls with actor pranking
-- 🧪 **Comprehensive Testing**: Extensive test suite with both unit- and fuzz tests
-- 📚 **Well-Documented**: Clear and complete, following OpenZeppelin-style conventions
+- **Basic Assertions**: Helpers for common test conditions and equality checks 
+- **Advanced Assertions**: Utilities like error handling via `errAllow` for expected failures
+- **Value Clamping**: Clamp values to ranges with uniform distribution for better fuzzing
+- **Logging Utilities**: Unified logging for debugging and tracing
+- **Math Utilities**: Operations like min, max, absolute value, and difference calculations
+- **Random Utilities**: Fisher-Yates array shuffling
+- **Function Call Helpers**: Utilities for making function calls with actor pranking
+- **Comprehensive Testing**: Extensive test suite with both unit- and fuzz tests
+- **Well-Documented**: Clear and complete, following OpenZeppelin-style conventions
 
 ## Installation
 
