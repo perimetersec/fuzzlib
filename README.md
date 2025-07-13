@@ -64,6 +64,10 @@ contract MyFuzzer is FuzzBase {
 }
 ```
 
+## Disclaimer
+
+This software is provided as-is without warranty. The main branch contains new and experimental features that may be unstable. For production use, we recommend using official tagged releases which have been thoroughly tested. While we are not responsible for any bugs or issues, we maintain a bug bounty program that applies to official releases only.
+
 ## Function Reference
 
 ### Basic Assertions
