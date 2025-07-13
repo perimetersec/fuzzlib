@@ -8,7 +8,9 @@ Fuzzlib is used in production by smart contract security teams and is actively m
 
 ## Why Fuzzlib
 
-Fuzzing suites often require a lot of boilerplate code to handle things like input clamping, assertions, and logging. Fuzzlib was created to reduce that overhead. It provides a lightweight set of helpers to build and maintain effective fuzzing suites without duplicating the same logic across every test.
+Fuzzing suites often require a lot of boilerplate code to handle things like input clamping, assertions, and logging.
+
+Fuzzlib was created to reduce that overhead. It provides a lightweight set of helpers to build and maintain effective fuzzing suites without duplicating the same logic across every test.
 
 ## Key Features
 
