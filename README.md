@@ -1,14 +1,17 @@
 # Fuzzlib
 
-**Stop writing repetitive fuzzing code.** Fuzzlib is a battle-tested Solidity library that eliminates the tedious setup work in smart contract fuzzing. Instead of manually implementing assertions, value clamping, and error handling in every test, you get a complete toolkit through a simple `fl` namespace.
+**Fuzzlib** is a general-purpose Solidity library for simplifying fuzz testing. It supports both stateful and stateless fuzzing and is designed to work with tools like **Echidna**, **Medusa**, and **Foundry**.
 
-**Why Fuzzlib?**
-- **Write less code**: Replace dozens of lines of boilerplate with single function calls
-- **Find more bugs**: Advanced clamping and assertions help explore edge cases effectively  
-- **Debug faster**: Built-in logging and error handling make failures easier to understand
-- **Focus on logic**: Spend time on test scenarios, not infrastructure
+The `fl` namespace offers utilities that reduce repetitive setup in fuzz tests, such as value clamping, error handling, and logging.
 
-Built for Foundry and used in production by security teams to find critical vulnerabilities.
+## Why Fuzzlib
+
+Fuzzing suites often require a lot of boilerplate code to handle things like input clamping, expected failures, and logging. This setup can get in the way of writing clear and focused tests.
+
+Fuzzlib was created to reduce that overhead. It provides a lightweight set of helpers to build and maintain effective fuzzing suites without duplicating the same logic across every test.
+
+Fuzzlib is used in production by smart contract security teams and is actively maintained.
+
 
 ## Key Features
 
