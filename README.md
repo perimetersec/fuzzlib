@@ -59,7 +59,7 @@ contract MyFuzzer is FuzzBase {
         fl.gte(fl.max(x, y), y, "Max should be >= y");
         
         // Log for debugging
-        fl.log("Testing with", x, "and", y);
+        fl.log("Testing max function");
     }
 }
 ```
@@ -74,15 +74,15 @@ This software is provided as-is without warranty. The main branch contains new a
 
 ```solidity
 // Fundamental assertions
-fl.t(condition, "Should be true");
-fl.eq(a, b, "Values should be equal");
-fl.neq(a, b, "Values should not be equal");
+fl.t(balance > 0, "Balance should be positive");
+fl.eq(result, 100, "Result should equal 100");
+fl.neq(userA, userB, "Users should be different");
 
 // Comparison assertions
-fl.gt(a, b, "A should be > B");
-fl.gte(a, b, "A should be >= B");
-fl.lt(a, b, "A should be < B");
-fl.lte(a, b, "A should be <= B");
+fl.gt(balance, 1000, "Balance should be > 1000");
+fl.gte(amount, 50, "Amount should be >= 50");
+fl.lt(fee, 100, "Fee should be < 100");
+fl.lte(price, 500, "Price should be <= 500");
 ```
 
 ### Advanced Assertions (Error Handling)
@@ -106,19 +106,19 @@ fl.errAllow(errorData, allowedMessages, allowedErrors, "Either should be allowed
 
 ```solidity
 // Value clamping with uniform distribution
-uint256 clamped = fl.clamp(value, 0, 100);
+uint256 clamped = fl.clamp(inputValue, 0, 100);
 
 // Clamp to greater than value
-uint256 clampedGt = fl.clampGt(value, 50);
+uint256 clampedGt = fl.clampGt(inputValue, 50);
 
 // Clamp to greater than or equal
-uint256 clampedGte = fl.clampGte(value, 50);
+uint256 clampedGte = fl.clampGte(inputValue, 50);
 
 // Clamp to less than value
-uint256 clampedLt = fl.clampLt(value, 100);
+uint256 clampedLt = fl.clampLt(inputValue, 100);
 
 // Clamp to less than or equal
-uint256 clampedLte = fl.clampLte(value, 100);
+uint256 clampedLte = fl.clampLte(inputValue, 100);
 ```
 
 ### Logging Utilities
@@ -129,23 +129,23 @@ fl.log("Testing scenario");
 
 // Logging with values
 fl.log("Balance:", balance);
-fl.log("Transfer from", sender, "to", recipient, "amount", amount);
+fl.log("User count:", 42);
 
 // Failure logging
 fl.logFail("This test failed");
-fl.logFail("Failed with value:", errorValue);
+fl.logFail("Invalid amount:", amount);
 ```
 
 ### Mathematical Operations
 
 ```solidity
 // Min/max operations
-uint256 maximum = fl.max(a, b);
-int256 minimum = fl.min(x, y);
+uint256 maximum = fl.max(150, 300);
+int256 minimum = fl.min(-50, 25);
 
 // Absolute value and difference
 uint256 absolute = fl.abs(-42);
-uint256 difference = fl.diff(a, b);
+uint256 difference = fl.diff(100, 75);
 ```
 
 ### Random Utilities
@@ -173,13 +173,13 @@ bytes memory result = fl.doFunctionCall(
 // Static calls (view functions)
 (bool success, bytes memory data) = fl.doFunctionStaticCall(
     address(target),
-    callData
+    abi.encodeWithSignature("balanceOf(address)", user)
 );
 
 // Calls with automatic pranking
 (bool success, bytes memory data) = fl.doFunctionCall(
     address(target),
-    callData,
+    abi.encodeWithSignature("transfer(address,uint256)", recipient, amount),
     actor
 );
 ```
