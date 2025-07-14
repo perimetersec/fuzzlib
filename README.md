@@ -240,4 +240,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+
+Some portions of this code are modified from [Crytic Properties](https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol), which is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+Some portions of this code are modified from [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeCast.sol), which is licensed under the MIT License.
