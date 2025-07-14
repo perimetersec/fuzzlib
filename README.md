@@ -77,7 +77,7 @@ fl.lt(fee, 100, "Fee should be less than 100");
 fl.lte(price, 500, "Price should be less than or equal to 500");
 ```
 
-### Advanced Assertions (Error Handling)
+### Advanced Assertions
 
 ```solidity
 // Allow specific require messages
@@ -113,7 +113,7 @@ uint256 clampedLt = fl.clampLt(inputValue, 100);
 uint256 clampedLte = fl.clampLte(inputValue, 100);
 ```
 
-### Logging Utilities
+### Logging
 
 ```solidity
 // Simple logging
@@ -128,7 +128,7 @@ fl.logFail("This test failed");
 fl.logFail("Invalid amount:", amount);
 ```
 
-### Mathematical Operations
+### Math Utilities
 
 ```solidity
 // Min/max operations
