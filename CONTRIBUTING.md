@@ -2,23 +2,50 @@
 
 Thanks for your interest in contributing to Fuzzlib!
 
-## Getting Started
+## Development Setup
+
+### Prerequisites
+
+- [Foundry](https://getfoundry.sh/)
+
+### Setup
+
+```bash
+git clone https://github.com/your-username/fuzzlib.git
+cd fuzzlib
+forge install
+```
+
+### Testing
+
+```bash
+# Run all tests
+forge test
+
+# Run tests with increased fuzz runs
+forge test --fuzz-runs 10000
+
+# Run Echidna E2E tests
+python3 test/e2e/echidna/run-echidna.py
+```
+
+## Contributing Workflow
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/fuzzlib.git`
-3. Create a branch: `git checkout -b feature-name`
-4. Make your changes
-5. Run tests: `forge test`
-6. Commit and push
-7. Open a Pull Request against the main repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Add tests
+5. Ensure all tests pass: `forge test`
+6. Format code: `forge fmt`
+7. Commit and push
+8. Open a Pull Request against the main repository
 
-## Development
+## Development Guidelines
 
-- Foundry required
-- Run `forge build` to build
-- Run `forge test` to test
-- Run `forge fmt` to format code
 - Keep code simple and maintainable
+- Follow existing code patterns and conventions
+- Add comprehensive tests for new functionality
+- Update documentation as needed
 
 ## Issues
 

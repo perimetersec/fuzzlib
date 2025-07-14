@@ -186,33 +186,6 @@ bytes memory result = fl.doFunctionCall(
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
 
 
-## Development
-
-### Prerequisites
-
-- [Foundry](https://getfoundry.sh/)
-
-### Setup
-
-```bash
-git clone https://github.com/perimetersec/fuzzlib.git
-cd fuzzlib
-forge install
-```
-
-### Testing
-
-```bash
-# Run all tests
-forge test
-
-# Run tests with increased fuzz runs
-forge test --fuzz-runs 10000
-
-# Run Echidna E2E tests
-python3 test/e2e/echidna/run-echidna.py
-```
-
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
