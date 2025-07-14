@@ -217,16 +217,6 @@ python3 test/e2e/echidna/run-echidna.py
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Ensure all tests pass: `forge test`
-6. Format code: `forge fmt`
-7. Submit a pull request
-
 
 ## Roadmap
 
