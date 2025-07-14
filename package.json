@@ -4,7 +4,7 @@
   "description": "Solidity Fuzzing Library",
   "homepage": "https://github.com/perimetersec/fuzzlib#readme",
   "author": "Perimeter <info@perimetersec.io>",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "files": [
     "src/**/*"
   ],
