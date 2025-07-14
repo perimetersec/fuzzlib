@@ -178,11 +178,6 @@ bytes memory result = fl.doFunctionCall(
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
 
 
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-
 ## Roadmap
 
 - [ ] Support for more platforms
@@ -190,9 +185,9 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - [ ] Performance optimizations
 
 
-## Disclaimer
+## Contributing
 
-This software is provided as-is without warranty. The main branch contains new and experimental features that may be unstable. For production use, we recommend using official tagged releases which have been thoroughly tested. While we are not responsible for any bugs or issues, we maintain a bug bounty program that applies to official releases only.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 
 ## License
@@ -202,3 +197,8 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 Some portions of this code are modified from [Crytic Properties](https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol), which is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
 Some portions of this code are modified from [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeCast.sol), which is licensed under the MIT License.
+
+
+## Disclaimer
+
+This software is provided as-is without warranty. The main branch contains new and experimental features that may be unstable. For production use, we recommend using official tagged releases which have been thoroughly tested. While we are not responsible for any bugs or issues, we maintain a bug bounty program that applies to official releases only.
