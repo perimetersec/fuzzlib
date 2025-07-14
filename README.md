@@ -67,9 +67,6 @@ contract MyFuzzer is FuzzBase {
 }
 ```
 
-## Disclaimer
-
-This software is provided as-is without warranty. The main branch contains new and experimental features that may be unstable. For production use, we recommend using official tagged releases which have been thoroughly tested. While we are not responsible for any bugs or issues, we maintain a bug bounty program that applies to official releases only.
 
 ## Function Reference
 
@@ -183,13 +180,11 @@ bytes memory result = fl.doFunctionCall(
 );
 ```
 
-
-
-
 ## Known Limitations
 
 - **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
+
 
 ## Development
 
@@ -232,11 +227,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 6. Format code: `forge fmt`
 7. Submit a pull request
 
+
 ## Roadmap
 
 - [ ] Support for more platforms
 - [ ] Add more helper functions
 - [ ] Performance optimizations
+
+
+## Disclaimer
+
+This software is provided as-is without warranty. The main branch contains new and experimental features that may be unstable. For production use, we recommend using official tagged releases which have been thoroughly tested. While we are not responsible for any bugs or issues, we maintain a bug bounty program that applies to official releases only.
+
 
 ## License
 
