@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "./HelperBase.sol";
@@ -7,8 +7,8 @@ import "../FuzzLibString.sol";
 
 /**
  * @dev Assertion utilities for fuzzing operations.
+ * @author Modified from Crytic Properties (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
  * @author Perimeter <info@perimetersec.io>
- * Based on Crytic PropertiesHelper (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
  */
 abstract contract HelperAssert is HelperBase {
     event AssertFail(string);

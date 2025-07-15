@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "../FuzzLibString.sol";
@@ -7,6 +7,7 @@ import "../FuzzSafeCast.sol";
 
 /**
  * @dev Value clamping and bounds checking utilities for fuzzing operations.
+ * @author Modified from Crytic Properties (https://github.com/crytic/properties/blob/main/contracts/util/PropertiesHelper.sol)
  * @author Perimeter <info@perimetersec.io>
  */
 abstract contract HelperClamp is HelperAssert {
