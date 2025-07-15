@@ -13,7 +13,7 @@ Provides common utilities for fuzz testing through a simple `fl` namespace: asse
 - **Math Utilities**: Operations like min, max, absolute value, and difference calculations
 - **Random Utilities**: Fisher-Yates array shuffling
 - **Function Call Helpers**: Utilities for making function calls with actor pranking
-- **Comprehensive Testing**: Extensive test suite with both unit- and fuzz tests
+- **Comprehensive Testing**: Extensive test suite with both unit and fuzz tests
 - **Well-Documented**: Clear and complete, following OpenZeppelin-style conventions
 
 ## Installation
@@ -176,6 +176,7 @@ bytes memory result = fl.doFunctionCall(
 
 - **Signed Integer Clamping**: Limited to `int128` range to avoid overflow issues in range calculations
 - **Gas Optimization**: Library prioritizes functionality over gas optimization
+- **Function Selector Clashing**: If the error selector clashes with `Error(string)` when using errAllow, unexpected behavior may happen
 
 
 ## Roadmap
