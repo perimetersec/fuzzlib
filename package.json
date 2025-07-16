@@ -1,6 +1,6 @@
 {
   "name": "@perimetersec/fuzzlib",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "Solidity Fuzzing Library",
   "homepage": "https://github.com/perimetersec/fuzzlib#readme",
   "author": "Perimeter <info@perimetersec.io>",
