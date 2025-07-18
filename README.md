@@ -24,6 +24,12 @@ Provides common utilities for fuzz testing through a simple `fl` namespace: asse
 forge install perimetersec/fuzzlib
 ```
 
+### Using Soldeer
+
+```bash
+soldeer install perimetersec-fuzzlib~1.0.0
+```
+
 ### Using npm
 
 ```bash
