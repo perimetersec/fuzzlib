@@ -283,11 +283,11 @@ contract TestHelperClamp is Test, HelperClamp {
     }
 
     function test_clamp_int128_large_ranges() public {
-        int256 low = -10000;
-        int256 high = 10000;
+        int256 low = -10_000;
+        int256 high = 10_000;
 
-        assertEq(this.clamp(int256(50000), low, high), int256(-2)); // range=20001, 50000%20001=9998, -10000+9998=-2
-        assertEq(this.clamp(int256(-50000), low, high), int256(3)); // range=20001, -50000%20001=10003, -10000+10003=3
+        assertEq(this.clamp(int256(50_000), low, high), int256(-2)); // range=20001, 50000%20001=9998, -10000+9998=-2
+        assertEq(this.clamp(int256(-50_000), low, high), int256(3)); // range=20001, -50000%20001=10003, -10000+10003=3
         assertEq(this.clamp(int256(0), low, high), int256(0)); // Already in range
     }
 

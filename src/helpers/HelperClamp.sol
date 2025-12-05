@@ -179,7 +179,9 @@ abstract contract HelperClamp is HelperAssert {
     function clamp(uint256 value, uint256 low, uint256 high, bool enableLogs) public returns (uint256) {
         // Input validation: Ensure low <= high to prevent overflow
         // Without this check, (high - low + 1) could wrap around if low > high
-        if (low > high) revert InvalidRange(low, high);
+        if (low > high) {
+            revert InvalidRange(low, high);
+        }
 
         // Return values already in range without modification.
         // This optimization also handles the full uint256 range [0, type(uint256).max]
@@ -230,7 +232,9 @@ abstract contract HelperClamp is HelperAssert {
         int128 high = FuzzSafeCast.toInt128(_high);
 
         // Input validation: Ensure low <= high to prevent overflow
-        if (low > high) revert InvalidRangeInt128(low, high);
+        if (low > high) {
+            revert InvalidRangeInt128(low, high);
+        }
 
         // Return values already in range without modification.
         if (value >= low && value <= high) {
@@ -277,7 +281,9 @@ abstract contract HelperClamp is HelperAssert {
      */
 
     function clampLt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (b == 0) revert UnsupportedClampLtValue(b);
+        if (b == 0) {
+            revert UnsupportedClampLtValue(b);
+        }
         return clamp(a, 0, b - 1, enableLogs);
     }
 
@@ -292,7 +298,9 @@ abstract contract HelperClamp is HelperAssert {
      * @return Clamped value in range [int128.min, b-1] as int256
      */
     function clampLt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (b <= type(int128).min) revert UnsupportedClampLtValue(uint256(b));
+        if (b <= type(int128).min) {
+            revert UnsupportedClampLtValue(uint256(b));
+        }
         return clamp(a, int256(type(int128).min), b - 1, enableLogs);
     }
 
@@ -331,7 +339,9 @@ abstract contract HelperClamp is HelperAssert {
      * @return Clamped value in range [b+1, uint256.max]
      */
     function clampGt(uint256 a, uint256 b, bool enableLogs) public returns (uint256) {
-        if (b == type(uint256).max) revert UnsupportedClampGtValue(b);
+        if (b == type(uint256).max) {
+            revert UnsupportedClampGtValue(b);
+        }
         return clamp(a, b + 1, type(uint256).max, enableLogs);
     }
 
@@ -346,7 +356,9 @@ abstract contract HelperClamp is HelperAssert {
      * @return Clamped value in range [b+1, int128.max] as int256
      */
     function clampGt(int256 a, int256 b, bool enableLogs) public returns (int256) {
-        if (b >= type(int128).max) revert UnsupportedClampGtValue(uint256(b));
+        if (b >= type(int128).max) {
+            revert UnsupportedClampGtValue(uint256(b));
+        }
         return clamp(a, b + 1, type(int128).max, enableLogs);
     }
 

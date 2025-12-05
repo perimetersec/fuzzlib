@@ -283,10 +283,11 @@ contract TestHelperMath is Test, HelperMath {
     function testFuzz_diff_int256(int256 a, int256 b) public {
         // Avoid overflow cases where the subtraction might overflow
         if (a >= 0 && b < 0) {
-            vm.assume(a <= type(int256).max + b); // Avoid a - b overflow
-        } else if (a < 0 && b >= 0) {
-            vm.assume(b <= type(int256).max + a); // Avoid b - a overflow
-        }
+            vm.assume(a <= type(int256).max + b);
+        } // Avoid a - b overflow
+        else if (a < 0 && b >= 0) {
+            vm.assume(b <= type(int256).max + a);
+        } // Avoid b - a overflow
 
         uint256 result = diff(a, b);
         if (a >= b) {

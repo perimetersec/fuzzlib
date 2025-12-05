@@ -26,7 +26,7 @@ contract TestHelperRandom is Test, HelperRandom {
             original[i] = array[i];
         }
 
-        shuffleArray(array, 12345);
+        shuffleArray(array, 12_345);
 
         // Check all original elements are still present
         for (uint256 i = 0; i < original.length; i++) {
@@ -55,7 +55,7 @@ contract TestHelperRandom is Test, HelperRandom {
             originalSum += array[i];
         }
 
-        shuffleArray(array, 98765);
+        shuffleArray(array, 98_765);
 
         uint256 shuffledSum = 0;
         for (uint256 i = 0; i < array.length; i++) {
@@ -150,14 +150,14 @@ contract TestHelperRandom is Test, HelperRandom {
         uint256[] memory array = new uint256[](0);
 
         vm.expectRevert(HelperRandom.EmptyArray.selector);
-        this.shuffleArray(array, 12345);
+        this.shuffleArray(array, 12_345);
     }
 
     function test_shuffleArray_single_element() public {
         uint256[] memory array = new uint256[](1);
         array[0] = 42;
 
-        shuffleArray(array, 98765);
+        shuffleArray(array, 98_765);
 
         assertEq(array.length, 1);
         assertEq(array[0], 42);
@@ -192,9 +192,13 @@ contract TestHelperRandom is Test, HelperRandom {
         uint256 count15 = 0;
 
         for (uint256 i = 0; i < array.length; i++) {
-            if (array[i] == 5) count5++;
-            else if (array[i] == 10) count10++;
-            else if (array[i] == 15) count15++;
+            if (array[i] == 5) {
+                count5++;
+            } else if (array[i] == 10) {
+                count10++;
+            } else if (array[i] == 15) {
+                count15++;
+            }
         }
 
         assertEq(count5, 3);
@@ -243,9 +247,13 @@ contract TestHelperRandom is Test, HelperRandom {
         bool foundMaxMinus2 = false;
 
         for (uint256 i = 0; i < array.length; i++) {
-            if (array[i] == type(uint256).max) foundMax = true;
-            else if (array[i] == type(uint256).max - 1) foundMaxMinus1 = true;
-            else if (array[i] == type(uint256).max - 2) foundMaxMinus2 = true;
+            if (array[i] == type(uint256).max) {
+                foundMax = true;
+            } else if (array[i] == type(uint256).max - 1) {
+                foundMaxMinus1 = true;
+            } else if (array[i] == type(uint256).max - 2) {
+                foundMaxMinus2 = true;
+            }
         }
 
         assertTrue(foundMax);
@@ -269,8 +277,11 @@ contract TestHelperRandom is Test, HelperRandom {
         uint256 maxCount = 0;
 
         for (uint256 i = 0; i < array.length; i++) {
-            if (array[i] == 0) zeroCount++;
-            else if (array[i] == type(uint256).max) maxCount++;
+            if (array[i] == 0) {
+                zeroCount++;
+            } else if (array[i] == type(uint256).max) {
+                maxCount++;
+            }
         }
 
         assertEq(zeroCount, 2);
