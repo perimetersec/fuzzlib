@@ -18,7 +18,9 @@ abstract contract HelperRandom {
      * @param entropy Random value used as seed for shuffling
      */
     function shuffleArray(uint256[] memory shuffle, uint256 entropy) public pure {
-        if (shuffle.length == 0) revert EmptyArray();
+        if (shuffle.length == 0) {
+            revert EmptyArray();
+        }
 
         for (uint256 i = shuffle.length - 1; i > 0; i--) {
             uint256 swapIndex = entropy % (shuffle.length - i);

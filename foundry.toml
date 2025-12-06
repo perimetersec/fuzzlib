@@ -11,3 +11,11 @@ line_length = 120
 tab_width = 4
 # Style of uint/int256 types
 int_types = "long"
+# Statement blocks will always be formatted to multiple lines
+single_line_statement_blocks = "multi"
+# Break the function header into multiple lines, with each parameter on its own line
+multiline_func_header = "attributes_first"
+# Use double quotes where possible
+quote_style = "double"
+# Use underscores in large numbers for better readability
+number_underscore = "thousands"

@@ -24,13 +24,13 @@ contract FuzzLibStringTest is Test {
     function test_toString_int256_positive() public {
         assertEq(FuzzLibString.toString(int256(42)), "42");
         assertEq(FuzzLibString.toString(int256(1)), "1");
-        assertEq(FuzzLibString.toString(int256(123456789)), "123456789");
+        assertEq(FuzzLibString.toString(int256(123_456_789)), "123456789");
     }
 
     function test_toString_int256_negative() public {
         assertEq(FuzzLibString.toString(int256(-1)), "-1");
         assertEq(FuzzLibString.toString(int256(-42)), "-42");
-        assertEq(FuzzLibString.toString(int256(-123456789)), "-123456789");
+        assertEq(FuzzLibString.toString(int256(-123_456_789)), "-123456789");
     }
 
     function test_toString_int256_max() public {
@@ -88,7 +88,7 @@ contract FuzzLibStringTest is Test {
     function test_toString_uint256_multi_digit() public {
         assertEq(FuzzLibString.toString(uint256(42)), "42");
         assertEq(FuzzLibString.toString(uint256(123)), "123");
-        assertEq(FuzzLibString.toString(uint256(123456789)), "123456789");
+        assertEq(FuzzLibString.toString(uint256(123_456_789)), "123456789");
     }
 
     function test_toString_uint256_max() public {
@@ -106,7 +106,7 @@ contract FuzzLibStringTest is Test {
         assertEq(FuzzLibString.toString(uint256(10)), "10");
         assertEq(FuzzLibString.toString(uint256(100)), "100");
         assertEq(FuzzLibString.toString(uint256(1000)), "1000");
-        assertEq(FuzzLibString.toString(uint256(10000)), "10000");
+        assertEq(FuzzLibString.toString(uint256(10_000)), "10000");
     }
 
     function testFuzz_toString_uint256(uint256 value) public {
@@ -227,7 +227,7 @@ contract FuzzLibStringTest is Test {
         assertTrue(bytes(result).length >= 2);
         assertEq(bytes(result)[0], bytes1("0"));
         assertEq(bytes(result)[1], bytes1("x"));
-        
+
         // Length should be 2 (for "0x") + 2 chars per input byte
         assertEq(bytes(result).length, 2 + 2 * value.length);
 

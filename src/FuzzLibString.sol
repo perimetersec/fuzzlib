@@ -100,8 +100,11 @@ library FuzzLibString {
      * @dev Converts a single byte to its hexadecimal character representation.
      */
     function char(bytes1 b) internal pure returns (bytes1 c) {
-        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
-        else return bytes1(uint8(b) + 0x57);
+        if (uint8(b) < 10) {
+            return bytes1(uint8(b) + 0x30);
+        } else {
+            return bytes1(uint8(b) + 0x57);
+        }
     }
 
     /**
@@ -152,7 +155,9 @@ library FuzzLibString {
         }
 
         // If the returnData length is less than 68, then the transaction failed silently (without a revert message)
-        if (returnData.length < 68) return "Transaction reverted silently";
+        if (returnData.length < 68) {
+            return "Transaction reverted silently";
+        }
 
         assembly {
             // Slice the sighash.
