@@ -15,6 +15,7 @@ abstract contract HelperClamp is HelperAssert {
     error InvalidRangeInt128(int128 low, int128 high);
     error UnsupportedClampLtValue(uint256 value);
     error UnsupportedClampGtValue(uint256 value);
+    error ClampEmptyArray();
 
     event Clamped(string);
 
@@ -388,6 +389,96 @@ abstract contract HelperClamp is HelperAssert {
         return clamp(a, b, type(int128).max, enableLogs);
     }
 
+    /**
+     * @dev Clamps an index to be within the bounds of the given unsigned integer array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The unsigned integer array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(uint256[] memory arr, uint256 _index) public returns (uint256) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
+    /**
+     * @dev Clamps an index to be within the bounds of the given signed integer array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The signed integer array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(int256[] memory arr, uint256 _index) public returns (int256) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
+    /**
+     * @dev Clamps an index to be within the bounds of the given address array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The address array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(address[] memory arr, uint256 _index) public returns (address) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
+    /**
+     * @dev Clamps an index to be within the bounds of the given boolean array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The boolean array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(bool[] memory arr, uint256 _index) public returns (bool) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
+    /**
+     * @dev Clamps an index to be within the bounds of the given string array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The string array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(string[] memory arr, uint256 _index) public returns (string memory) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
+    /**
+     * @dev Clamps an index to be within the bounds of the given bytes array and returns the element at that index.
+     * Reverts with EmptyArray error if the array is empty.
+     * @param arr The bytes array to index into
+     * @param _index The index to clamp
+     * @return The element at the clamped index
+     */
+    function clampArr(bytes[] memory arr, uint256 _index) public returns (bytes memory) {
+        if (arr.length == 0) {
+            revert ClampEmptyArray();
+        }
+        uint256 index = clamp(_index, 0, arr.length - 1);
+        return arr[index];
+    }
+
     /*
      **************************************************************************
      * Private Helper Functions
@@ -395,18 +486,14 @@ abstract contract HelperClamp is HelperAssert {
      */
 
     function logClamp(uint256 value, uint256 ans) private {
-        emit Clamped(
-            string(
+        emit Clamped(string(
                 abi.encodePacked("Clamping value ", FuzzLibString.toString(value), " to ", FuzzLibString.toString(ans))
-            )
-        );
+            ));
     }
 
     function logClamp(int256 value, int256 ans) private {
-        emit Clamped(
-            string(
+        emit Clamped(string(
                 abi.encodePacked("Clamping value ", FuzzLibString.toString(value), " to ", FuzzLibString.toString(ans))
-            )
-        );
+            ));
     }
 }

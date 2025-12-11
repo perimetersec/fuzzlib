@@ -145,8 +145,9 @@ contract EchidnaTest is EchidnaHandler {
     function fuzz_function_call_multiple_returns(uint256 value, string memory testString, bool flag, address actor)
         public
     {
-        bytes memory callData =
-            abi.encodeWithSelector(this.handler_function_call_multiple_returns.selector, value, testString, flag, actor);
+        bytes memory callData = abi.encodeWithSelector(
+            this.handler_function_call_multiple_returns.selector, value, testString, flag, actor
+        );
         (bool success, bytes4 errorSelector) = _testSelf(callData);
         if (!success) {
             fl.t(false, "CALL-03: Unexpected function call multiple returns failure");

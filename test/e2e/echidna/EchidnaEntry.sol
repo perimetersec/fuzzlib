@@ -9,8 +9,9 @@ import "./EchidnaTest.sol";
  * @author Perimeter <info@perimetersec.io>
  */
 contract EchidnaEntry is EchidnaTest {
-// This contract serves as the entry point for Echidna
-// All functionality is inherited from the parent contracts:
-// - EchidnaHandler: handler_* functions
-// - EchidnaTest: fuzz_* wrapper functions and _testSelf helper
-}
+    // This contract serves as the entry point for Echidna
+    // All functionality is inherited from the parent contracts:
+    // - EchidnaHandler: handler_* functions
+    // - EchidnaTest: fuzz_* wrapper functions and _testSelf helper
+
+    }

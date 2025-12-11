@@ -240,8 +240,9 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function test_eq_int256_mixed_signs() public {
         string memory reason = "mixed signs test";
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(int256(-5)), FuzzLibString.toString(int256(5)), "!=", reason);
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(int256(-5)), FuzzLibString.toString(int256(5)), "!=", reason
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertEqFail(failReason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -366,8 +367,9 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function test_gte_uint256_less() public {
         string memory reason = "gte less test";
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(uint256(3)), FuzzLibString.toString(uint256(7)), "<", reason);
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(uint256(3)), FuzzLibString.toString(uint256(7)), "<", reason
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertGteFail(failReason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
@@ -724,8 +726,9 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
 
     function test_lt_int256_greater() public {
         string memory reason = "lt int256 greater test";
-        string memory failReason =
-            createAssertFailMessage(FuzzLibString.toString(int256(10)), FuzzLibString.toString(int256(5)), ">=", reason);
+        string memory failReason = createAssertFailMessage(
+            FuzzLibString.toString(int256(10)), FuzzLibString.toString(int256(5)), ">=", reason
+        );
         vm.expectEmit(true, false, false, true);
         emit AssertLtFail(failReason);
         vm.expectRevert(PlatformTest.TestAssertFail.selector);
