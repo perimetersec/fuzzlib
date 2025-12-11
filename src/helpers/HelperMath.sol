@@ -55,4 +55,13 @@ abstract contract HelperMath {
     function diff(uint256 a, uint256 b) public pure returns (uint256) {
         return a >= b ? a - b : b - a;
     }
+
+    /**
+     * @dev Scales an amount by the given number of decimals.
+     * @param amount The amount to scale
+     * @param decimals The number of decimals to scale by
+     */
+    function scale(uint256 amount, uint256 decimals) public pure returns (uint256) {
+        return amount * (10 ** decimals);
+    }
 }

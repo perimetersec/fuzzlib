@@ -333,6 +333,38 @@ contract TestHelperMath is Test, HelperMath {
     }
 
     /**
+     * Tests for scale(uint256, uint256)
+     */
+    function test_scale_basic() public {
+        assertEq(scale(1, 18), 1e18);
+        assertEq(scale(5, 6), 5_000_000);
+        assertEq(scale(100, 2), 10_000);
+    }
+
+    function test_scale_zero_amount() public {
+        assertEq(scale(0, 18), 0);
+        assertEq(scale(0, 0), 0);
+        assertEq(scale(0, 100), 0);
+    }
+
+    function test_scale_zero_decimals() public {
+        assertEq(scale(42, 0), 42);
+        assertEq(scale(1000, 0), 1000);
+        assertEq(scale(type(uint256).max, 0), type(uint256).max);
+    }
+
+    function test_scale_common_decimals() public {
+        assertEq(scale(1, 6), 1_000_000);
+        assertEq(scale(1, 8), 100_000_000);
+        assertEq(scale(1, 18), 1_000_000_000_000_000_000);
+    }
+
+    function test_scale_large_decimals() public {
+        assertEq(scale(1, 27), 1e27);
+        assertEq(scale(2, 30), 2e30);
+    }
+
+    /**
      * Edge case tests
      */
     function test_edge_cases_boundary_values() public {
