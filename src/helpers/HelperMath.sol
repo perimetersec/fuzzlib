@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
  * @author Perimeter <info@perimetersec.io>
  */
 abstract contract HelperMath {
+    error ExceedMaxValue();
+
     /**
      * @dev Returns the smallest of two unsigned numbers.
      */
@@ -59,9 +61,12 @@ abstract contract HelperMath {
     /**
      * @dev Scales an amount by the given number of decimals.
      * @param amount The amount to scale
-     * @param decimals The number of decimals to scale by
+     * @param decimals The number of decimals to scale by. Note: Max value is 77 to prevent overflow.
      */
-    function scale(uint256 amount, uint256 decimals) public pure returns (uint256) {
+    function scaleDec(uint256 amount, uint256 decimals) public pure returns (uint256) {
+        if (decimals > 77) {
+            revert ExceedMaxValue();
+        }
         return amount * (10 ** decimals);
     }
 }
