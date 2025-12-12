@@ -863,4 +863,208 @@ contract TestHelperClamp is Test, HelperClamp {
         );
         this.clampGte(int256(50), int256(type(int128).max) + 1);
     }
+
+    function test_clampArr_within_bounds() public {
+        uint256[] memory arr = new uint256[](5);
+        arr[0] = 10;
+        arr[1] = 20;
+        arr[2] = 30;
+        arr[3] = 40;
+        arr[4] = 50;
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[2], this.clampArr(arr, 2));
+        assertEq(arr[4], this.clampArr(arr, 4));
+    }
+
+    function test_clampArr_out_of_bounds() public {
+        uint256[] memory arr = new uint256[](3);
+        arr[0] = 100;
+        arr[1] = 200;
+        arr[2] = 300;
+
+        assertEq(this.clampArr(arr, 5), arr[2]);
+        assertEq(this.clampArr(arr, 10), arr[1]);
+        assertEq(this.clampArr(arr, 15), arr[0]);
+    }
+
+    function test_clampArr_empty_array() public {
+        uint256[] memory arr = new uint256[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
+
+    /**
+     * Tests for clampArr(int256[], uint256)
+     */
+    function test_clampArr_int256_within_bounds() public {
+        int256[] memory arr = new int256[](4);
+        arr[0] = -100;
+        arr[1] = -50;
+        arr[2] = 0;
+        arr[3] = 50;
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[1], this.clampArr(arr, 1));
+        assertEq(arr[3], this.clampArr(arr, 3));
+    }
+
+    function test_clampArr_int256_out_of_bounds() public {
+        int256[] memory arr = new int256[](7);
+        arr[0] = -1000;
+        arr[1] = -500;
+        arr[2] = -100;
+        arr[3] = 0;
+        arr[4] = 100;
+        arr[5] = 500;
+        arr[6] = 1000;
+
+        assertEq(this.clampArr(arr, 10), arr[3]);
+        assertEq(this.clampArr(arr, 20), arr[6]);
+        assertEq(this.clampArr(arr, 25), arr[4]);
+    }
+
+    function test_clampArr_int256_empty_array() public {
+        int256[] memory arr = new int256[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
+
+    /**
+     * Tests for clampArr(address[], uint256)
+     */
+    function test_clampArr_address_within_bounds() public {
+        address[] memory arr = new address[](6);
+        arr[0] = address(0x1111);
+        arr[1] = address(0x2222);
+        arr[2] = address(0x3333);
+        arr[3] = address(0x4444);
+        arr[4] = address(0x5555);
+        arr[5] = address(0x6666);
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[3], this.clampArr(arr, 3));
+        assertEq(arr[5], this.clampArr(arr, 5));
+    }
+
+    function test_clampArr_address_out_of_bounds() public {
+        address[] memory arr = new address[](2);
+        arr[0] = address(0xAAAA);
+        arr[1] = address(0xBBBB);
+
+        assertEq(this.clampArr(arr, 4), arr[0]);
+        assertEq(this.clampArr(arr, 7), arr[1]);
+        assertEq(this.clampArr(arr, 12), arr[0]);
+    }
+
+    function test_clampArr_address_empty_array() public {
+        address[] memory arr = new address[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
+
+    /**
+     * Tests for clampArr(bool[], uint256)
+     */
+    function test_clampArr_bool_within_bounds() public {
+        bool[] memory arr = new bool[](3);
+        arr[0] = true;
+        arr[1] = false;
+        arr[2] = true;
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[1], this.clampArr(arr, 1));
+        assertEq(arr[2], this.clampArr(arr, 2));
+    }
+
+    function test_clampArr_bool_out_of_bounds() public {
+        bool[] memory arr = new bool[](5);
+        arr[0] = false;
+        arr[1] = true;
+        arr[2] = false;
+        arr[3] = true;
+        arr[4] = false;
+
+        assertEq(this.clampArr(arr, 8), arr[3]);
+        assertEq(this.clampArr(arr, 11), arr[1]);
+        assertEq(this.clampArr(arr, 17), arr[2]);
+    }
+
+    function test_clampArr_bool_empty_array() public {
+        bool[] memory arr = new bool[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
+
+    /**
+     * Tests for clampArr(string[], uint256)
+     */
+    function test_clampArr_string_within_bounds() public {
+        string[] memory arr = new string[](8);
+        arr[0] = "first";
+        arr[1] = "second";
+        arr[2] = "third";
+        arr[3] = "fourth";
+        arr[4] = "fifth";
+        arr[5] = "sixth";
+        arr[6] = "seventh";
+        arr[7] = "eighth";
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[4], this.clampArr(arr, 4));
+        assertEq(arr[7], this.clampArr(arr, 7));
+    }
+
+    function test_clampArr_string_out_of_bounds() public {
+        string[] memory arr = new string[](4);
+        arr[0] = "alpha";
+        arr[1] = "beta";
+        arr[2] = "gamma";
+        arr[3] = "delta";
+
+        assertEq(this.clampArr(arr, 6), arr[2]);
+        assertEq(this.clampArr(arr, 13), arr[1]);
+        assertEq(this.clampArr(arr, 20), arr[0]);
+    }
+
+    function test_clampArr_string_empty_array() public {
+        string[] memory arr = new string[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
+
+    /**
+     * Tests for clampArr(bytes[], uint256)
+     */
+    function test_clampArr_bytes_within_bounds() public {
+        bytes[] memory arr = new bytes[](10);
+        arr[0] = hex"00";
+        arr[1] = hex"11";
+        arr[2] = hex"22";
+        arr[3] = hex"33";
+        arr[4] = hex"44";
+        arr[5] = hex"55";
+        arr[6] = hex"66";
+        arr[7] = hex"77";
+        arr[8] = hex"88";
+        arr[9] = hex"99";
+        assertEq(arr[0], this.clampArr(arr, 0));
+        assertEq(arr[5], this.clampArr(arr, 5));
+        assertEq(arr[9], this.clampArr(arr, 9));
+    }
+
+    function test_clampArr_bytes_out_of_bounds() public {
+        bytes[] memory arr = new bytes[](6);
+        arr[0] = hex"AAAA";
+        arr[1] = hex"BBBB";
+        arr[2] = hex"CCCC";
+        arr[3] = hex"DDDD";
+        arr[4] = hex"EEEE";
+        arr[5] = hex"FFFF";
+
+        assertEq(this.clampArr(arr, 9), arr[3]);
+        assertEq(this.clampArr(arr, 19), arr[1]);
+        assertEq(this.clampArr(arr, 30), arr[0]);
+    }
+
+    function test_clampArr_bytes_empty_array() public {
+        bytes[] memory arr = new bytes[](0);
+        vm.expectRevert(abi.encodeWithSelector(HelperClamp.ClampEmptyArray.selector));
+        this.clampArr(arr, 0);
+    }
 }
