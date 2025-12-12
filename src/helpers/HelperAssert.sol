@@ -337,7 +337,9 @@ abstract contract HelperAssert is HelperBase {
             // strippedDataPtr: memory position of where to copy the data
             // errorDataPtr: memory position of what to copy
             // dataLength: length of the data to copy
-            mcopy(strippedDataPtr, errorDataPtr, dataLength)
+            for { let i := 0 } lt(i, dataLength) { i := add(i, 32) } {
+                mstore(add(strippedDataPtr, i), mload(add(errorDataPtr, i)))
+            }
 
             // now "strippedData" is the error message (string) without selector
         }
