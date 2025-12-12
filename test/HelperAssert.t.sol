@@ -1649,4 +1649,34 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
         errAllow(errorData, allowedErrors, "errAllow test");
         errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
     }
+
+    function testFuzz_errAllow_equivalence(string[] memory allowedErrors, string memory actualMsg) public {
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), actualMsg);
+
+        // Check if actualMsg matches any in allowedErrors
+        bool shouldMatch = false;
+        for (uint256 i = 0; i < allowedErrors.length; i++) {
+            if (keccak256(abi.encode(allowedErrors[i])) == keccak256(abi.encode(actualMsg))) {
+                shouldMatch = true;
+                break;
+            }
+        }
+
+        if (shouldMatch) {
+            // Both should pass when actualMsg is in allowedErrors
+            errAllow(errorData, allowedErrors, "errAllow test");
+            errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+        } else {
+            // Both should fail when actualMsg is not in allowedErrors
+            vm.expectEmit(false, false, false, true);
+            emit AssertFail("errAllow test");
+            vm.expectRevert(PlatformTest.TestAssertFail.selector);
+            errAllow(errorData, allowedErrors, "errAllow test");
+
+            vm.expectEmit(false, false, false, true);
+            emit AssertFail("errAllow_mcopy test");
+            vm.expectRevert(PlatformTest.TestAssertFail.selector);
+            errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+        }
+    }
 }
