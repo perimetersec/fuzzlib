@@ -333,6 +333,62 @@ contract TestHelperMath is Test, HelperMath {
     }
 
     /**
+     * Tests for scaleDec(uint256, uint256)
+     */
+    function test_scaleDec_basic() public {
+        assertEq(scaleDec(1, 18), 1e18);
+        assertEq(scaleDec(5, 6), 5_000_000);
+        assertEq(scaleDec(100, 2), 10_000);
+    }
+
+    function test_scaleDec_zero_amount() public {
+        assertEq(scaleDec(0, 18), 0);
+        assertEq(scaleDec(0, 0), 0);
+        assertEq(scaleDec(0, 77), 0);
+    }
+
+    function test_scaleDec_zero_decimals() public {
+        assertEq(scaleDec(42, 0), 42);
+        assertEq(scaleDec(1000, 0), 1000);
+        assertEq(scaleDec(type(uint256).max, 0), type(uint256).max);
+    }
+
+    function test_scaleDec_common_decimals() public {
+        assertEq(scaleDec(1, 6), 1_000_000);
+        assertEq(scaleDec(1, 8), 100_000_000);
+        assertEq(scaleDec(1, 18), 1_000_000_000_000_000_000);
+    }
+
+    function test_scaleDec_large_decimals() public {
+        assertEq(scaleDec(1, 27), 1e27);
+        assertEq(scaleDec(2, 30), 2e30);
+    }
+
+    function test_scaleDec_overflow() public {
+        // Overflow from multiplication when amount is large
+        vm.expectRevert(stdError.arithmeticError);
+        this.scaleDec(type(uint256).max, 1);
+
+        // Just below overflow threshold should succeed
+        uint256 maxSafeAmount = type(uint256).max / 10;
+        assertEq(scaleDec(maxSafeAmount, 1), maxSafeAmount * 10);
+
+        // Just above overflow threshold should revert
+        vm.expectRevert(stdError.arithmeticError);
+        this.scaleDec(maxSafeAmount + 1, 1);
+
+        // Maximum valid decimals value (10**77 is the largest power of 10 that fits in uint256)
+        assertEq(scaleDec(1, 77), 1e77);
+
+        // Decimals > 77 should revert with custom error
+        vm.expectRevert(HelperMath.ExceedMaxValue.selector);
+        this.scaleDec(1, 78);
+
+        vm.expectRevert(HelperMath.ExceedMaxValue.selector);
+        this.scaleDec(1, 100);
+    }
+
+    /**
      * Edge case tests
      */
     function test_edge_cases_boundary_values() public {
