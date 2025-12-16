@@ -60,6 +60,16 @@ interface IHevm {
     function prank(address newSender) external;
 
     /**
+     * @dev Sets msg.sender to the specified sender until stopPrank() is called
+     */
+    function startPrank(address sender) external;
+
+    /**
+     * @dev Resets msg.sender to the default sender.
+     */
+    function stopPrank() external;
+
+    /**
      * @dev Creates a new fork with the given endpoint and the latest block and returns the identifier of the fork
      */
     function createFork(string calldata urlOrAlias) external returns (uint256);
