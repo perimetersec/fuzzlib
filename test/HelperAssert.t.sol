@@ -1414,4 +1414,269 @@ contract TestHelperAssert is Test, HelperAssert, ErrAllowTestHelper {
         require(!success3, "should fail");
         assertFalse(_isErrorString(bytes4(emptyErrorData)), "empty error should not be Error(string) type");
     }
+
+    /**
+     * @dev Alternative implementation of errAllow using mcopy opcode for testing equivalence.
+     */
+    function errAllow_mcopy(
+        bytes memory errorData,
+        string[] memory allowedRequireErrorMessages,
+        string memory errorContext
+    ) public {
+        // space for error message without selector (4 bytes)
+        bytes memory strippedData = new bytes(errorData.length - 4);
+        assembly {
+            // calculate the memory position of strippedData
+            let strippedDataPtr := add(strippedData, 32)
+            // calculate the memory position of errorData (4 bytes for selector)
+            let errorDataPtr := add(add(errorData, 32), 4)
+            // calculate the data length
+            let dataLength := sub(mload(errorData), 4)
+            // copy the data
+            // strippedDataPtr: memory position of where to copy the data
+            // errorDataPtr: memory position of what to copy
+            // dataLength: length of the data to copy
+            mcopy(strippedDataPtr, errorDataPtr, dataLength)
+
+            // now "strippedData" is the error message (string) without selector
+        }
+
+        // extract the string from the remaining data
+        string memory decodedString = abi.decode(strippedData, (string));
+
+        // compare with allowedRequireErrorMessages
+        bool allowed = false;
+        for (uint256 i = 0; i < allowedRequireErrorMessages.length; i++) {
+            if (keccak256(abi.encode(decodedString)) == keccak256(abi.encode(allowedRequireErrorMessages[i]))) {
+                allowed = true;
+                break;
+            }
+        }
+
+        t(allowed, errorContext);
+    }
+
+    /**
+     * Tests for errAllow vs errAllow_mcopy equivalence
+     */
+    function test_errAllow_equivalence_short_message() public {
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = "short";
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), "short");
+
+        // Both should pass with allowed message
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_short_message_fail() public {
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = "expected";
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), "different");
+
+        // Both should fail with disallowed message
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("errAllow test");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        errAllow(errorData, allowedErrors, "errAllow test");
+
+        vm.expectEmit(false, false, false, true);
+        emit AssertFail("errAllow_mcopy test");
+        vm.expectRevert(PlatformTest.TestAssertFail.selector);
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_32_byte_message() public {
+        // Exactly 32 bytes (one word)
+        string memory message = "12345678901234567890123456789012";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_31_byte_message() public {
+        // Just under 32 bytes
+        string memory message = "1234567890123456789012345678901";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_33_byte_message() public {
+        // Just over 32 bytes
+        string memory message = "123456789012345678901234567890123";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_64_byte_message() public {
+        // Exactly two words
+        string memory message = "1234567890123456789012345678901212345678901234567890123456789012";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_long_message() public {
+        // Very long message (over 100 bytes)
+        string memory message =
+            "This is a very long error message that exceeds multiple memory words to test proper copying behavior";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_special_characters() public {
+        string memory message = "Error: Value out of range! @#$%^&*()";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_unicode_characters() public {
+        string memory message = unicode"Error: Invalid value \u2713 \u2717";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_empty_message() public {
+        string memory message = "";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_single_character() public {
+        string memory message = "x";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_multiple_allowed_messages() public {
+        string[] memory allowedErrors = new string[](3);
+        allowedErrors[0] = "first error";
+        allowedErrors[1] = "second error";
+        allowedErrors[2] = "third error";
+
+        // Test first message
+        bytes memory errorData1 = abi.encodeWithSelector(bytes4(0x08c379a0), "first error");
+        errAllow(errorData1, allowedErrors, "errAllow test 1");
+        errAllow_mcopy(errorData1, allowedErrors, "errAllow_mcopy test 1");
+
+        // Test middle message
+        bytes memory errorData2 = abi.encodeWithSelector(bytes4(0x08c379a0), "second error");
+        errAllow(errorData2, allowedErrors, "errAllow test 2");
+        errAllow_mcopy(errorData2, allowedErrors, "errAllow_mcopy test 2");
+
+        // Test last message
+        bytes memory errorData3 = abi.encodeWithSelector(bytes4(0x08c379a0), "third error");
+        errAllow(errorData3, allowedErrors, "errAllow test 3");
+        errAllow_mcopy(errorData3, allowedErrors, "errAllow_mcopy test 3");
+    }
+
+    function test_errAllow_equivalence_numbers_in_message() public {
+        string memory message = "Error code: 12345678901234567890";
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = message;
+
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), message);
+
+        // Both should pass
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function test_errAllow_equivalence_real_dummy_error() public {
+        // Use actual dummy contract error
+        string[] memory allowedErrors = new string[](1);
+        allowedErrors[0] = "require failure message 1";
+
+        (bool success, bytes memory errorData) =
+            address(dummy).call(abi.encodeWithSignature("requireFailWithMessage()"));
+        require(!success, "should fail");
+
+        // Both should pass with real error data
+        errAllow(errorData, allowedErrors, "errAllow test");
+        errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+    }
+
+    function testFuzz_errAllow_equivalence(string[] memory allowedErrors, string memory actualMsg) public {
+        bytes memory errorData = abi.encodeWithSelector(bytes4(0x08c379a0), actualMsg);
+
+        // Check if actualMsg matches any in allowedErrors
+        bool shouldMatch = false;
+        for (uint256 i = 0; i < allowedErrors.length; i++) {
+            if (keccak256(abi.encode(allowedErrors[i])) == keccak256(abi.encode(actualMsg))) {
+                shouldMatch = true;
+                break;
+            }
+        }
+
+        if (shouldMatch) {
+            // Both should pass when actualMsg is in allowedErrors
+            errAllow(errorData, allowedErrors, "errAllow test");
+            errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+        } else {
+            // Both should fail when actualMsg is not in allowedErrors
+            vm.expectEmit(false, false, false, true);
+            emit AssertFail("errAllow test");
+            vm.expectRevert(PlatformTest.TestAssertFail.selector);
+            errAllow(errorData, allowedErrors, "errAllow test");
+
+            vm.expectEmit(false, false, false, true);
+            emit AssertFail("errAllow_mcopy test");
+            vm.expectRevert(PlatformTest.TestAssertFail.selector);
+            errAllow_mcopy(errorData, allowedErrors, "errAllow_mcopy test");
+        }
+    }
 }
