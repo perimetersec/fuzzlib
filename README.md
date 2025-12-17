@@ -1,8 +1,10 @@
 # Fuzzlib
 
-General purpose unopinionated Solidity fuzzing library for stateful and stateless fuzzing. Compatible with Echidna, Medusa, and Foundry.
+Fuzzlib is a general purpose unopinionated Solidity fuzzing library for stateful and stateless fuzzing. Compatible with Echidna, Medusa, and Foundry.
 
 Provides common utilities for fuzz testing through a simple `fl` namespace: assertions, value clamping, logging, math operations, and more.
+
+Maintained by [Perimeter](https://www.perimetersec.io) – Leaders in securing DeFi using fuzzing since 2022.
 
 ## Key Features
 

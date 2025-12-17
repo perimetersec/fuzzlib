@@ -5,12 +5,12 @@ import {Constants} from "./Constants.sol";
 
 /**
  * @dev Available cheat codes for Medusa.
- * Documentation: https://github.com/crytic/medusa/tree/dev/mdbook/docs/src/cheatcodes
- * Usage: https://github.com/crytic/medusa/blob/dev/mdbook/docs/src/cheatcodes_overview.md
+ * Documentation: https://github.com/crytic/medusa/blob/master/docs/src/cheatcodes/cheatcodes_overview.md
+ * Usage: https://github.com/crytic/medusa/blob/master/docs/src/cheatcodes/cheatcodes_overview.md#cheatcode-interface
  * @author Perimeter <info@perimetersec.io>
  */
 interface IStdCheats {
-    /**
+    /** 
      * @dev Set block.timestamp
      */
     function warp(uint256 x) external;
@@ -23,12 +23,17 @@ interface IStdCheats {
     /**
      * @dev Set block.basefee
      */
-    function fee(uint256 x) external;
+    function fee(uint256 fee) external;
 
     /**
-     * @dev Set block.difficulty and block.prevrandao
+     * @dev Set block.difficulty (deprecated in `medusa`)
      */
-    function difficulty(uint256 x) external;
+    function difficulty(uint256 difficulty) external;
+
+    /**
+     * @dev Set block.prevrandao
+     */
+    function prevrandao(bytes32 x) external;
 
     /**
      * @dev Set block.chainid
@@ -36,7 +41,7 @@ interface IStdCheats {
     function chainId(uint256 x) external;
 
     /**
-     * @dev Sets the block.coinbase
+     * @dev Set block.coinbase
      */
     function coinbase(address x) external;
 
@@ -56,6 +61,16 @@ interface IStdCheats {
     function prank(address sender) external;
 
     /**
+     * @dev Sets all subsequent call's msg.sender (until stopPrank is called) to be the input address
+     */
+    function startPrank(address sender) external;
+
+    /**
+     * @dev Stops a previously called startPrank
+     */
+    function stopPrank() external;
+
+    /**
      * @dev Set msg.sender to the input address until the current call exits
      */
     function prankHere(address sender) external;
@@ -71,6 +86,11 @@ interface IStdCheats {
     function etch(address who, bytes calldata code) external;
 
     /**
+     * @dev Sets a label for an address (for debugging purposes)
+     */
+    function label(address account, string calldata label) external;
+
+    /**
      * @dev Signs data
      */
     function sign(uint256 privateKey, bytes32 digest) external returns (uint8 v, bytes32 r, bytes32 s);
@@ -79,6 +99,11 @@ interface IStdCheats {
      * @dev Computes address for a given private key
      */
     function addr(uint256 privateKey) external returns (address);
+
+    /**
+     * @dev Gets the creation bytecode of a contract
+     */
+    function getCode(string calldata) external returns (bytes memory);
 
     /**
      * @dev Gets the nonce of an account
@@ -95,6 +120,16 @@ interface IStdCheats {
      * @dev Performs a foreign function call via terminal
      */
     function ffi(string[] calldata) external returns (bytes memory);
+
+    /**
+     * @dev Take a snapshot of the current state of the EVM
+     */
+    function snapshot() external returns (uint256);
+
+    /**
+     * @dev Revert state back to a snapshot
+     */
+    function revertTo(uint256) external returns (bool);
 
     /**
      * @dev Convert Solidity types to strings
